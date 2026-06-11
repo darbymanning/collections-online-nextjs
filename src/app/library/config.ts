@@ -1,3 +1,5 @@
+import { museums } from "./types"
+
 function parent(url: URL): URL {
 	const parts = url.hostname.split(".")
 
@@ -6,7 +8,7 @@ function parent(url: URL): URL {
 	return new URL(url.origin)
 }
 
-const self = new URL(process.env.SITE_URL!)
+const self = new URL(museums[process.env.MUSEUM].url)
 
 export const urls = {
 	self,

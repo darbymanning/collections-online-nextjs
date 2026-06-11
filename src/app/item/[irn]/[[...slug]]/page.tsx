@@ -8,20 +8,20 @@ import { urls } from "$library/config"
 
 type Params = {
 	params: Promise<{
-		id: string
+		irn: CollectionObject["irn"]
 		// cosmetic only — never read, just makes URLs human-friendly
 		slug?: Array<string>
 	}>
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-	const { id } = await params
-	const object = await api.getCollectionObject(id)
+	const { irn } = await params
+	const object = await api.getCollectionObject(irn)
 
 	return {
 		title: object.recordTitle,
 		alternates: {
-			canonical: `/item/${id}/${slugify(object.recordTitle)}`,
+			canonical: `/item/${irn}/${slugify(object.recordTitle)}`,
 		},
 	}
 }
@@ -55,8 +55,8 @@ export function props(object: CollectionObject) {
 export type Props = ReturnType<typeof props>
 
 export default async function Page({ params }: Params) {
-	const { id } = await params
-	const object = await api.getCollectionObject(id)
+	const { irn } = await params
+	const [object, iiif] = await Promise.all([api.getCollectionObject(irn), api.getDamsIiif(irn)])
 
 	return <CollectionObjectLayout {...props(object)} />
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { List } from "$components/list"
-import type { Props } from "../item/[id]/[[...slug]]/page"
+import type { Props } from "../item/[irn]/[[...slug]]/page"
 import Link from "next/link"
 
 export function CollectionObjectLayout({
