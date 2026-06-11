@@ -1,13 +1,17 @@
 import type { Metadata } from "next"
 import { Montserrat } from "next/font/google"
+import StyledJsxRegistry from "./registry"
 import "./globals.css"
+import { urls } from "$library/config"
 
 const montserrat = Montserrat({
 	subsets: ["latin"],
-	variable: "--font-montserrat",
+	variable: "--f-montserrat",
 })
 
 export const metadata: Metadata = {
+	// per-museum deployment domain; relative canonical/og URLs resolve against this
+	metadataBase: urls.self,
 	title: "Collections Online",
 	description: "POC",
 }
@@ -19,7 +23,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en-GB" className={montserrat.variable}>
-			<body>{children}</body>
+			<body>
+				<StyledJsxRegistry>{children}</StyledJsxRegistry>
+			</body>
 		</html>
 	)
 }

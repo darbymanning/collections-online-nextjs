@@ -3,7 +3,7 @@ import { CollectionObject } from "./types"
 const base = "https://prd-online.glamdigital.io"
 
 export const api = {
-	async get_collection_object(id: string): Promise<CollectionObject> {
+	async getCollectionObject(id: string): Promise<CollectionObject> {
 		const url = new URL(base)
 		url.pathname = `/v2/item/${id}/full`
 
