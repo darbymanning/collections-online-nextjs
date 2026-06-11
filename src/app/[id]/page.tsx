@@ -36,7 +36,7 @@ function List({ list, base }: { list: string; base: string }) {
 	)
 }
 export default async function Page({ params }: Params) {
-	const json = await api.getCollectionObject((await params).id)
+	const json = await api.get_collection_object((await params).id)
 
 	const { recordTitle, objectNumbers, geographicalProvenance, datePeriod } = json
 
@@ -75,8 +75,6 @@ export default async function Page({ params }: Params) {
 					))}
 				</dl>
 			</section>
-
-			<pre>{JSON.stringify(json, null, 2)}</pre>
 		</article>
 	)
 }
