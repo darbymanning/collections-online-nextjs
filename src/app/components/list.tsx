@@ -4,7 +4,7 @@ import { useState } from "react"
 
 type Props = {
 	links: Array<{ label: string; href: string }>
-	association: string
+	association?: string
 }
 
 // styled-jsx's class injection is dropped by React Compiler memoization,
@@ -22,7 +22,8 @@ export function List({ links, association }: Props) {
 				<div className="views">
 					<div className="view closed">
 						<div>
-							<a href={last.href}>{last.label}</a>, ({association})
+							<a href={last.href}>{last.label}</a>
+							{association ? ` (${association})` : ""}
 						</div>
 					</div>
 					<div className="view opened">
@@ -33,7 +34,7 @@ export function List({ links, association }: Props) {
 									{index < links.length - 1 && <span className="chevron"> &gt; </span>}
 								</span>
 							))}
-							, ({association})
+							{association ? ` (${association})` : ""}
 						</div>
 					</div>
 				</div>

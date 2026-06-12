@@ -3,24 +3,30 @@ export const museums = {
 	/** Ashmolean Museum
 	 * @see {@link https://www.ashmolean.org} */
 	ash: {
+		ref: "ash",
 		name: "Ashmolean Museum",
 		url: "https://www.ashmolean.org",
+		dams: "https://dams.ashmus.ox.ac.uk/iiif/",
 	},
 	/** Oxford University Museum of Natural History
 	 * @see {@link https://www.oumnh.ox.ac.uk} */
 	oum: {
+		ref: "oum",
 		name: "Oxford University Museum of Natural History",
 		url: "https://www.oumnh.ox.ac.uk",
 	},
 	/** Pitt Rivers Museum
 	 * @see {@link https://www.prm.ox.ac.uk} */
 	prm: {
+		ref: "prm",
 		name: "Pitt Rivers Museum",
 		url: "https://www.prm.ox.ac.uk",
+		dams: "https://dams.prm.ox.ac.uk/iiif/",
 	},
 	/** History of Science Museum
 	 * @see {@link https://hsm.ox.ac.uk} */
 	hsm: {
+		ref: "hsm",
 		name: "History of Science Museum",
 		url: "https://hsm.ox.ac.uk",
 	},
@@ -81,12 +87,15 @@ export type CollectionObject = {
 		sort: string
 	}>
 	persons: Array<any>
-	geographicalProvenance: Array<{
-		place: string
-		association: string
-		sort: string
-		placeSearch: string
-	}>
+	geographicalProvenance?: Array<
+		| {
+				place: string
+				association?: string
+				sort: string
+				placeSearch?: string
+		  }
+		| { region: string; sort: string }
+	>
 	materialAndProcess: Array<{
 		type: string
 		sort: string
@@ -100,13 +109,16 @@ export type CollectionObject = {
 		type: string
 		displayAccNo: string
 	}>
-	datePeriod: Array<{
-		period: string
-		sort: string
-		to: string
-		from: string
-		type: string
-	}>
+	datePeriod?: Array<
+		| {
+				period: string
+				sort: string
+				to: string
+				from: string
+				type: string
+		  }
+		| { from: string }
+	>
 	personsAssociated: Array<any>
 	provenance: Array<any>
 	inscriptionsAndMarks: Array<any>

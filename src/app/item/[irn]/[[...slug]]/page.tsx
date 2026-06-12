@@ -3,8 +3,7 @@ import { api } from "$library/api"
 import { slugify } from "$library/slug"
 import { CollectionObjectLayout } from "$layouts/collection-object"
 import type { CollectionObject } from "$library/types"
-import { list } from "$library/utils"
-import { urls } from "$library/config"
+import { museum } from "$library/config"
 
 type Params = {
 	params: Promise<{
@@ -18,16 +17,22 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 	const { irn } = await params
 	const object = await api.getCollectionObject(irn)
 
+	// If the title is the same as the object number, use the record subtitle instead
+	const title =
+		object.recordTitle !== object.objectNumberSorting1
+			? object.recordTitle
+			: object.recordSubtitle
+
 	return {
-		title: object.recordTitle,
+		title,
 		alternates: {
-			canonical: `/item/${irn}/${slugify(object.recordTitle)}`,
+			canonical: `/item/${irn}/${slugify(title)}`,
 		},
 	}
 }
 
 function links(str: string, filter: string) {
-	const base = [urls.simpleSearch, filter].join("/")
+	const base = [museum.urls.simpleSearch, filter].join("/")
 	const parts = str.split(" > ")
 
 	return parts.map((label, index) => ({
@@ -39,16 +44,28 @@ function links(str: string, filter: string) {
 export function props(object: CollectionObject) {
 	return {
 		title: object.recordTitle,
-		objectNumbers: list.readable(object.objectNumbers.map((o) => o.NumberVrt)),
-		datePeriod: object.datePeriod.map(({ period, type }) => ({
-			period,
-			type,
-			link: `${urls.simpleSearch}/datePeriod.period:${encodeURI(period)}`,
-		})),
-		geographicalProvenance: object.geographicalProvenance.map(({ place, association }) => ({
-			association,
-			links: links(place, "geographicalProvenance.place:"),
-		})),
+		subTitle: object.recordSubtitle,
+		objectNumber: object.objectNumberSorting1,
+		datePeriod: object.datePeriod?.map((d) => {
+			if ("period" in d)
+				return {
+					period: d.period,
+					type: d.type,
+					link: `${museum.urls.simpleSearch}/datePeriod.period:${encodeURI(d.period)}`,
+				}
+			else if ("from" in d)
+				return {
+					from: d.from,
+				}
+		}),
+		geographicalProvenance: object.geographicalProvenance?.map((p) => {
+			if ("place" in p)
+				return {
+					association: p.association,
+					links: links(p.place, "geographicalProvenance.place:"),
+				}
+			else if ("region" in p) return { region: p.region }
+		}),
 	}
 }
 
@@ -56,7 +73,10 @@ export type Props = ReturnType<typeof props>
 
 export default async function Page({ params }: Params) {
 	const { irn } = await params
-	const [object, iiif] = await Promise.all([api.getCollectionObject(irn), api.getDamsIiif(irn)])
+	const object = await api.getCollectionObject(irn)
+	const iiif = await api.getDamsIiif(object)
+
+	console.log(object)
 
 	return <CollectionObjectLayout {...props(object)} />
 }

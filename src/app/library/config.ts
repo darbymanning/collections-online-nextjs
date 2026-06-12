@@ -8,10 +8,14 @@ function parent(url: URL): URL {
 	return new URL(url.origin)
 }
 
-const self = new URL(museums[process.env.MUSEUM].url)
+const current = museums[process.env.MUSEUM]
+const self = new URL(current.url)
 
-export const urls = {
-	self,
-	parent: parent(self),
-	simpleSearch: new URL(parent(self) + "/collections-online#/search/simple-search"),
+export const museum = {
+	...current,
+	urls: {
+		self,
+		parent: parent(self),
+		simpleSearch: new URL(parent(self) + "/collections-online#/search/simple-search"),
+	},
 }

@@ -6,9 +6,10 @@ import Link from "next/link"
 
 export function CollectionObjectLayout({
 	title,
+	subTitle,
 	geographicalProvenance,
 	datePeriod,
-	objectNumbers,
+	objectNumber,
 }: Props) {
 	// styled-jsx's class injection is dropped by React Compiler memoization,
 	// so this component must opt out of it
@@ -18,7 +19,8 @@ export function CollectionObjectLayout({
 		<article>
 			<header>
 				<h1 className="title">{title}</h1>
-				<span className="object-numbers">{objectNumbers}</span>
+				<h2 className="sub-title">{subTitle}</h2>
+				<span className="object-numbers">{objectNumber}</span>
 				<figure />
 			</header>
 			<section>
@@ -27,18 +29,25 @@ export function CollectionObjectLayout({
 					<dt>Title</dt>
 					<dd>{title}</dd>
 
-					<dt>Associated place</dt>
-					{geographicalProvenance.map((p, index) => (
-						<dd key={index}>
-							<List links={p.links} association={p.association} />
-						</dd>
-					))}
-					<dt>Date</dt>
-					{datePeriod.map((d, index) => (
-						<dd key={index}>
-							<Link href={d.link}>{d.period}</Link> ({d.type})
-						</dd>
-					))}
+					{geographicalProvenance && (
+						<>
+							<dt>Associated place</dt>
+							{geographicalProvenance?.map((p, index) => (
+								<dd key={index}>{p?.links ? <List {...p} /> : p?.region}</dd>
+							))}
+						</>
+					)}
+
+					{datePeriod && (
+						<>
+							<dt>Date</dt>
+							{datePeriod?.map((d, index) => (
+								<dd key={index}>
+									{d?.period ? <Link href={d.link}>{d.period}</Link> : d?.from}
+								</dd>
+							))}
+						</>
+					)}
 				</dl>
 			</section>
 			<style jsx>{`
@@ -54,6 +63,11 @@ export function CollectionObjectLayout({
 
 				.title {
 					font: 600 var(--f-h1);
+					text-align: center;
+				}
+
+				.sub-title {
+					font: 600 var(--f-h2);
 					text-align: center;
 				}
 
@@ -74,6 +88,7 @@ export function CollectionObjectLayout({
 				section {
 					max-width: var(--s-wrap-small);
 					margin: 0 auto;
+					width: 100%;
 					display: grid;
 					gap: 2rem;
 				}
@@ -85,7 +100,13 @@ export function CollectionObjectLayout({
 				}
 
 				dt {
+					grid-column: 1;
+					align-self: start;
 					font-weight: 700;
+				}
+
+				dd {
+					grid-column: 2;
 				}
 			`}</style>
 		</article>
