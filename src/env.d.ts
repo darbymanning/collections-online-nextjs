@@ -14,6 +14,8 @@ declare global {
 			 * @see {@link Museum}
 			 * @see {@link museumDirectory} */
 			MUSEUM: Museum
+			/** HTTP basic auth password — platform env only, not in varlock schema. */
+			BASIC_AUTH_PASS?: string
 		}
 	}
 }
@@ -23,8 +25,6 @@ declare module "varlock/env" {
 		MUSEUM: Museum
 		/** HTTP basic auth username — enables the gate when set with `BASIC_AUTH_PASS`. */
 		BASIC_AUTH_USER?: string
-		/** HTTP basic auth password — enables the gate when set with `BASIC_AUTH_USER`. */
-		BASIC_AUTH_PASS?: string
 	}
 }
 

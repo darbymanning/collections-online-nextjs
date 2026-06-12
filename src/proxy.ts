@@ -2,9 +2,12 @@ import { ENV } from "varlock/env"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
+// Password is read from process.env, not ENV — it is intentionally omitted from
+// .env.schema so varlock does not inject it into build output or scan SSR HTML
+// for substring matches against catalogue text (e.g. "italian" in item slugs).
 function getBasicAuthCredentials() {
 	const user = ENV.BASIC_AUTH_USER
-	const pass = ENV.BASIC_AUTH_PASS
+	const pass = process.env.BASIC_AUTH_PASS
 	return { user, pass, enabled: Boolean(user && pass) }
 }
 
