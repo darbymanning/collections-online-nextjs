@@ -25,6 +25,8 @@ export const museums = {
 		onDisplay: false,
 		imageCount: 2,
 		expectHierarchy: true,
+		furtherItemsHeading: "Further items to explore",
+		furtherItemsMore: false,
 	},
 	oum: {
 		id: "oum-catalogue-36916",
@@ -48,6 +50,8 @@ export const museums = {
 		onDisplay: false,
 		imageCount: 1,
 		expectHierarchy: false,
+		furtherItemsHeading: "Related Items",
+		furtherItemsMore: true,
 	},
 	// the prm record title is the accession number; the description becomes
 	// the page title (via generateMetadata) and the rendered subtitle
@@ -74,6 +78,8 @@ export const museums = {
 		onDisplay: true,
 		imageCount: 6,
 		expectHierarchy: true,
+		furtherItemsHeading: "Further items to explore",
+		furtherItemsMore: false,
 	},
 	hsm: {
 		id: "hsm-catalogue-29715",
@@ -99,6 +105,8 @@ export const museums = {
 		onDisplay: false,
 		imageCount: 1,
 		expectHierarchy: false,
+		furtherItemsHeading: "Related Items",
+		furtherItemsMore: true,
 	},
 } as const
 

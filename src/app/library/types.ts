@@ -322,6 +322,14 @@ export type CollectionObject = {
 	}
 }
 
+/** Response from `prd-online.glamdigital.io/v2/search-fields/{museum}/catalogue`.
+ * Result items carry the same fields as full records, minus the virtual fields. */
+export type SearchResults = {
+	total: number
+	maxScore: number | null
+	results: Array<{ item: CollectionObject }>
+}
+
 /** IIIF Image API 3.0 service endpoint.
  * @see {@link https://iiif.io/api/image/3.0/#image-service | IIIF Image API 3.0 — Image Service} */
 type IIIFImageService = {
@@ -401,7 +409,8 @@ type IIIFCanvas = {
 	}
 	height: number
 	width: number
-	thumbnail: Array<IIIFThumbnail>
+	/** Absent on some Ashmolean DAMS canvases. */
+	thumbnail?: Array<IIIFThumbnail>
 	items: Array<IIIFAnnotationPage>
 }
 

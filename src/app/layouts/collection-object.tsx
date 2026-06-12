@@ -1,8 +1,10 @@
 "use client"
 
 import { List } from "$components/list"
+import { FurtherItems } from "$components/further-items"
 import { ImageViewer } from "$components/image-viewer"
 import type { Props } from "../item/[id]/[[...slug]]/page"
+import type { FurtherItemsSection } from "$library/further-items"
 import type { BackLink } from "$library/utils"
 import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
@@ -54,7 +56,8 @@ export function CollectionObjectLayout({
 	referenceURL,
 	description,
 	literatureVirtualField,
-}: Props & { backLink: BackLink }) {
+	furtherItems,
+}: Props & { backLink: BackLink; furtherItems?: FurtherItemsSection }) {
 	// styled-jsx's class injection is dropped by React Compiler memoization,
 	// so this component must opt out of it
 	"use no memo"
@@ -78,7 +81,7 @@ export function CollectionObjectLayout({
 						</figure>
 					) : null}
 				</header>
-				<section>
+				<section className="contain">
 					<h2 className="details-title">Details</h2>
 					<dl>
 						{titleRow && (
@@ -380,7 +383,7 @@ export function CollectionObjectLayout({
 						{referenceURL && (
 							<div>
 								<dt>Reference URL</dt>
-								<dd>
+								<dd className="reference-url">
 									<a href={referenceURL}>{referenceURL}</a>
 								</dd>
 							</div>
@@ -388,7 +391,7 @@ export function CollectionObjectLayout({
 					</dl>
 				</section>
 				{literatureVirtualField && (
-					<section>
+					<section className="contain">
 						<h2 className="details-title">Further reading</h2>
 						<p
 							className="description"
@@ -397,9 +400,19 @@ export function CollectionObjectLayout({
 					</section>
 				)}
 				{description && (
-					<section>
+					<section className="contain">
 						<h2 className="details-title">Description</h2>
 						<p className="description">{description}</p>
+					</section>
+				)}
+				{furtherItems && (
+					<section>
+						<h2 className="details-title">{furtherItems.title}</h2>
+						<FurtherItems
+							items={furtherItems.items}
+							description={furtherItems.description}
+							more={furtherItems.more}
+						/>
 					</section>
 				)}
 			</article>
@@ -446,7 +459,7 @@ export function CollectionObjectLayout({
 				}
 
 				.sub-title {
-					font: 600 var(--f-h2);
+					font: 600 var(--f-h3);
 					text-align: center;
 				}
 
@@ -457,6 +470,7 @@ export function CollectionObjectLayout({
 
 				.object-numbers {
 					font: 700 var(--f-h6);
+					text-align: center;
 				}
 
 				figure {
@@ -474,8 +488,11 @@ export function CollectionObjectLayout({
 					text-align: center;
 				}
 
-				section {
+				.contain {
 					max-width: var(--s-wrap-small);
+				}
+
+				section {
 					margin: 0 auto;
 					width: 100%;
 					display: grid;
@@ -503,7 +520,15 @@ export function CollectionObjectLayout({
 
 				dd {
 					grid-column: 2;
+					min-width: 0;
 					white-space: pre-line;
+				}
+
+				.reference-url :global(a) {
+					display: block;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
 				}
 
 				.description {

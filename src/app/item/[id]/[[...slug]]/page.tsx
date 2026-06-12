@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import { api } from "$library/api"
+import { furtherItemsSection } from "$library/further-items"
 import { slugify } from "$library/slug"
-import { legacyBackLink } from "$library/utils"
+import { derivative, legacyBackLink } from "$library/utils"
 import { CollectionObjectLayout } from "$layouts/collection-object"
 import type { CollectionObject, IIIFManifest } from "$library/types"
 import { museum } from "$library/config"
@@ -85,12 +86,6 @@ function materials(materialAndProcess: CollectionObject["materialAndProcess"]) {
 	if (text) values.push({ text })
 
 	return values.length ? values : undefined
-}
-
-/** Swaps an image filename's extension for an S3 derivative suffix,
- * e.g. "MIN.28380_001.jpg" → "MIN.28380_001.1000x1000.jpg" */
-function derivative(url: string, suffix: string) {
-	return url.replace(/\.[^.]+$/, `${suffix}.jpg`)
 }
 
 /** hsm dimensions are structured values with separate units, e.g. "Weight: 91g" */
@@ -214,7 +209,7 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 		images:
 			iiif?.items.flatMap((canvas) => {
 				const service = canvas.items[0]?.items[0]?.body.service[0]?.id
-				return service ? [{ service, thumbnail: canvas.thumbnail[0]?.id }] : []
+				return service ? [{ service, thumbnail: canvas.thumbnail?.[0]?.id }] : []
 			}) ?? multimediaImages(object),
 		imageCopyright: iiif
 			? imageCopyright && museum.ref === "prm"
@@ -314,7 +309,16 @@ export default async function Page({ params, searchParams }: Params) {
 	const { id } = await params
 	const { return: returnUrl } = await searchParams
 	const object = await api.getCollectionObject(id)
-	const iiif = await api.getDamsIiif(object)
+	const [iiif, relatedItems] = await Promise.all([
+		api.getDamsIiif(object),
+		api.getFurtherItems(object),
+	])
 
-	return <CollectionObjectLayout {...props(object, iiif)} backLink={legacyBackLink(returnUrl)} />
+	return (
+		<CollectionObjectLayout
+			{...props(object, iiif)}
+			backLink={legacyBackLink(returnUrl)}
+			furtherItems={furtherItemsSection(object, relatedItems)}
+		/>
+	)
 }

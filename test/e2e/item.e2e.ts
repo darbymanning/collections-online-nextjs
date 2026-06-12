@@ -107,6 +107,22 @@ test("pages through images with the thumbnails", async ({ page }) => {
 	await expect(thumbnails.first()).toHaveAttribute("aria-current", "false")
 })
 
+test("suggests related items to explore", async ({ page }) => {
+	const museum = currentMuseum()
+
+	await page.goto(`/item/${museum.id}/${museum.slug}`)
+
+	await expect(page.getByRole("heading", { name: museum.furtherItemsHeading })).toBeVisible()
+
+	// the queries decide how many cards appear, but the known items always match something
+	expect(await page.locator('.further-items a[href^="/item/"]').count()).toBeGreaterThan(0)
+
+	if (museum.furtherItemsMore) {
+		const more = page.getByRole("link", { name: "More related items" })
+		await expect(more).toHaveAttribute("href", /#\/related-to\/.+\/catalogue$/)
+	}
+})
+
 test("expands and collapses hierarchy trails", async ({ page }) => {
 	const museum = currentMuseum()
 	test.skip(!museum.expectHierarchy, "no hierarchy trails for this item")

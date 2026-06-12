@@ -6,6 +6,12 @@ export const list = {
 	},
 }
 
+/** Swaps an image filename's extension for an S3 derivative suffix,
+ * e.g. "MIN.28380_001.jpg" → "MIN.28380_001.1000x1000.jpg" */
+export function derivative(url: string, suffix: string) {
+	return url.replace(/\.[^.]+$/, `${suffix}.jpg`)
+}
+
 export type BackLink = {
 	href: string
 	label: string

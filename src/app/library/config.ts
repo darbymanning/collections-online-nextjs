@@ -8,6 +8,10 @@ export const museumDirectory = {
 		self: new URL("https://collections-online-nextjs.ashmolean.org"),
 		url: new URL("https://www.ashmolean.org"),
 		dams: new URL("https://dams.ashmus.ox.ac.uk/iiif/"),
+		// teaser thumbnails come straight from this S3 bucket, not the DAMs
+		assets: new URL(
+			"https://ash-online-collections-assets-prd.s3.eu-west-1.amazonaws.com/assets/",
+		),
 	},
 	/** Oxford University Museum of Natural History
 	 * @see {@link https://www.oumnh.ox.ac.uk} */
@@ -29,6 +33,10 @@ export const museumDirectory = {
 		self: new URL("https://collections-online-nextjs.prm.ox.ac.uk"),
 		url: new URL("https://www.prm.ox.ac.uk"),
 		dams: new URL("https://dams.prm.ox.ac.uk/iiif/"),
+		// teaser thumbnails come straight from this S3 bucket, not the DAMs
+		assets: new URL(
+			"https://prm-online-collections-assets-prd.s3.eu-west-1.amazonaws.com/assets/",
+		),
 	},
 	/** History of Science Museum
 	 * @see {@link https://hsm.ox.ac.uk} */

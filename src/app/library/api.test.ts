@@ -90,3 +90,66 @@ onlyFor("oum", "hsm")("api.getDamsIiif (no DAMs)", () => {
 		expect(fetchSpy).not.toHaveBeenCalled()
 	})
 })
+
+onlyFor("ash")("api.getFurtherItems (ash)", () => {
+	const self = partial({ id: "ash-object-0", collection: "ash collection" })
+
+	test("merges the rule queries, deduplicating and dropping the object itself", async () => {
+		mockFetch(
+			json({ results: [{ item: { id: "ash-object-1" } }] }),
+			json({ results: [{ item: { id: "ash-object-1" } }] }),
+			json({ results: [{ item: { id: "ash-object-0" } }, { item: { id: "ash-object-2" } }] }),
+		)
+
+		const items = await api.getFurtherItems(self)
+
+		expect(items.map((item) => item.id)).toEqual(["ash-object-1", "ash-object-2"])
+	})
+
+	test("failed queries just yield fewer items", async () => {
+		const fetchSpy = spyOn(globalThis, "fetch")
+		fetchSpy.mockRejectedValueOnce(new Error("network down"))
+		fetchSpy.mockResolvedValueOnce(json({ results: [{ item: { id: "ash-object-1" } }] }))
+		fetchSpy.mockResolvedValueOnce(json(null, 500))
+
+		const items = await api.getFurtherItems(self)
+
+		expect(items.map((item) => item.id)).toEqual(["ash-object-1"])
+	})
+})
+
+onlyFor("hsm")("api.getFurtherItems (hsm)", () => {
+	test("fetches more-like-this results in one query", async () => {
+		const item = { id: "hsm-catalogue-1", multimedia: [{ identifier: "a.jpg" }] }
+		const fetchSpy = mockFetch(json({ results: [{ item }] }))
+
+		const items = await api.getFurtherItems(partial({ id: "hsm-catalogue-0" }))
+
+		expect(String(fetchSpy.mock.calls[0]?.[0])).toBe(
+			"https://prd-online.glamdigital.io/v2/search-related/hsm-catalogue-0/catalogue/hsm?size=4",
+		)
+		expect(items.map((i) => i.id)).toEqual(["hsm-catalogue-1"])
+	})
+})
+
+onlyFor("oum")("api.getFurtherItems (oum)", () => {
+	test("refetches full records for results with stripped multimedia", async () => {
+		const slim = { id: "oum-catalogue-1", multimedia: [] }
+		const full = { id: "oum-catalogue-1", multimedia: [{ identifier: "a.jpg" }] }
+		const fetchSpy = mockFetch(json({ results: [{ item: slim }] }), json(full))
+
+		const items = await api.getFurtherItems(partial({ id: "oum-catalogue-0" }))
+
+		expect(String(fetchSpy.mock.calls[1]?.[0])).toBe(
+			"https://prd-online.glamdigital.io/v2/item/oum-catalogue-1/full",
+		)
+		expect(items).toEqual([full] as never)
+	})
+
+	test("keeps the slim record when the full fetch fails", async () => {
+		const slim = { id: "oum-catalogue-1", multimedia: [] }
+		mockFetch(json({ results: [{ item: slim }] }), json(null, 500))
+
+		expect(await api.getFurtherItems(partial({ id: "oum-catalogue-0" }))).toEqual([slim] as never)
+	})
+})
