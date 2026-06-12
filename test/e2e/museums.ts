@@ -11,6 +11,10 @@ export const museums = {
 		pageTitle: "Tin-glazed tile in Italian style",
 		origin: "https://collections-online-nextjs.ashmolean.org",
 		legacyHref: "https://www.ashmolean.org/collections-online#/item/ash-object-312375",
+		simpleSearchHref: "https://www.ashmolean.org/collections-online#/search/simple-search",
+		// referer headers omit the URL fragment, so this is what the server receives
+		// when someone follows a link from legacy search results
+		legacySearchReferrer: "https://www.ashmolean.org/collections-online",
 		detailLabels: [
 			"Title",
 			"Associated place",
@@ -30,6 +34,8 @@ export const museums = {
 		pageTitle: "Topaz (single colourless crystal)",
 		origin: "https://collections-online-nextjs.oumnh.ox.ac.uk",
 		legacyHref: "https://www.oumnh.ox.ac.uk/collections-online#/item/oum-catalogue-36916",
+		simpleSearchHref: "https://www.oumnh.ox.ac.uk/collections-online#/search/simple-search",
+		legacySearchReferrer: "https://www.oumnh.ox.ac.uk/collections-online",
 		detailLabels: [
 			"Collection",
 			"Subcollection",
@@ -52,6 +58,8 @@ export const museums = {
 		pageTitle: "Headdress mask representing Abam, a predatory fish.",
 		origin: "https://collections-online-nextjs.prm.ox.ac.uk",
 		legacyHref: "https://www.prm.ox.ac.uk/collections-online#/item/prm-object-79439",
+		simpleSearchHref: "https://www.prm.ox.ac.uk/collections-online#/search/simple-search",
+		legacySearchReferrer: "https://www.prm.ox.ac.uk/collections-online",
 		detailLabels: [
 			"Long description",
 			"Geographical reference",
@@ -74,6 +82,8 @@ export const museums = {
 			"Two Cardboard Boxes for 'Lab Snacks', Issued by Thorlabs, New Jersey, USA, Early 21st Century",
 		origin: "https://collections-online-nextjs.hsm.ox.ac.uk",
 		legacyHref: "https://www.hsm.ox.ac.uk/collections-online#/item/hsm-catalogue-29715",
+		simpleSearchHref: "https://www.hsm.ox.ac.uk/collections-online#/search/simple-search",
+		legacySearchReferrer: "https://www.hsm.ox.ac.uk/collections-online",
 		detailLabels: [
 			"Item type",
 			"Provenance",

@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
+import { headers } from "next/headers"
 import { api } from "$library/api"
 import { slugify } from "$library/slug"
+import { legacyBackLink } from "$library/utils"
 import { CollectionObjectLayout } from "$layouts/collection-object"
 import type { CollectionObject, IIIFManifest } from "$library/types"
 import { museum } from "$library/config"
@@ -300,6 +302,7 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 		objectNumbersAll: object.objectNumbersAll,
 		researchAndResponses: object.researchAndResponses?.replace(/\r\n/g, "\n"),
 		referenceURL: object.referenceURL,
+		literatureVirtualField: object.literatureVirtualField,
 	}
 }
 
@@ -309,6 +312,8 @@ export default async function Page({ params }: Params) {
 	const { id } = await params
 	const object = await api.getCollectionObject(id)
 	const iiif = await api.getDamsIiif(object)
+	const referrer = (await headers()).get("referer")
+	const backLink = legacyBackLink(referrer)
 
-	return <CollectionObjectLayout {...props(object, iiif)} />
+	return <CollectionObjectLayout {...props(object, iiif)} backLink={backLink} />
 }

@@ -23,7 +23,7 @@ export default defineConfig({
 	expect: { timeout: 10_000 },
 	reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
 	use: { trace: "on-first-retry" },
-	// MUSEUM is fixed per server, so each museum gets its own dev server and project
+	// NEXT_PUBLIC_MUSEUM is fixed per server, so each museum gets its own dev server and project
 	projects: museums.map((museum) => ({
 		name: museum,
 		use: { ...devices["Desktop Chrome"], baseURL: `http://localhost:${port(museum)}` },
@@ -34,6 +34,6 @@ export default defineConfig({
 		reuseExistingServer: !process.env.CI,
 		timeout: 120_000,
 		// explicit process env beats .env.local in varlock's loader
-		env: { MUSEUM: museum, NEXT_DIST_DIR: `.next-e2e-${museum}` },
+		env: { NEXT_PUBLIC_MUSEUM: museum, NEXT_DIST_DIR: `.next-e2e-${museum}` },
 	})),
 })

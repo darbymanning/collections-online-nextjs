@@ -5,7 +5,7 @@ import Link from "next/link"
 let id: string
 let title: string
 
-switch (process.env.MUSEUM) {
+switch (process.env.NEXT_PUBLIC_MUSEUM) {
 	case "ash":
 		id = "ash-object-312375"
 		title = "Tin glazed tile in Italian style"

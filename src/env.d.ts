@@ -13,7 +13,7 @@ declare global {
 			 *
 			 * @see {@link Museum}
 			 * @see {@link museumDirectory} */
-			MUSEUM: Museum
+			NEXT_PUBLIC_MUSEUM: Museum
 			/** HTTP basic auth password — platform env only, not in varlock schema. */
 			BASIC_AUTH_PASS?: string
 		}
@@ -22,7 +22,7 @@ declare global {
 
 declare module "varlock/env" {
 	interface TypedEnvSchema {
-		MUSEUM: Museum
+		NEXT_PUBLIC_MUSEUM: Museum
 		/** HTTP basic auth username — enables the gate when set with `BASIC_AUTH_PASS`. */
 		BASIC_AUTH_USER?: string
 	}

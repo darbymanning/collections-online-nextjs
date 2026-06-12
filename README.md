@@ -8,14 +8,14 @@ See [docs/seo-options.md](docs/seo-options.md) for the context and goals, and [d
 
 ## Museums
 
-One deployment per museum, selected with the `MUSEUM` environment variable:
+One deployment per museum, selected with the `NEXT_PUBLIC_MUSEUM` environment variable:
 
-| `MUSEUM` | Museum                                      |
-| -------- | ------------------------------------------- |
-| `ash`    | Ashmolean Museum                            |
-| `oum`    | Oxford University Museum of Natural History |
-| `prm`    | Pitt Rivers Museum                          |
-| `hsm`    | History of Science Museum                   |
+| `NEXT_PUBLIC_MUSEUM` | Museum                                      |
+| -------------------- | ------------------------------------------- |
+| `ash`                | Ashmolean Museum                            |
+| `oum`                | Oxford University Museum of Natural History |
+| `prm`                | Pitt Rivers Museum                          |
+| `hsm`                | History of Science Museum                   |
 
 Per-museum URLs and image sources are configured in [src/app/library/config.ts](src/app/library/config.ts).
 
@@ -23,7 +23,7 @@ Per-museum URLs and image sources are configured in [src/app/library/config.ts](
 
 ```bash
 bun install
-echo 'MUSEUM="ash"' > .env.local
+echo 'NEXT_PUBLIC_MUSEUM="ash"' > .env.local
 bun run dev
 ```
 
@@ -46,7 +46,7 @@ Two tiers, both run in CI:
 - **Unit** (`bun test`) — pure logic: the slug, list, and API helpers, and the
   `props()` transformation that maps API records to the page, asserted against
   committed fixtures of real API responses. Museum-dependent modules read
-  `MUSEUM` at import time, so `bun run test` runs the suite once per museum.
+  `NEXT_PUBLIC_MUSEUM` at import time, so `bun run test` runs the suite once per museum.
 - **E2E** ([Playwright](https://playwright.dev)) — real browser against live
   APIs. `bun run test:e2e` starts one dev server per museum (ports 3101–3104)
   and runs each spec against all four, covering metadata, detail fields, the

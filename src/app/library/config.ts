@@ -1,4 +1,4 @@
-/** GLAM Oxford museum sites, keyed by the identifier used in IRNs and `MUSEUM`. */
+/** GLAM Oxford museum sites, keyed by the identifier used in IRNs and `NEXT_PUBLIC_MUSEUM`. */
 export const museumDirectory = {
 	/** Ashmolean Museum
 	 * @see {@link https://www.ashmolean.org} */
@@ -44,7 +44,7 @@ export const museumDirectory = {
 	},
 } as const
 
-const current = museumDirectory[process.env.MUSEUM]
+const current = museumDirectory[process.env.NEXT_PUBLIC_MUSEUM]
 const self = current.self
 const parent = new URL(current.url.origin)
 const collectionsOnline = new URL("/collections-online", parent)

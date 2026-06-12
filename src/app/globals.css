@@ -4,10 +4,13 @@
 	/* Colors */
 	--c-black: #000;
 	--c-white: #fff;
-	--c-gray: #444;
+	--c-gray-100: #f2f2f2;
+	--c-gray-200: #ddd;
+	--c-gray-600: #444;
 
 	--c-background: var(--c-white);
-	--c-foreground: var(--c-gray);
+	--c-foreground: var(--c-gray-600);
+	--c-border: var(--c-gray-200);
 
 	/* Radius */
 	--r-x: calc(infinity * 1px);
@@ -20,6 +23,12 @@
 	/* Sizes */
 	--s-wrap: 105rem;
 	--s-wrap-small: 50rem;
+	--s-4: 0.25rem;
+	--s-8: 0.5rem;
+	--s-12: 0.75rem;
+	--s-16: 1rem;
+	--s-32: 2rem;
+	--s-48: 3rem;
 
 	/* Typography */
 	--f-family: var(--f-montserrat), sans-serif;
@@ -52,15 +61,23 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+a {
 	all: unset;
 }
 
-a {
-	color: inherit;
+a,
+button,
+[type="button"] {
+	cursor: pointer;
 }
 
 ul,
 ol {
 	margin-inline: 1em;
+}
+
+svg {
+	width: 1em;
+	height: 1em;
 }

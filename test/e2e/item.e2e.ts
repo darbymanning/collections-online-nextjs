@@ -17,6 +17,42 @@ test.afterEach(() => {
 	expect(pageErrors).toEqual([])
 })
 
+test("shows the default back link without a referrer", async ({ page }) => {
+	const museum = currentMuseum()
+
+	await page.goto(`/item/${museum.id}/${museum.slug}`)
+
+	const backLink = page.locator("a.back-link")
+	await expect(backLink).toHaveText("Back to search")
+	await expect(backLink).toHaveAttribute("href", museum.simpleSearchHref)
+})
+
+test("shows the legacy search results back link when referred from collections online", async ({
+	page,
+}) => {
+	const museum = currentMuseum()
+
+	await page.goto(`/item/${museum.id}/${museum.slug}`, {
+		referer: museum.legacySearchReferrer,
+	})
+
+	const backLink = page.locator("a.back-link")
+	await expect(backLink).toHaveText("Back to search results")
+	await expect(backLink).toHaveAttribute("href", museum.legacySearchReferrer)
+})
+
+test("shows the default back link for external referrers", async ({ page }) => {
+	const museum = currentMuseum()
+
+	await page.goto(`/item/${museum.id}/${museum.slug}`, {
+		referer: "https://www.google.com/",
+	})
+
+	const backLink = page.locator("a.back-link")
+	await expect(backLink).toHaveText("Back to search")
+	await expect(backLink).toHaveAttribute("href", museum.simpleSearchHref)
+})
+
 test("renders the record with canonical metadata", async ({ page }) => {
 	const museum = currentMuseum()
 
