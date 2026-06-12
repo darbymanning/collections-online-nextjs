@@ -1,0 +1,176 @@
+{
+	"@context": "http://iiif.io/api/presentation/3/context.json",
+	"id": "https://dams.ashmus.ox.ac.uk/iiif/312375/manifest",
+	"type": "Manifest",
+	"label": {
+		"en": ["AN1921.320"]
+	},
+	"metadata": [
+		{
+			"label": {
+				"en": ["Asset copyright notice"]
+			},
+			"value": {
+				"en": ["© Ashmolean Museum, University of Oxford"]
+			}
+		},
+		{
+			"label": {
+				"en": ["IIIF Sequence"]
+			},
+			"value": {
+				"en": ["1"]
+			}
+		},
+		{
+			"label": {
+				"en": ["Object number"]
+			},
+			"value": {
+				"en": ["AN1921.320"]
+			}
+		},
+		{
+			"label": {
+				"en": ["CMS_ID"]
+			},
+			"value": {
+				"en": ["312375"]
+			}
+		}
+	],
+	"requiredStatement": {
+		"label": {
+			"en": ["Asset copyright notice"]
+		},
+		"value": {
+			"en": ["© Ashmolean Museum, University of Oxford"]
+		}
+	},
+	"thumbnail": [
+		{
+			"id": "https://dams.ashmus.ox.ac.uk/iiif/image/12973/full/thm/0/default.jpg",
+			"type": "Image",
+			"format": "image/jpeg",
+			"height": 131,
+			"width": 175,
+			"service": [
+				{
+					"id": "https://dams.ashmus.ox.ac.uk/iiif/image/12973",
+					"type": "ImageService3",
+					"profile": "level0"
+				}
+			]
+		}
+	],
+	"behavior": ["individuals"],
+	"viewingDirection": "left-to-right",
+	"items": [
+		{
+			"id": "https://dams.ashmus.ox.ac.uk/iiif/312375/canvas/0",
+			"type": "Canvas",
+			"label": {
+				"none": ["1"]
+			},
+			"height": 5428,
+			"width": 7230,
+			"thumbnail": [
+				{
+					"id": "https://dams.ashmus.ox.ac.uk/iiif/image/12973/full/thm/0/default.jpg",
+					"type": "Image",
+					"format": "image/jpeg",
+					"height": 131,
+					"width": 175,
+					"service": [
+						{
+							"id": "https://dams.ashmus.ox.ac.uk/iiif/image/12973",
+							"type": "ImageService3",
+							"profile": "level0"
+						}
+					]
+				}
+			],
+			"items": [
+				{
+					"id": "https://dams.ashmus.ox.ac.uk/iiif/312375/annotationpage/0",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://dams.ashmus.ox.ac.uk/iiif/312375/annotation/0",
+							"type": "Annotation",
+							"motivation": "painting",
+							"body": {
+								"id": "https://dams.ashmus.ox.ac.uk/iiif/image/12973/full/max/0/default.jpg",
+								"type": "Image",
+								"format": "image/jpeg",
+								"service": [
+									{
+										"id": "https://dams.ashmus.ox.ac.uk/iiif/image/12973",
+										"type": "ImageService3",
+										"profile": "level0"
+									}
+								],
+								"height": 5428,
+								"width": 7230
+							},
+							"target": "https://dams.ashmus.ox.ac.uk/iiif/312375/canvas/0"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "https://dams.ashmus.ox.ac.uk/iiif/312375/canvas/1",
+			"type": "Canvas",
+			"label": {
+				"none": ["2"]
+			},
+			"height": 1536,
+			"width": 2048,
+			"thumbnail": [
+				{
+					"id": "https://dams.ashmus.ox.ac.uk/iiif/image/1068284/full/thm/0/default.jpg",
+					"type": "Image",
+					"format": "image/jpeg",
+					"height": 131,
+					"width": 175,
+					"service": [
+						{
+							"id": "https://dams.ashmus.ox.ac.uk/iiif/image/1068284",
+							"type": "ImageService3",
+							"profile": "level0"
+						}
+					]
+				}
+			],
+			"items": [
+				{
+					"id": "https://dams.ashmus.ox.ac.uk/iiif/312375/annotationpage/1",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://dams.ashmus.ox.ac.uk/iiif/312375/annotation/1",
+							"type": "Annotation",
+							"motivation": "painting",
+							"body": {
+								"id": "https://dams.ashmus.ox.ac.uk/iiif/image/1068284/full/max/0/default.jpg",
+								"type": "Image",
+								"format": "image/jpeg",
+								"service": [
+									{
+										"id": "https://dams.ashmus.ox.ac.uk/iiif/image/1068284",
+										"type": "ImageService3",
+										"profile": "level0"
+									}
+								],
+								"height": 1536,
+								"width": 2048
+							},
+							"target": "https://dams.ashmus.ox.ac.uk/iiif/312375/canvas/1"
+						}
+					]
+				}
+			]
+		}
+	]
+}

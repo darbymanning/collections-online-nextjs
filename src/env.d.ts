@@ -1,4 +1,5 @@
 import type { Museum } from "$library/types"
+import type { museumDirectory } from "$library/config"
 
 declare global {
 	namespace NodeJS {
@@ -11,7 +12,7 @@ declare global {
 			 * - `hsm` — History of Science Museum
 			 *
 			 * @see {@link Museum}
-			 * @see {@link museums} */
+			 * @see {@link museumDirectory} */
 			MUSEUM: Museum
 		}
 	}

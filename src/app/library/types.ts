@@ -1,36 +1,4 @@
-/** GLAM Oxford museum sites, keyed by the identifier used in IRNs and `MUSEUM`. */
-export const museums = {
-	/** Ashmolean Museum
-	 * @see {@link https://www.ashmolean.org} */
-	ash: {
-		ref: "ash",
-		name: "Ashmolean Museum",
-		url: "https://www.ashmolean.org",
-		dams: "https://dams.ashmus.ox.ac.uk/iiif/",
-	},
-	/** Oxford University Museum of Natural History
-	 * @see {@link https://www.oumnh.ox.ac.uk} */
-	oum: {
-		ref: "oum",
-		name: "Oxford University Museum of Natural History",
-		url: "https://www.oumnh.ox.ac.uk",
-	},
-	/** Pitt Rivers Museum
-	 * @see {@link https://www.prm.ox.ac.uk} */
-	prm: {
-		ref: "prm",
-		name: "Pitt Rivers Museum",
-		url: "https://www.prm.ox.ac.uk",
-		dams: "https://dams.prm.ox.ac.uk/iiif/",
-	},
-	/** History of Science Museum
-	 * @see {@link https://hsm.ox.ac.uk} */
-	hsm: {
-		ref: "hsm",
-		name: "History of Science Museum",
-		url: "https://hsm.ox.ac.uk",
-	},
-} as const
+import { museumDirectory } from "./config"
 
 /** Museum identifier configured via `MUSEUM`.
  *
@@ -39,38 +7,45 @@ export const museums = {
  * - `prm` — Pitt Rivers Museum
  * - `hsm` — History of Science Museum
  *
- * @see {@link museums} */
-export type Museum = keyof typeof museums
+ * @see {@link museumDirectory} */
+export type Museum = keyof typeof museumDirectory
 
 /** A catalogue object from `prd-online.glamdigital.io`.
  *
  * The shape varies by museum — fields only returned by some museums are
- * optional and annotated. Verified against `ash` and `prm` responses. */
+ * optional and annotated. Verified against `ash`, `prm` and `oum` responses. */
 export type CollectionObject = {
-	id: `${Museum}-object-${string}`
+	/** @example "ash-object-312375", "oum-catalogue-36916" */
+	id: `${Museum}-${string}`
 	type: string
-	irn: string
-	isPublished: string
+	/** a string for ash/prm, a number for oum */
+	irn: string | number
 	museum: string
 	collection: string
-	domain: string
-	recordType: string
 	recordTitle: string
 	recordSubtitle: string
-	objectNumberSorting1: string
-	objectNumberSortedSorting1: string
-	lastModified: string
-	hasCulturalWarning: boolean
+	isPublished?: string
+	domain?: string
+	recordType?: string
+	objectNumberSorting1?: string
+	objectNumberSortedSorting1?: string
+	lastModified?: string
+	hasCulturalWarning?: boolean
 	dimensionsVirtualField?: string
 	creditLine?: string
 	multimedia: Array<{
-		resourceSpaceId: string
-		isPublished: string
 		identifier: string
 		mimeType: string
 		path: string
-		rights: {}
-		irn: string
+		isPublished?: string
+		irn?: string | number
+		rights?: {
+			rightsAcknowledgement?: string
+			rightsConditions?: string
+			rightsRequiresAcknowledgement?: string
+		}
+		/** ash + prm */
+		resourceSpaceId?: string
 		/** prm */
 		id?: string
 		ranking?: string
@@ -78,8 +53,14 @@ export type CollectionObject = {
 		quality?: string
 		lastModified?: string
 		thumbnail?: string
+		/** oum */
+		MulIdentifier?: string
+		MulMimeType?: string
+		mimeFormat?: string
+		title?: string
+		summaryData?: string
 	}>
-	persons: Array<{
+	persons?: Array<{
 		id?: string
 		/** prm */
 		primaryName?: string
@@ -88,6 +69,19 @@ export type CollectionObject = {
 		displayName?: string
 		attribution?: string
 		sort?: string
+		/** hsm */
+		irn?: string | number
+		fullName?: string | null
+		firstName?: string | null
+		lastName?: string | null
+		organisation?: string | null
+		partyType?: string
+		personTitle?: string | null
+		birthDate?: string | null
+		sex?: string | null
+		nationality?: string | null
+		isPublished?: string
+		multimedia?: Array<any>
 	}>
 	geographicalProvenance?: Array<
 		| {
@@ -98,7 +92,7 @@ export type CollectionObject = {
 		  }
 		| { region: string; sort: string }
 	>
-	materialAndProcess: Array<{
+	materialAndProcess?: Array<{
 		type: string
 		sort?: string
 		/** ash */
@@ -204,7 +198,120 @@ export type CollectionObject = {
 	objectGroups?: Array<{ id: string; isPublished: string }>
 	music?: Array<any>
 
-	_nested: {
+	/* oum */
+	objectNumber?: string
+	subcollection?: string
+	briefDescription?: string
+	currentLocation?: string
+	numberOfParts?: string
+	numberOfSpecimens?: string
+	objectName?: Array<string>
+	otherNumbers?: {
+		notes: Array<string>
+		otherNumbers: Array<string>
+		otherNumbersType: Array<string>
+	}
+	locality?: Array<{
+		irn: number
+		summaryData: string
+		country: Array<string>
+		globalRegion: Array<string>
+		districtCountyShire: Array<string>
+		cityTown: Array<string>
+		nearestNamedPlace: Array<string>
+		siteName: Array<string>
+	}>
+	collectedDisplayDate?: Array<string>
+	collectedDisplayDateEarliest?: Array<string>
+	collectedDisplayDateLatest?: Array<string>
+	collectedBy?: Array<any>
+	collectionName?: Array<string>
+	taxonomy?: Array<any>
+	typeStatus?: Array<string>
+	stratigraphy?: any
+	preservation?: string | null
+	sex?: string | null
+	stage?: string | null
+	age?: string | null
+	phase?: string | null
+	language?: string | null
+	technique?: Array<any>
+	materials?: Array<any>
+	titleDescription?: string | null
+	briefDescriptionSearch?: string
+	preciseLocation?: Array<string>
+	parentRecord?: any
+	productionMaker?: Array<any>
+	productionDisplayDate?: Array<string>
+	EADUnitTitle?: string | null
+	EADUnitDate?: string | null
+	EADUnitDateEarliest?: string | null
+	EADUnitDateLatest?: string | null
+	EADUnitID?: string | null
+	EADIdentifier?: string | null
+	EADLevelAttribute?: string | null
+	EADScopeAndContent?: string | null
+	EADOrigination_tab?: Array<any>
+	EADExtent_tab?: Array<any>
+
+	/* hsm */
+	title?: string
+	summaryData?: string
+	subject?: Array<string>
+	dateCreated?: string | number | null
+	dateCreatedEarliest?: number
+	dateCreatedLatest?: number
+	identifier?: {
+		inventoryNo?: string
+		accessionNumber?: string
+	}
+	object?: {
+		objectType?: string | null
+		objectName?: string | null
+	}
+	owner?: {
+		provenance?: string | null
+		collectionGroup: Array<string>
+		relatedParties: Array<string>
+		collectionGroupTitle?: string | null
+	}
+	inscriptions?: {
+		primaryInscriptions?: string | null
+		otherInscriptions?: string | null
+	}
+	physical?: {
+		material: Array<string>
+		medium: Array<string>
+		technique: Array<string>
+		contentAnalysis: Array<string>
+		support?: string | null
+		watermark?: string | null
+		description?: string | null
+	}
+	origins?: {
+		placeCreatedSummary: Array<string>
+		placeCreated0: Array<string>
+		placeCreated1: Array<string>
+		placeCreated2: Array<string>
+		placeCreated3: Array<string>
+		placeCreated4: Array<string>
+	}
+	dimensions?: {
+		unitLength: Array<string>
+		unitWeight: Array<string>
+		diameter: Array<number>
+		height: Array<number>
+		width: Array<number>
+		depth: Array<number>
+		weight: Array<number>
+	}
+	EADExtent?: Array<string>
+	EADLanguageOfMaterial?: Array<string>
+	EADArchiveRef?: string | null
+	EADAuthor?: Array<any>
+	EADDescription?: string | null
+
+	_nested?: {
 		geographicalProvenance?: Array<{
 			place: string
 			association: string

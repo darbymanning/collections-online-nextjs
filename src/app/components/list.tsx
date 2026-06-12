@@ -28,7 +28,7 @@ export function List({ links, association, prefix }: Props) {
 							{association ? ` (${association})` : ""}
 						</div>
 					</div>
-					<div className="view opened">
+					<div className="view opened" inert={open ? false : true}>
 						<div>
 							{prefix ? `${prefix} ` : ""}
 							{links.map((link, index) => (

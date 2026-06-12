@@ -19,7 +19,7 @@ export const api = {
 
 		switch (museum.ref) {
 			case "ash":
-				id = object.irn
+				id = String(object.irn)
 				break
 
 			case "prm":

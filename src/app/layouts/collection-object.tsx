@@ -1,39 +1,55 @@
 "use client"
 
 import { List } from "$components/list"
-import { IiifViewer } from "$components/iiif-viewer"
+import { ImageViewer } from "$components/image-viewer"
 import type { Props } from "../item/[id]/[[...slug]]/page"
 import Link from "next/link"
 
 export function CollectionObjectLayout({
 	labels,
 	title,
+	titleRow,
 	subTitle,
 	objectNumber,
 	onDisplay,
 	images,
 	imageCopyright,
 	collectionType,
+	subcollection,
 	longDescription,
+	briefDescription,
+	subject,
+	itemType,
 	geographicalProvenance,
+	locality,
 	culturalGroups,
 	persons,
 	datePeriod,
 	datePeriodText,
 	dateCollected,
 	acquisitionInformation,
+	provenance,
+	primaryInscriptions,
+	otherInscriptions,
 	materialAndProcess,
 	materialsList,
+	physicalMaterial,
+	physicalMedium,
+	physicalTechnique,
 	objectType,
 	dimensions,
 	numberOfItems,
+	numberOfParts,
 	creditLine,
 	museumLocation,
 	museumDepartment,
+	inventoryNumber,
 	accessionNumbers,
+	otherNumbers,
 	objectNumbersAll,
 	researchAndResponses,
 	referenceURL,
+	description,
 }: Props) {
 	// styled-jsx's class injection is dropped by React Compiler memoization,
 	// so this component must opt out of it
@@ -48,7 +64,7 @@ export function CollectionObjectLayout({
 				<span className="object-numbers">{objectNumber}</span>
 				{images?.length ? (
 					<figure>
-						<IiifViewer label={title} images={images} />
+						<ImageViewer label={title} images={images} />
 						{imageCopyright && <figcaption>{imageCopyright}</figcaption>}
 					</figure>
 				) : null}
@@ -56,17 +72,24 @@ export function CollectionObjectLayout({
 			<section>
 				<h2 className="details-title">Details</h2>
 				<dl>
-					{title !== objectNumber && (
+					{titleRow && (
 						<div>
 							<dt>Title</dt>
-							<dd>{title}</dd>
+							<dd>{titleRow}</dd>
 						</div>
 					)}
 
 					{collectionType && (
 						<div>
-							<dt>Collection type</dt>
+							<dt>{labels.collection}</dt>
 							<dd>{collectionType}</dd>
+						</div>
+					)}
+
+					{subcollection && (
+						<div>
+							<dt>Subcollection</dt>
+							<dd>{subcollection}</dd>
 						</div>
 					)}
 
@@ -77,11 +100,47 @@ export function CollectionObjectLayout({
 						</div>
 					)}
 
+					{briefDescription && (
+						<div>
+							<dt>Brief Description</dt>
+							<dd>{briefDescription}</dd>
+						</div>
+					)}
+
+					{subject && (
+						<div>
+							<dt>Subject</dt>
+							{subject.map((s, index) => (
+								<dd key={index}>
+									<a href={s.href}>{s.label}</a>
+								</dd>
+							))}
+						</div>
+					)}
+
+					{itemType && (
+						<div>
+							<dt>Item type</dt>
+							<dd>
+								<a href={itemType.href}>{itemType.label}</a>
+							</dd>
+						</div>
+					)}
+
 					{geographicalProvenance && (
 						<div>
 							<dt>{labels.place}</dt>
 							{geographicalProvenance.map((p, index) => (
 								<dd key={index}>{p?.links ? <List {...p} /> : p?.region}</dd>
+							))}
+						</div>
+					)}
+
+					{locality && (
+						<div>
+							<dt>Locality</dt>
+							{locality.map((l, index) => (
+								<dd key={index}>{l}</dd>
 							))}
 						</div>
 					)}
@@ -129,7 +188,7 @@ export function CollectionObjectLayout({
 
 					{dateCollected && (
 						<div>
-							<dt>Date collected</dt>
+							<dt>{labels.dateCollected}</dt>
 							{dateCollected.map((date, index) => (
 								<dd key={index}>{date}</dd>
 							))}
@@ -140,6 +199,27 @@ export function CollectionObjectLayout({
 						<div>
 							<dt>Acquisition information</dt>
 							<dd>{acquisitionInformation}</dd>
+						</div>
+					)}
+
+					{provenance && (
+						<div>
+							<dt>Provenance</dt>
+							<dd>{provenance}</dd>
+						</div>
+					)}
+
+					{primaryInscriptions && (
+						<div>
+							<dt>Primary inscriptions</dt>
+							<dd>{primaryInscriptions}</dd>
+						</div>
+					)}
+
+					{otherInscriptions && (
+						<div>
+							<dt>Other inscriptions</dt>
+							<dd>{otherInscriptions}</dd>
 						</div>
 					)}
 
@@ -165,13 +245,44 @@ export function CollectionObjectLayout({
 						</div>
 					)}
 
+					{physicalMaterial && (
+						<div>
+							<dt>Physical material</dt>
+							{physicalMaterial.map((m, index) => (
+								<dd key={index}>
+									<a href={m.href}>{m.label}</a>
+								</dd>
+							))}
+						</div>
+					)}
+
+					{physicalMedium && (
+						<div>
+							<dt>Physical medium</dt>
+							{physicalMedium.map((m, index) => (
+								<dd key={index}>
+									<a href={m.href}>{m.label}</a>
+								</dd>
+							))}
+						</div>
+					)}
+
+					{physicalTechnique && (
+						<div>
+							<dt>Physical technique</dt>
+							{physicalTechnique.map((m, index) => (
+								<dd key={index}>
+									<a href={m.href}>{m.label}</a>
+								</dd>
+							))}
+						</div>
+					)}
+
 					{objectType && (
 						<div>
-							<dt>Object type</dt>
+							<dt>{labels.objectType}</dt>
 							{objectType.map((o, index) => (
-								<dd key={index}>
-									<List {...o} />
-								</dd>
+								<dd key={index}>{"links" in o ? <List links={o.links} /> : o.text}</dd>
 							))}
 						</div>
 					)}
@@ -190,6 +301,13 @@ export function CollectionObjectLayout({
 						</div>
 					)}
 
+					{numberOfParts && (
+						<div>
+							<dt>No. of Parts</dt>
+							<dd>{numberOfParts}</dd>
+						</div>
+					)}
+
 					{creditLine && (
 						<div>
 							<dt>Credit line</dt>
@@ -199,7 +317,7 @@ export function CollectionObjectLayout({
 
 					{museumLocation && (
 						<div>
-							<dt>Museum location</dt>
+							<dt>{labels.location}</dt>
 							<dd>{museumLocation}</dd>
 						</div>
 					)}
@@ -211,14 +329,30 @@ export function CollectionObjectLayout({
 						</div>
 					)}
 
+					{inventoryNumber && (
+						<div>
+							<dt>Inventory No</dt>
+							<dd>{inventoryNumber}</dd>
+						</div>
+					)}
+
 					{accessionNumbers?.length ? (
 						<div>
-							<dt>Accession no.</dt>
+							<dt>{labels.accession}</dt>
 							{accessionNumbers.map((number, index) => (
 								<dd key={index}>{number}</dd>
 							))}
 						</div>
 					) : null}
+
+					{otherNumbers && (
+						<div>
+							<dt>Number (Other Numbers)</dt>
+							{otherNumbers.map((number, index) => (
+								<dd key={index}>{number}</dd>
+							))}
+						</div>
+					)}
 
 					{objectNumbersAll && (
 						<div>
@@ -244,6 +378,12 @@ export function CollectionObjectLayout({
 					)}
 				</dl>
 			</section>
+			{description && (
+				<section>
+					<h2 className="details-title">Description</h2>
+					<p className="description">{description}</p>
+				</section>
+			)}
 			<style jsx>{`
 				article {
 					display: grid;
@@ -281,6 +421,7 @@ export function CollectionObjectLayout({
 
 				figcaption {
 					text-align: center;
+					white-space: pre-line;
 				}
 
 				.details-title {
@@ -317,6 +458,10 @@ export function CollectionObjectLayout({
 
 				dd {
 					grid-column: 2;
+					white-space: pre-line;
+				}
+
+				.description {
 					white-space: pre-line;
 				}
 			`}</style>

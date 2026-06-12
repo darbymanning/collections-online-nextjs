@@ -1,0 +1,200 @@
+{
+	"id": "prm-object-79439",
+	"type": "catalogue",
+	"domain": "Objects",
+	"irn": "79439",
+	"objectNumberSortedSorting1": "1938.0015.69",
+	"objectNumberSorting1": "1938.15.69",
+	"recordType": "Object",
+	"isPublished": "yes",
+	"intNumberOfObjects": "1",
+	"description": "Headdress mask representing Abam, a predatory fish.",
+	"longDescription": "Painted wooden mask carved in a number of separate pieces representing a predatory fish, 'Abam', which is painted on one side and '£1:' on the other side. Designed to be worn on top of the head and used for owu or water-spirit masquerades. The wooden base is shaped to fit on the head with a twisted length of twisted cord attached. [ZM 02/04/2014]",
+	"archaologyOrEthnography": "Ethnography",
+	"culturalGroupsVirtualField": " -> Ikwerre Igbo;  -> Southern Igbo",
+	"geographicalProvenanceVirtualField": "Africa -> Western Africa -> Nigeria, Southern Nigeria  Niger Delta  Rivers State  Rumuji town",
+	"materialAndProcessVirtualField": "Material: Wood Plant, Material: Pigment, Material: Glass, Material: Metal, Material: Plant Fibre Yarn, Process: Painted, Process: Carved, Process: Twisted, Process: Perforated",
+	"dimensionsVirtualField": "Depth 460 mm, Width: max 640 mm, Length: max 980 mm",
+	"datePeriodVirtualField": "Date made: Before 1937\n",
+	"acquisitionDateVirtualField": "Donated: 1938\n",
+	"onDisplay": "On display",
+	"objectNumbersAll": "Accession number: 1938.15.69",
+	"researchAndResponses": "In a letter to Henry Balfour dated 5 July 1936, the donor (Gwilym Iwan Jones) writes: 'I sent you a case of \"masks\" and figures for the Pitt Rivers. One of them \"Abam\" price £1 you will have to reconstruct. Here is a photograph taken by Chadwick showing the complete \"mask\" & its make [sic; maker?] for your guidance'. The photograph appears to have been accessioned by the Museum as 1998.208.39.1; two others associated with the donor (i.e. 1998.208.39.2 and 1998.208.39.3) appear to show a similar (but not identical) mask in performance. It is not known when or how the latter two photographs were acquired. Original letter is in RDF. [GI  6/12/2001; JC 3 12 2008]\r\n\r\nJohn Picton examined this mask during a consultation visit to look at Igbo masks on 12 November 2013 and noted the following: This appears to be a shark or predatory fish, for information about this style of mask and images of similar ones see John Picton, 1988, 'Ekpeye Masks and Masking' in African Arts, Volume 21, No. 2 pp. 46-53 and 94. Ikwerre is a region comprising of a group of villages and is within the southern Igbo region of Igboland. [ZM 20/11/2013]",
+	"lastModified": "2023-06-08T11:11:25.333",
+	"persons": [
+		{
+			"id": "5847",
+			"primaryName": "Gwilym Iwan Jones",
+			"role": "Field collector",
+			"sort": "11"
+		},
+		{
+			"id": "5847",
+			"primaryName": "Gwilym Iwan Jones",
+			"role": "PRM source",
+			"sort": "101"
+		}
+	],
+	"geographicalProvenance": [
+		{
+			"place": "Africa > Western Africa > Nigeria",
+			"sort": "1"
+		},
+		{
+			"region": "Southern Nigeria  Niger Delta  Rivers State  Rumuji town",
+			"sort": "50"
+		}
+	],
+	"culturalGroups": [
+		{
+			"id": "30320",
+			"culturalGroup": "Southern Igbo",
+			"sort": "2",
+			"culturalGroupHierarchy": " -> Southern Igbo"
+		},
+		{
+			"id": "30328",
+			"culturalGroup": "Ikwerre Igbo",
+			"sort": "1",
+			"culturalGroupHierarchy": " -> Ikwerre Igbo"
+		}
+	],
+	"materialAndProcess": [
+		{
+			"materialIndex": "Wood Plant",
+			"type": "Material"
+		},
+		{
+			"materialIndex": "Pigment",
+			"type": "Material"
+		},
+		{
+			"materialIndex": "Glass",
+			"type": "Material"
+		},
+		{
+			"materialIndex": "Metal",
+			"type": "Material"
+		},
+		{
+			"materialIndex": "Plant Fibre Yarn",
+			"type": "Material"
+		},
+		{
+			"processIndex": "Painted",
+			"type": "Process"
+		},
+		{
+			"processIndex": "Carved",
+			"type": "Process"
+		},
+		{
+			"processIndex": "Twisted",
+			"type": "Process"
+		},
+		{
+			"processIndex": "Perforated",
+			"type": "Process"
+		}
+	],
+	"multimedia": [
+		{
+			"id": "148600",
+			"isPublished": "Yes",
+			"resourceSpaceId": "265206",
+			"ranking": "5",
+			"identifier": "PRM_RS265206_1938.0015.69.jpg",
+			"mimeType": "image",
+			"path": "",
+			"rights": {},
+			"irn": "265206"
+		}
+	],
+	"acquisitionDate": [
+		{
+			"dateText": "Donated 1938",
+			"from": "1938",
+			"preview": "Donated: 1938",
+			"sort": "1",
+			"type": "Donated",
+			"fromYear": "1938",
+			"toYear": "1938"
+		}
+	],
+	"class": [
+		{
+			"class": "Ornament"
+		},
+		{
+			"class": "Clothing Headgear"
+		},
+		{
+			"class": "Figure"
+		},
+		{
+			"class": "Mask"
+		}
+	],
+	"keywords": [
+		{
+			"keyword": "Headdress",
+			"sort": "1"
+		},
+		{
+			"keyword": "Fish Figure",
+			"sort": "2"
+		},
+		{
+			"keyword": "Mask",
+			"sort": "3"
+		}
+	],
+	"dateCollected": [
+		{
+			"date": "1937",
+			"sort": "1"
+		}
+	],
+	"format": [],
+	"photoProcess": [],
+	"rights": [],
+	"datePeriod": [
+		{
+			"from": "1937"
+		}
+	],
+	"objectLinks": [],
+	"objectLinks2": [
+		{
+			"irn": "281341"
+		}
+	],
+	"objectGroups": [
+		{
+			"id": "71027",
+			"isPublished": "Yes"
+		}
+	],
+	"music": [],
+	"museum": "prm",
+	"collection": "Object",
+	"_nested": {
+		"persons": [
+			{
+				"id": "5847",
+				"primaryName": "Gwilym Iwan Jones",
+				"role": "Field collector",
+				"sort": "11"
+			},
+			{
+				"id": "5847",
+				"primaryName": "Gwilym Iwan Jones",
+				"role": "PRM source",
+				"sort": "101"
+			}
+		]
+	},
+	"recordTitle": "1938.15.69",
+	"recordSubtitle": "Headdress mask representing Abam, a predatory fish.",
+	"hasCulturalWarning": false
+}

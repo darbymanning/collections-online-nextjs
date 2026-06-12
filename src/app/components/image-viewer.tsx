@@ -3,23 +3,29 @@
 import { useEffect, useRef, useState } from "react"
 import type OpenSeadragon from "openseadragon"
 
+export type Image = {
+	/** IIIF Image API service base URL, e.g. "https://dams.ashmus.ox.ac.uk/iiif/image/12973" */
+	service?: string
+	/** plain image URL for museums without a IIIF DAMs */
+	url?: string
+	thumbnail?: string
+}
+
 type Props = {
 	label: string
-	images: Array<{
-		/** IIIF Image API service base URL, e.g. "https://dams.ashmus.ox.ac.uk/iiif/image/12973" */
-		service: string
-		thumbnail?: string
-	}>
+	images: Array<Image>
 }
 
 // styled-jsx's class injection is dropped by React Compiler memoization,
 // so this component must opt out of it
-export function IiifViewer({ label, images }: Props) {
+export function ImageViewer({ label, images }: Props) {
 	"use no memo"
 
+	const frame = useRef<HTMLDivElement>(null)
 	const element = useRef<HTMLDivElement>(null)
 	const viewer = useRef<OpenSeadragon.Viewer>(null)
 	const [page, setPage] = useState(0)
+	const [fullscreen, setFullscreen] = useState(false)
 
 	useEffect(() => {
 		let cancelled = false
@@ -30,10 +36,21 @@ export function IiifViewer({ label, images }: Props) {
 
 			viewer.current = OpenSeadragon({
 				element: element.current,
-				tileSources: images.map((image) => `${image.service}/info.json`),
+				// the inline image source spec isn't modelled by the type definitions
+				tileSources: images.map((image) =>
+					image.service
+						? `${image.service}/info.json`
+						: // buildPyramid reads pixels back from a canvas, which cross-origin
+							// images without CORS headers (e.g. the oum S3 bucket) don't allow
+							{ type: "image", url: image.url, buildPyramid: false },
+				) as OpenSeadragon.Options["tileSources"],
 				sequenceMode: true,
 				showSequenceControl: false,
 				showNavigationControl: false,
+				showNavigator: true,
+				navigatorPosition: "BOTTOM_RIGHT",
+				navigatorBorderColor: "transparent",
+				gestureSettingsMouse: { clickToZoom: true, dblClickToZoom: true },
 				// the default WebGL drawer logs "Error creating texture" in some browsers
 				drawer: "canvas",
 				maxZoomPixelRatio: 2,
@@ -41,8 +58,23 @@ export function IiifViewer({ label, images }: Props) {
 			})
 		})
 
+		function onFullscreenChange() {
+			setFullscreen(Boolean(document.fullscreenElement))
+		}
+
+		// native fullscreen exits (e.g. Esc) don't go through the toggle button;
+		// Esc also exits the fill-the-window fallback, which has no native event
+		function onKeyDown(event: KeyboardEvent) {
+			if (event.key === "Escape" && !document.fullscreenElement) setFullscreen(false)
+		}
+
+		document.addEventListener("fullscreenchange", onFullscreenChange)
+		document.addEventListener("keydown", onKeyDown)
+
 		return () => {
 			cancelled = true
+			document.removeEventListener("fullscreenchange", onFullscreenChange)
+			document.removeEventListener("keydown", onKeyDown)
 			viewer.current?.destroy()
 			viewer.current = null
 		}
@@ -57,6 +89,35 @@ export function IiifViewer({ label, images }: Props) {
 		viewport.applyConstraints()
 	}
 
+	function rotateBy(degrees: number) {
+		const viewport = viewer.current?.viewport
+
+		if (!viewport) return
+
+		viewport.setRotation(viewport.getRotation() + degrees)
+	}
+
+	function reset() {
+		const viewport = viewer.current?.viewport
+
+		if (!viewport) return
+
+		viewport.setRotation(0)
+		viewport.goHome()
+	}
+
+	function toggleFullscreen() {
+		if (fullscreen) {
+			if (document.fullscreenElement) document.exitFullscreen()
+			setFullscreen(false)
+		} else {
+			// embeds without fullscreen permission reject — the [data-full]
+			// styling still fills the window either way
+			frame.current?.requestFullscreen().catch(() => {})
+			setFullscreen(true)
+		}
+	}
+
 	function goToPage(index: number) {
 		viewer.current?.goToPage(index)
 		setPage(index)
@@ -64,17 +125,30 @@ export function IiifViewer({ label, images }: Props) {
 
 	return (
 		<div className="root">
-			<div className="frame">
+			<div ref={frame} className="frame" data-full={fullscreen ? "" : undefined}>
 				<div ref={element} className="viewer" aria-label={`Zoomable image of ${label}`} />
 				<div className="controls">
-					<button onClick={() => zoomBy(2)} aria-label="Zoom in">
+					<button onClick={() => zoomBy(2)} aria-label="Zoom in" title="Zoom in">
 						+
 					</button>
-					<button onClick={() => zoomBy(0.5)} aria-label="Zoom out">
+					<button onClick={() => zoomBy(0.5)} aria-label="Zoom out" title="Zoom out">
 						&minus;
 					</button>
-					<button onClick={() => viewer.current?.viewport.goHome()} aria-label="Reset zoom">
+					<button onClick={() => rotateBy(-90)} aria-label="Rotate left" title="Rotate left">
 						&#x21ba;
+					</button>
+					<button onClick={() => rotateBy(90)} aria-label="Rotate right" title="Rotate right">
+						&#x21bb;
+					</button>
+					<button onClick={reset} aria-label="Reset view" title="Reset view">
+						&#x2302;
+					</button>
+					<button
+						onClick={toggleFullscreen}
+						aria-label={fullscreen ? "Exit full screen" : "Enter full screen"}
+						title={fullscreen ? "Exit full screen" : "Enter full screen"}
+					>
+						{fullscreen ? <>&#x2922;</> : <>&#x2921;</>}
 					</button>
 				</div>
 			</div>
@@ -102,6 +176,13 @@ export function IiifViewer({ label, images }: Props) {
 					position: relative;
 					height: 34rem;
 					background: var(--c-black);
+				}
+
+				.frame[data-full] {
+					position: fixed;
+					inset: 0;
+					height: auto;
+					z-index: 1;
 				}
 
 				.viewer {

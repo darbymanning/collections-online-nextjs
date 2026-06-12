@@ -1,23 +1,63 @@
-import { museums } from "./types"
+/** GLAM Oxford museum sites, keyed by the identifier used in IRNs and `MUSEUM`. */
+export const museumDirectory = {
+	/** Ashmolean Museum
+	 * @see {@link https://www.ashmolean.org} */
+	ash: {
+		ref: "ash",
+		name: "Ashmolean Museum",
+		self: new URL("https://collections-online-nextjs.ashmolean.org"),
+		url: new URL("https://www.ashmolean.org"),
+		dams: new URL("https://dams.ashmus.ox.ac.uk/iiif/"),
+	},
+	/** Oxford University Museum of Natural History
+	 * @see {@link https://www.oumnh.ox.ac.uk} */
+	oum: {
+		ref: "oum",
+		name: "Oxford University Museum of Natural History",
+		self: new URL("https://collections-online-nextjs.oumnh.ox.ac.uk"),
+		url: new URL("https://www.oumnh.ox.ac.uk"),
+		// no DAMs/IIIF — images are served straight from S3 via `multimedia` paths
+		multimedia: new URL(
+			"https://mhn-online-collections-assets-prd.s3.eu-west-1.amazonaws.com/emu/data/oumnh/multimedia/",
+		),
+	},
+	/** Pitt Rivers Museum
+	 * @see {@link https://www.prm.ox.ac.uk} */
+	prm: {
+		ref: "prm",
+		name: "Pitt Rivers Museum",
+		self: new URL("https://collections-online-nextjs.prm.ox.ac.uk"),
+		url: new URL("https://www.prm.ox.ac.uk"),
+		dams: new URL("https://dams.prm.ox.ac.uk/iiif/"),
+	},
+	/** History of Science Museum
+	 * @see {@link https://hsm.ox.ac.uk} */
+	hsm: {
+		ref: "hsm",
+		name: "History of Science Museum",
+		self: new URL("https://collections-online-nextjs.hsm.ox.ac.uk"),
+		url: new URL("https://www.hsm.ox.ac.uk"),
+		// no DAMs/IIIF — images are served straight from S3 via `multimedia` paths
+		multimedia: new URL(
+			"https://hsm-online-collections-assets-prd.s3.eu-west-1.amazonaws.com/emu/emumultimedia/multimedia/",
+		),
+	},
+} as const
 
-function parent(url: URL): URL {
-	const parts = url.hostname.split(".")
-	// clone — mutating the argument would strip a level per call
-	const origin = new URL(url.origin)
-
-	if (parts.length > 2) origin.hostname = parts.slice(1).join(".")
-
-	return origin
-}
-
-const current = museums[process.env.MUSEUM]
-const self = new URL(current.url)
+const current = museumDirectory[process.env.MUSEUM]
+const self = current.self
+const parent = new URL(current.url.origin)
+const collectionsOnline = new URL("/collections-online", parent)
+const simpleSearch = new URL("#/search/simple-search", collectionsOnline)
 
 export const museum = {
 	...current,
 	urls: {
 		self,
-		parent: parent(self),
-		simpleSearch: new URL("/collections-online#/search/simple-search", parent(self)),
+		parent,
+		legacy: {
+			collectionsOnline,
+			simpleSearch,
+		},
 	},
 }

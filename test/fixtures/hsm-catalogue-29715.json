@@ -1,0 +1,100 @@
+{
+	"id": "hsm-catalogue-29715",
+	"type": "catalogue",
+	"museum": "hsm",
+	"collection": "HSM collection",
+	"briefDescription": null,
+	"owner": {
+		"provenance": "Transferred from the Ultrafast Physics Group, Oxford University, in 2012. Originally lent for display in the 'Time Machines' exhibition.",
+		"collectionGroup": [],
+		"relatedParties": [],
+		"collectionGroupTitle": null
+	},
+	"title": "Two Cardboard Boxes for 'Lab Snacks', Issued by Thorlabs, New Jersey, USA, Early 21st Century",
+	"EADExtent": [],
+	"inscriptions": {
+		"otherInscriptions": null,
+		"primaryInscriptions": "Wording on printed cardboard box: 'LAB SNACKS A Treat for Humans THORLABS [motto in picture:] Born to Serve'."
+	},
+	"dimensions": {
+		"unitLength": ["mm"],
+		"weight": [91],
+		"height": [],
+		"diameter": [],
+		"width": [],
+		"unitWeight": ["g"],
+		"depth": []
+	},
+	"origins": {
+		"placeCreatedSummary": [],
+		"placeCreated4": [],
+		"placeCreated1": [],
+		"placeCreated2": [],
+		"placeCreated0": [],
+		"placeCreated3": []
+	},
+	"EADLevelAttribute": null,
+	"physical": {
+		"medium": [],
+		"support": null,
+		"material": ["Cardboard"],
+		"contentAnalysis": [],
+		"technique": [],
+		"watermark": null,
+		"description": "Printed cardboard rectangular box for 'Lab Snacks' and small cardboard pillow box for ‘Lab Snacks Lite’, both with cartoon of a dog serving 'Lab Snacks' on a tray with the motto 'Born to Serve'. These are promotional items given to employees and clients of Thorlabs and would have contained an assortment of pre-packaged snack foods. \n\nThorlabs Inc. is a scientific instrument manufacturer specialising in optical and fibre-optic laboratory tools, founded at Newton, New Jersey, USA in 1989. Their web site (as viewed in 2013) contains illustrations of the same and similar Lab Snacks boxes and a reference to 'famished grad students who depend on the Lab snacks for an occasional meal'."
+	},
+	"subject": [],
+	"object": {
+		"objectType": "Object",
+		"objectName": null
+	},
+	"multimedia": [
+		{
+			"irn": 50117,
+			"isPublished": "Yes",
+			"MulMimeType": "image",
+			"summaryData": "\"Two Cardboard Boxes for 'Lab Snacks', Issued by Thorlabs, New Jersey, USA, Early 21st Century\" (image/jpeg)",
+			"title": "\"Two Cardboard Boxes for 'Lab Snacks', Issued by Thorlabs, New Jersey, USA, Early 21st Century\"",
+			"MulIdentifier": "DSC_0028.JPG",
+			"identifier": "DSC_0028.JPG",
+			"mimeType": "image",
+			"path": "50/117/",
+			"rights": {}
+		}
+	],
+	"dateCreatedLatest": 2012,
+	"EADUnitDate": null,
+	"persons": [
+		{
+			"organisation": "Thorlabs",
+			"birthDate": null,
+			"multimedia": [],
+			"isPublished": "Yes",
+			"partyType": "Organisation",
+			"fullName": "Thorlabs",
+			"irn": 3400,
+			"firstName": null,
+			"personTitle": null,
+			"sex": null,
+			"nationality": null,
+			"lastName": null
+		}
+	],
+	"dateCreated": null,
+	"irn": 29715,
+	"EADUnitTitle": null,
+	"EADLanguageOfMaterial": [],
+	"summaryData": "Inventory No. 13431, \"Two Cardboard Boxes for 'Lab Snacks', Issued by Thorlabs, New Jersey, USA, Early 21st Century\" [2012-9/2], Thorlabs",
+	"EADArchiveRef": null,
+	"EADAuthor": [],
+	"isPublished": "Yes",
+	"EADDescription": null,
+	"parentRecord": null,
+	"identifier": {
+		"inventoryNo": "13431",
+		"accessionNumber": "2012-9/2"
+	},
+	"dateCreatedEarliest": 2000,
+	"recordTitle": "Two Cardboard Boxes for 'Lab Snacks', Issued by Thorlabs, New Jersey, USA, Early 21st Century",
+	"recordSubtitle": "Inventory Number 13431"
+}

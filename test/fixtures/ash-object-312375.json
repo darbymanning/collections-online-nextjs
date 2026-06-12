@@ -1,0 +1,138 @@
+{
+	"id": "ash-object-312375",
+	"type": "catalogue",
+	"irn": "312375",
+	"isPublished": "silver",
+	"objectNumberSorting1": "AN1921.320",
+	"objectNumberSortedSorting1": "AN1921.00320",
+	"numberOfObjects": "1",
+	"recordType": "ceramic",
+	"dimensionsVirtualField": "13.5 x 13.5cm (height x width)",
+	"creditLine": "Purchased from C J Manning in 1921, from the collection of Mr Percy Manning.",
+	"acquisitionDatePreview": "1921",
+	"literatureVirtualField": "Wilson, Timothy, <i>Italian Maiolica and Europe: Medieval and Later Italian Pottery in the Ashmolean Museum</i> (Oxford/Ashmolean Museum, 2017), Cat. No.: p. 485 no. 271",
+	"header": "Tin-glazed tile in Italian style",
+	"subheader": "Medieval period (Britain) (CE 1066 - 1500)\nAN1921.320",
+	"currentLocationDisplay": "not on display",
+	"webCategory": "ceramics",
+	"department": "Antiquities",
+	"lastModified": "2025-02-09T12:54:04.203",
+	"catalogueQuality": "true",
+	"domain": "ANMedievalandLaterEurope",
+	"isValidated": "true",
+	"multimediaQuality": "Professional",
+	"showImages": "yes",
+	"hasCulturalWarning": false,
+	"referenceURL": "https://collections.ashmolean.org/object/312375",
+	"redirectId": "23619",
+	"multimedia": [
+		{
+			"resourceSpaceId": "12973",
+			"isPublished": "Yes",
+			"quality": "Professional shot",
+			"lastModified": "2025-12-15T01:56:38.799",
+			"thumbnail": "true",
+			"identifier": "ASH_RS12973_AN1921.00320.jpg",
+			"mimeType": "image",
+			"path": "",
+			"rights": {},
+			"irn": "12973"
+		}
+	],
+	"objectTitle": [
+		{
+			"title": "Tin-glazed tile in Italian style",
+			"type": "preferred (descriptive)",
+			"sort": "1"
+		}
+	],
+	"persons": [],
+	"geographicalProvenance": [
+		{
+			"place": "Europe > United Kingdom > England > Oxfordshire > Cherwell District > Bicester parish > Bicester town > Sheep Street > St John the Baptist's Chapel",
+			"association": "find spot",
+			"sort": "5",
+			"placeSearch": "Europe > United Kingdom > England > Oxfordshire > Cherwell District > Bicester parish > Bicester town > Sheep Street > St John the Baptist's Chapel (St John Baptist's Chapel)"
+		}
+	],
+	"materialAndProcess": [
+		{
+			"type": "Display",
+			"sort": "1",
+			"previewTxt": "ceramic, with tin glaze",
+			"matTechSearch": "ceramic, with tin glaze"
+		},
+		{
+			"type": "Material",
+			"sort": "1",
+			"previewVoc": "processed material > ceramic",
+			"matTechSearch": "processed material > ceramic"
+		},
+		{
+			"type": "Technique",
+			"sort": "1",
+			"previewVoc": "glazed > tin-glazed",
+			"matTechSearch": "glazed (glazing) > tin-glazed (maiolica, tin glazed)"
+		}
+	],
+	"objectNumbers": [
+		{
+			"NumberVrt": "AN1921.320",
+			"sort": "1",
+			"type": "accession number",
+			"displayAccNo": "AN1921.320"
+		}
+	],
+	"datePeriod": [
+		{
+			"period": "Medieval period (Britain) (1066 - 1500)",
+			"sort": "1",
+			"to": "1500",
+			"from": "1066",
+			"type": "date of creation"
+		}
+	],
+	"personsAssociated": [],
+	"provenance": [],
+	"inscriptionsAndMarks": [],
+	"provenancePerson": [],
+	"objectNames": [
+		{
+			"objectName": "architecture > tile",
+			"objectNameSearch": "Tin-glazed tile in Italian style | tile | architecture"
+		}
+	],
+	"objectLinksA": [],
+	"objectLinksB": [],
+	"design": [],
+	"conservation": [],
+	"series": [
+		{
+			"sort": "1"
+		}
+	],
+	"book": [
+		{
+			"sort": "1"
+		}
+	],
+	"museum": "ash",
+	"collection": "ash collection",
+	"onDisplayFilter": "Objects not on display",
+	"catalogueQualityFilter": "Only objects with catalogue quality data",
+	"averageDatePeriod": 1283,
+	"multimediaQualityFilter": ["Objects with images", "Objects with professional quality images"],
+	"_nested": {
+		"geographicalProvenance": [
+			{
+				"place": "Europe > United Kingdom > England > Oxfordshire > Cherwell District > Bicester parish > Bicester town > Sheep Street > St John the Baptist's Chapel",
+				"association": "find spot",
+				"sort": "5",
+				"placeSearch": "Europe > United Kingdom > England > Oxfordshire > Cherwell District > Bicester parish > Bicester town > Sheep Street > St John the Baptist's Chapel (St John Baptist's Chapel)"
+			}
+		],
+		"persons": []
+	},
+	"recordTitle": "Tin-glazed tile in Italian style",
+	"recordSubtitle": "Medieval period (Britain) (CE 1066 - 1500)\nAN1921.320"
+}

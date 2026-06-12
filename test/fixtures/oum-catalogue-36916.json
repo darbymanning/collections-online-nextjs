@@ -1,0 +1,82 @@
+{
+	"id": "oum-catalogue-36916",
+	"type": "catalogue",
+	"EADUnitDate": null,
+	"collectedDisplayDateEarliest": [],
+	"parentRecord": null,
+	"objectNumber": "MIN.28380",
+	"technique": [],
+	"language": null,
+	"taxonomy": [],
+	"EADUnitTitle": null,
+	"stratigraphy": null,
+	"collectionName": [],
+	"subcollection": "Mineralogy",
+	"preservation": null,
+	"EADUnitDateLatest": null,
+	"EADOrigination_tab": [],
+	"titleDescription": null,
+	"EADUnitDateEarliest": null,
+	"numberOfSpecimens": null,
+	"EADScopeAndContent": null,
+	"phase": null,
+	"irn": 36916,
+	"otherNumbers": {
+		"notes": [],
+		"otherNumbers": ["Hull Univ. M1141"],
+		"otherNumbersType": []
+	},
+	"EADExtent_tab": [],
+	"collectedDisplayDateLatest": [],
+	"sex": null,
+	"typeStatus": [],
+	"locality": [
+		{
+			"country": ["Nigeria"],
+			"districtCountyShire": [],
+			"irn": 5356,
+			"cityTown": [],
+			"globalRegion": [],
+			"siteName": ["Roppe Tin mines:"],
+			"summaryData": "Roppe Tin mines:, Roppe Tin mines, Central Province, Nigeria, Africa",
+			"nearestNamedPlace": ["Roppe Tin mines, Central Province"]
+		}
+	],
+	"productionDisplayDate": [],
+	"collection": "Mineralogy and Petrology",
+	"preciseLocation": [],
+	"numberOfParts": null,
+	"multimedia": [
+		{
+			"MulIdentifier": "MIN.28380_001.jpg",
+			"irn": 10077,
+			"isPublished": "Yes",
+			"rights": {
+				"rightsAcknowledgement": "© Oxford University Museum of Natural History",
+				"rightsConditions": "Permission is granted to use this image for non-profit, educational or academic purposes as long as notification of use is sent to the Museum, and the image is clearly credited with © Oxford University Museum of Natural History. To obtain permission for commercial and other uses, or to enquire about reprints, fees, and licensing, please contact library@oum.ox.ac.uk.",
+				"rightsRequiresAcknowledgement": "Yes"
+			},
+			"mimeFormat": "jpeg",
+			"MulMimeType": "image",
+			"title": "MIN.28380",
+			"summaryData": "MIN.28380 (image/jpeg)",
+			"identifier": "MIN.28380_001.jpg",
+			"mimeType": "image",
+			"path": "10/077/"
+		}
+	],
+	"museum": "oum",
+	"stage": null,
+	"EADIdentifier": null,
+	"materials": [],
+	"EADUnitID": null,
+	"EADLevelAttribute": null,
+	"objectName": ["mineral"],
+	"age": null,
+	"collectedBy": [],
+	"briefDescription": "Topaz (single colourless crystal)",
+	"productionMaker": [],
+	"collectedDisplayDate": [],
+	"recordTitle": "Topaz (single colourless crystal)",
+	"recordSubtitle": "Mineralogy and Petrology. MIN.28380"
+}

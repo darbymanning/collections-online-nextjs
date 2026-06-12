@@ -21,7 +21,8 @@
 		"paths": {
 			"$components/*": ["./src/app/components/*"],
 			"$layouts/*": ["./src/app/layouts/*"],
-			"$library/*": ["./src/app/library/*"]
+			"$library/*": ["./src/app/library/*"],
+			"$fixtures/*": ["./test/fixtures/*"]
 		}
 	},
 	"include": [
@@ -30,7 +31,15 @@
 		"**/*.tsx",
 		".next/types/**/*.ts",
 		".next/dev/types/**/*.ts",
-		"**/*.mts"
+		"**/*.mts",
+		".next-e2e-ash/types/**/*.ts",
+		".next-e2e-ash/dev/types/**/*.ts",
+		".next-e2e-oum/types/**/*.ts",
+		".next-e2e-oum/dev/types/**/*.ts",
+		".next-e2e-prm/types/**/*.ts",
+		".next-e2e-prm/dev/types/**/*.ts",
+		".next-e2e-hsm/types/**/*.ts",
+		".next-e2e-hsm/dev/types/**/*.ts"
 	],
 	"exclude": ["node_modules"]
 }

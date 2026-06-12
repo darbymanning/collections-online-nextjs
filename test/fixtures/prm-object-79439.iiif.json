@@ -1,0 +1,388 @@
+{
+	"@context": "http://iiif.io/api/presentation/3/context.json",
+	"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/manifest",
+	"type": "Manifest",
+	"label": {
+		"en": ["RS265206_PRM1938.15.69"]
+	},
+	"metadata": [
+		{
+			"label": {
+				"en": ["Accession number (+)"]
+			},
+			"value": {
+				"en": ["1938.15.69"]
+			}
+		},
+		{
+			"label": {
+				"en": ["Image width (pixels)"]
+			},
+			"value": {
+				"en": ["3290"]
+			}
+		},
+		{
+			"label": {
+				"en": ["Image height (pixels)"]
+			},
+			"value": {
+				"en": ["2655"]
+			}
+		},
+		{
+			"label": {
+				"en": ["Name of copyright holder (for digital asset) (+)"]
+			},
+			"value": {
+				"en": ["Pitt Rivers Museum, University of Oxford"]
+			}
+		}
+	],
+	"requiredStatement": {
+		"label": {
+			"en": ["Name of copyright holder (for digital asset) (+)"]
+		},
+		"value": {
+			"en": ["Pitt Rivers Museum, University of Oxford"]
+		}
+	},
+	"thumbnail": [
+		{
+			"id": "https://dams.prm.ox.ac.uk/iiif/image/265206/full/thm/0/default.jpg",
+			"type": "Image",
+			"format": "image/jpeg",
+			"height": 141,
+			"width": 175,
+			"service": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/image/265206",
+					"type": "ImageService3",
+					"profile": "level0"
+				}
+			]
+		}
+	],
+	"behavior": ["individuals"],
+	"viewingDirection": "left-to-right",
+	"items": [
+		{
+			"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/0",
+			"type": "Canvas",
+			"label": {
+				"none": ["1"]
+			},
+			"height": 2655,
+			"width": 3290,
+			"thumbnail": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/image/265206/full/thm/0/default.jpg",
+					"type": "Image",
+					"format": "image/jpeg",
+					"height": 141,
+					"width": 175,
+					"service": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/image/265206",
+							"type": "ImageService3",
+							"profile": "level0"
+						}
+					]
+				}
+			],
+			"items": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotationpage/0",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotation/0",
+							"type": "Annotation",
+							"motivation": "painting",
+							"body": {
+								"id": "https://dams.prm.ox.ac.uk/iiif/image/265206/full/max/0/default.jpg",
+								"type": "Image",
+								"format": "image/jpeg",
+								"service": [
+									{
+										"id": "https://dams.prm.ox.ac.uk/iiif/image/265206",
+										"type": "ImageService3",
+										"profile": "level0"
+									}
+								],
+								"height": 2655,
+								"width": 3290
+							},
+							"target": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/0"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/1",
+			"type": "Canvas",
+			"label": {
+				"none": ["2"]
+			},
+			"height": 2628,
+			"width": 3420,
+			"thumbnail": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/image/265562/full/thm/0/default.jpg",
+					"type": "Image",
+					"format": "image/jpeg",
+					"height": 134,
+					"width": 175,
+					"service": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/image/265562",
+							"type": "ImageService3",
+							"profile": "level0"
+						}
+					]
+				}
+			],
+			"items": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotationpage/1",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotation/1",
+							"type": "Annotation",
+							"motivation": "painting",
+							"body": {
+								"id": "https://dams.prm.ox.ac.uk/iiif/image/265562/full/max/0/default.jpg",
+								"type": "Image",
+								"format": "image/jpeg",
+								"service": [
+									{
+										"id": "https://dams.prm.ox.ac.uk/iiif/image/265562",
+										"type": "ImageService3",
+										"profile": "level0"
+									}
+								],
+								"height": 2628,
+								"width": 3420
+							},
+							"target": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/1"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/2",
+			"type": "Canvas",
+			"label": {
+				"none": ["3"]
+			},
+			"height": 2567,
+			"width": 2736,
+			"thumbnail": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/image/265743/full/thm/0/default.jpg",
+					"type": "Image",
+					"format": "image/jpeg",
+					"height": 164,
+					"width": 175,
+					"service": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/image/265743",
+							"type": "ImageService3",
+							"profile": "level0"
+						}
+					]
+				}
+			],
+			"items": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotationpage/2",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotation/2",
+							"type": "Annotation",
+							"motivation": "painting",
+							"body": {
+								"id": "https://dams.prm.ox.ac.uk/iiif/image/265743/full/max/0/default.jpg",
+								"type": "Image",
+								"format": "image/jpeg",
+								"service": [
+									{
+										"id": "https://dams.prm.ox.ac.uk/iiif/image/265743",
+										"type": "ImageService3",
+										"profile": "level0"
+									}
+								],
+								"height": 2567,
+								"width": 2736
+							},
+							"target": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/2"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/3",
+			"type": "Canvas",
+			"label": {
+				"none": ["4"]
+			},
+			"height": 2500,
+			"width": 2857,
+			"thumbnail": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/image/265929/full/thm/0/default.jpg",
+					"type": "Image",
+					"format": "image/jpeg",
+					"height": 153,
+					"width": 175,
+					"service": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/image/265929",
+							"type": "ImageService3",
+							"profile": "level0"
+						}
+					]
+				}
+			],
+			"items": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotationpage/3",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotation/3",
+							"type": "Annotation",
+							"motivation": "painting",
+							"body": {
+								"id": "https://dams.prm.ox.ac.uk/iiif/image/265929/full/max/0/default.jpg",
+								"type": "Image",
+								"format": "image/jpeg",
+								"service": [
+									{
+										"id": "https://dams.prm.ox.ac.uk/iiif/image/265929",
+										"type": "ImageService3",
+										"profile": "level0"
+									}
+								],
+								"height": 2500,
+								"width": 2857
+							},
+							"target": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/3"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/4",
+			"type": "Canvas",
+			"label": {
+				"none": ["5"]
+			},
+			"height": 3383,
+			"width": 2149,
+			"thumbnail": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/image/265939/full/thm/0/default.jpg",
+					"type": "Image",
+					"format": "image/jpeg",
+					"height": 175,
+					"width": 111,
+					"service": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/image/265939",
+							"type": "ImageService3",
+							"profile": "level0"
+						}
+					]
+				}
+			],
+			"items": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotationpage/4",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotation/4",
+							"type": "Annotation",
+							"motivation": "painting",
+							"body": {
+								"id": "https://dams.prm.ox.ac.uk/iiif/image/265939/full/max/0/default.jpg",
+								"type": "Image",
+								"format": "image/jpeg",
+								"service": [
+									{
+										"id": "https://dams.prm.ox.ac.uk/iiif/image/265939",
+										"type": "ImageService3",
+										"profile": "level0"
+									}
+								],
+								"height": 3383,
+								"width": 2149
+							},
+							"target": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/4"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/5",
+			"type": "Canvas",
+			"label": {
+				"none": ["6"]
+			},
+			"height": 1864,
+			"width": 2400,
+			"thumbnail": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/image/303842/full/thm/0/default.jpg",
+					"type": "Image",
+					"format": "image/jpeg",
+					"height": 136,
+					"width": 175,
+					"service": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/image/303842",
+							"type": "ImageService3",
+							"profile": "level0"
+						}
+					]
+				}
+			],
+			"items": [
+				{
+					"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotationpage/5",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/annotation/5",
+							"type": "Annotation",
+							"motivation": "painting",
+							"body": {
+								"id": "https://dams.prm.ox.ac.uk/iiif/image/303842/full/max/0/default.jpg",
+								"type": "Image",
+								"format": "image/jpeg",
+								"service": [
+									{
+										"id": "https://dams.prm.ox.ac.uk/iiif/image/303842",
+										"type": "ImageService3",
+										"profile": "level0"
+									}
+								],
+								"height": 1864,
+								"width": 2400
+							},
+							"target": "https://dams.prm.ox.ac.uk/iiif/1938.15.69/canvas/5"
+						}
+					]
+				}
+			]
+		}
+	]
+}

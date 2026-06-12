@@ -32,12 +32,22 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 function links(str: string, filter: string) {
-	const base = [museum.urls.simpleSearch, filter].join("/")
+	const base = [museum.urls.legacy.simpleSearch, filter].join("/")
 	const parts = str.split(" > ")
 
 	return parts.map((label, index) => ({
 		label,
 		href: encodeURI(base + parts.slice(0, index + 1).join(" > ")),
+	}))
+}
+
+/** One search link per value, e.g. hsm's "Cardboard" → `physical.material:Cardboard` */
+function searchLinks(values: Array<string> | undefined, filter: string) {
+	if (!values?.length) return undefined
+
+	return values.map((label) => ({
+		label,
+		href: encodeURI(`${museum.urls.legacy.simpleSearch}/${filter}${label}`),
 	}))
 }
 
@@ -73,17 +83,83 @@ function materials(materialAndProcess: CollectionObject["materialAndProcess"]) {
 	return values.length ? values : undefined
 }
 
+/** Swaps an image filename's extension for an S3 derivative suffix,
+ * e.g. "MIN.28380_001.jpg" → "MIN.28380_001.1000x1000.jpg" */
+function derivative(url: string, suffix: string) {
+	return url.replace(/\.[^.]+$/, `${suffix}.jpg`)
+}
+
+/** hsm dimensions are structured values with separate units, e.g. "Weight: 91g" */
+function dimensionLines(dimensions: CollectionObject["dimensions"]) {
+	if (!dimensions) return undefined
+
+	const measurements = [
+		["Diameter", dimensions.diameter[0], dimensions.unitLength[0]],
+		["Height", dimensions.height[0], dimensions.unitLength[0]],
+		["Width", dimensions.width[0], dimensions.unitLength[0]],
+		["Depth", dimensions.depth[0], dimensions.unitLength[0]],
+		["Weight", dimensions.weight[0], dimensions.unitWeight[0]],
+	] as const
+
+	const lines = measurements
+		.filter(([, value, unit]) => value != null && unit)
+		.map(([label, value, unit]) => `${label}: ${value}${unit}`)
+
+	return lines.length ? lines.join("\n") : undefined
+}
+
+/** Images for museums without a DAMs (oum/hsm) come straight from S3 multimedia paths. */
+function multimediaImages(object: CollectionObject) {
+	if (!("multimedia" in museum)) return undefined
+
+	const base = museum.multimedia
+
+	const images = object.multimedia.flatMap((m) => {
+		if (m.mimeType !== "image" || !m.path || !m.identifier) return []
+		if (/\.tiff?$/.test(m.identifier)) return []
+
+		const url = derivative(`${base}${m.path}${m.identifier}`, ".1000x1000")
+
+		return [{ url, thumbnail: url }]
+	})
+
+	return images.length ? images : undefined
+}
+
 export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 	const imageCopyright = iiif?.requiredStatement?.value.en[0]
 
+	// rights live on the multimedia entries for museums without a DAMs
+	const rights = object.multimedia.find((m) => m.rights?.rightsAcknowledgement)?.rights
+	const multimediaCopyright =
+		[
+			rights?.rightsAcknowledgement && `Acknowledgement: ${rights.rightsAcknowledgement}`,
+			rights?.rightsConditions && `Conditions: ${rights.rightsConditions}`,
+		]
+			.filter(Boolean)
+			.join("\n") ||
+		// hsm assets without explicit rights default to the museum's acknowledgement
+		(museum.ref === "hsm" && object.identifier?.inventoryNo
+			? `Acknowledgement: © ${museum.name}, University of Oxford, inv.${object.identifier.inventoryNo}`
+			: undefined)
+
 	const persons = object.persons?.toSorted(bySort).flatMap((p) => {
-		const name = p.primaryName ?? p.displayName
+		const name =
+			p.primaryName ??
+			p.displayName ??
+			p.fullName ??
+			[p.firstName, p.lastName].filter(Boolean).join(" ")
 		if (!name) return []
 		return [
 			{
 				role: p.role,
 				name,
-				href: encodeURI(`${museum.urls.simpleSearch}/persons.id:${p.id}`),
+				// hsm parties have no search id and are found by name instead
+				href: encodeURI(
+					p.id
+						? `${museum.urls.legacy.simpleSearch}/persons.id:${p.id}`
+						: `${museum.urls.legacy.simpleSearch}/persons.fullName:${name}`,
+				),
 			},
 		]
 	})
@@ -96,7 +172,9 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 			{
 				type: m.type,
 				label: m[key]!,
-				href: encodeURI(`${museum.urls.simpleSearch}/materialAndProcess.${key}:${m[key]}`),
+				href: encodeURI(
+					`${museum.urls.legacy.simpleSearch}/materialAndProcess.${key}:${m[key]}`,
+				),
 			},
 		]
 	})
@@ -106,23 +184,59 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 		labels: {
 			place: museum.ref === "prm" ? "Geographical reference" : "Associated place",
 			materials: museum.ref === "prm" ? "Materials and processes" : "Material and technique",
-			persons: museum.ref === "prm" ? "Person" : "Artist/maker",
+			persons:
+				museum.ref === "prm" ? "Person" : museum.ref === "hsm" ? "Makers" : "Artist/maker",
+			collection: museum.ref === "oum" ? "Collection" : "Collection type",
+			objectType: museum.ref === "oum" ? "Object Type" : "Object type",
+			accession:
+				museum.ref === "oum"
+					? "Object Number"
+					: museum.ref === "hsm"
+						? "Accession Number"
+						: "Accession no.",
+			dateCollected: museum.ref === "oum" ? "Date Collected" : "Date collected",
+			location: museum.ref === "oum" ? "Current Location" : "Museum location",
 		},
 		title: object.recordTitle,
+		// only the ash details list repeats the title as a row
+		titleRow:
+			museum.ref === "ash" && object.recordTitle !== object.objectNumberSorting1
+				? object.recordTitle
+				: undefined,
 		subTitle: object.recordSubtitle,
-		objectNumber: object.objectNumberSorting1,
+		objectNumber: object.objectNumberSorting1 ?? object.objectNumber,
 		onDisplay:
 			(object.onDisplay ?? object.currentLocationDisplay)?.toLowerCase() === "on display",
-		images: iiif?.items.flatMap((canvas) => {
-			const service = canvas.items[0]?.items[0]?.body.service[0]?.id
-			return service ? [{ service, thumbnail: canvas.thumbnail[0]?.id }] : []
-		}),
-		imageCopyright:
-			imageCopyright && museum.ref === "prm"
+		images:
+			iiif?.items.flatMap((canvas) => {
+				const service = canvas.items[0]?.items[0]?.body.service[0]?.id
+				return service ? [{ service, thumbnail: canvas.thumbnail[0]?.id }] : []
+			}) ?? multimediaImages(object),
+		imageCopyright: iiif
+			? imageCopyright && museum.ref === "prm"
 				? `Digital asset copyright: ${imageCopyright}`
-				: imageCopyright,
-		collectionType: museum.ref === "prm" ? object.collection : undefined,
+				: imageCopyright
+			: multimediaCopyright || undefined,
+		collectionType: ["prm", "oum"].includes(museum.ref) ? object.collection : undefined,
+		subcollection: object.subcollection,
 		longDescription: object.longDescription,
+		briefDescription: object.briefDescription,
+		subject: searchLinks(object.subject, "subject:"),
+		itemType: object.object?.objectType
+			? {
+					label: object.object.objectType,
+					href: encodeURI(
+						`${museum.urls.legacy.simpleSearch}/object.objectType:${object.object.objectType}`,
+					),
+				}
+			: undefined,
+		provenance: object.owner?.provenance || undefined,
+		primaryInscriptions: object.inscriptions?.primaryInscriptions || undefined,
+		otherInscriptions: object.inscriptions?.otherInscriptions || undefined,
+		physicalMaterial: searchLinks(object.physical?.material, "physical.material:"),
+		physicalMedium: searchLinks(object.physical?.medium, "physical.medium:"),
+		physicalTechnique: searchLinks(object.physical?.technique, "physical.technique:"),
+		description: object.physical?.description || undefined,
 		// the virtual field is the display-ready form; the datePeriod array then only feeds search
 		datePeriod: object.datePeriodVirtualField
 			? undefined
@@ -131,7 +245,7 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 						return {
 							period: d.period,
 							type: d.type,
-							link: `${museum.urls.simpleSearch}/datePeriod.period:${encodeURI(d.period)}`,
+							link: `${museum.urls.legacy.simpleSearch}/datePeriod.period:${encodeURI(d.period)}`,
 						}
 					else if ("from" in d)
 						return {
@@ -139,8 +253,11 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 						}
 				}),
 		datePeriodText: object.datePeriodVirtualField?.trim(),
-		dateCollected: object.dateCollected?.toSorted(bySort).map((d) => d.date),
+		dateCollected:
+			object.dateCollected?.toSorted(bySort).map((d) => d.date) ??
+			(object.collectedDisplayDate?.length ? object.collectedDisplayDate : undefined),
 		acquisitionInformation: object.acquisitionDateVirtualField?.trim(),
+		locality: object.locality?.length ? object.locality.map((l) => l.summaryData) : undefined,
 		geographicalProvenance: object.geographicalProvenance?.map((p) => {
 			if ("place" in p)
 				return {
@@ -152,21 +269,34 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 		culturalGroups: object.culturalGroups?.toSorted(bySort).map((g) => ({
 			label: g.culturalGroup,
 			href: encodeURI(
-				`${museum.urls.simpleSearch}/culturalGroups.culturalGroupHierarchy:${g.culturalGroupHierarchy}`,
+				`${museum.urls.legacy.simpleSearch}/culturalGroups.culturalGroupHierarchy:${g.culturalGroupHierarchy}`,
 			),
 		})),
 		persons: persons?.length ? persons : undefined,
 		materialAndProcess: materials(object.materialAndProcess),
 		materialsList: materialsList?.length ? materialsList : undefined,
-		objectType: object.objectNames?.map((n) => ({
-			links: links(n.objectName, "objectNames.objectName:"),
-		})),
-		dimensions: object.dimensionsVirtualField,
+		objectType:
+			object.objectNames?.map((n) => ({
+				links: links(n.objectName, "objectNames.objectName:"),
+			})) ??
+			(object.objectName?.length ? object.objectName.map((text) => ({ text })) : undefined) ??
+			(object.object?.objectName ? [{ text: object.object.objectName }] : undefined),
+		dimensions: object.dimensionsVirtualField ?? dimensionLines(object.dimensions),
 		numberOfItems: object.numberOfObjects,
+		numberOfParts: object.numberOfParts,
 		creditLine: object.creditLine,
-		museumLocation: object.currentLocationDisplay,
+		museumLocation: object.currentLocationDisplay ?? object.currentLocation,
 		museumDepartment: object.department,
-		accessionNumbers: object.objectNumbers?.map((n) => n.displayAccNo),
+		accessionNumbers:
+			object.objectNumbers?.map((n) => n.displayAccNo) ??
+			(object.objectNumber ? [object.objectNumber] : undefined) ??
+			(object.identifier?.accessionNumber ? [object.identifier.accessionNumber] : undefined),
+		inventoryNumber: object.identifier?.inventoryNo,
+		otherNumbers: object.otherNumbers?.otherNumbers.length
+			? object.otherNumbers.otherNumbers.map((number, index) =>
+					[object.otherNumbers?.otherNumbersType[index], number].filter(Boolean).join(": "),
+				)
+			: undefined,
 		objectNumbersAll: object.objectNumbersAll,
 		researchAndResponses: object.researchAndResponses?.replace(/\r\n/g, "\n"),
 		referenceURL: object.referenceURL,
