@@ -17,7 +17,7 @@ test.afterEach(() => {
 	expect(pageErrors).toEqual([])
 })
 
-test("shows the default back link without a referrer", async ({ page }) => {
+test("shows the default back link without a return URL", async ({ page }) => {
 	const museum = currentMuseum()
 
 	await page.goto(`/item/${museum.id}/${museum.slug}`)
@@ -27,26 +27,24 @@ test("shows the default back link without a referrer", async ({ page }) => {
 	await expect(backLink).toHaveAttribute("href", museum.simpleSearchHref)
 })
 
-test("shows the legacy search results back link when referred from collections online", async ({
+test("shows the legacy search results back link when a return URL is provided", async ({
 	page,
 }) => {
 	const museum = currentMuseum()
+	const returnParam = encodeURIComponent(museum.legacySearchReturn)
 
-	await page.goto(`/item/${museum.id}/${museum.slug}`, {
-		referer: museum.legacySearchReferrer,
-	})
+	await page.goto(`/item/${museum.id}/${museum.slug}?return=${returnParam}`)
 
 	const backLink = page.locator("a.back-link")
 	await expect(backLink).toHaveText("Back to search results")
-	await expect(backLink).toHaveAttribute("href", museum.legacySearchReferrer)
+	await expect(backLink).toHaveAttribute("href", museum.legacySearchReturn)
 })
 
-test("shows the default back link for external referrers", async ({ page }) => {
+test("shows the default back link for untrusted return URLs", async ({ page }) => {
 	const museum = currentMuseum()
+	const returnParam = encodeURIComponent("https://www.google.com/")
 
-	await page.goto(`/item/${museum.id}/${museum.slug}`, {
-		referer: "https://www.google.com/",
-	})
+	await page.goto(`/item/${museum.id}/${museum.slug}?return=${returnParam}`)
 
 	const backLink = page.locator("a.back-link")
 	await expect(backLink).toHaveText("Back to search")

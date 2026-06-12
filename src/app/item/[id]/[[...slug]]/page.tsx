@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { headers } from "next/headers"
 import { api } from "$library/api"
 import { slugify } from "$library/slug"
 import { legacyBackLink } from "$library/utils"
@@ -12,6 +11,9 @@ type Params = {
 		id: CollectionObject["id"]
 		// cosmetic only — never read, just makes URLs human-friendly
 		slug?: Array<string>
+	}>
+	searchParams: Promise<{
+		return?: string
 	}>
 }
 
@@ -308,12 +310,11 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 
 export type Props = ReturnType<typeof props>
 
-export default async function Page({ params }: Params) {
+export default async function Page({ params, searchParams }: Params) {
 	const { id } = await params
+	const { return: returnUrl } = await searchParams
 	const object = await api.getCollectionObject(id)
 	const iiif = await api.getDamsIiif(object)
-	const referrer = (await headers()).get("referer")
-	const backLink = legacyBackLink(referrer)
 
-	return <CollectionObjectLayout {...props(object, iiif)} backLink={backLink} />
+	return <CollectionObjectLayout {...props(object, iiif)} backLink={legacyBackLink(returnUrl)} />
 }

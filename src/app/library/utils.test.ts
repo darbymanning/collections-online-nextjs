@@ -24,24 +24,38 @@ describe("legacyBackLink", () => {
 	const simpleSearch = String(museum.urls.legacy.simpleSearch)
 	const collectionsOnline = String(museum.urls.legacy.collectionsOnline)
 
-	test("defaults to simple search when there is no referrer", () => {
+	test("defaults to simple search when there is no return URL", () => {
 		expect(legacyBackLink(null)).toEqual({
 			href: simpleSearch,
 			label: "Back to search",
 		})
 	})
 
-	test("returns the referrer when it points at legacy Collections Online", () => {
-		const referrer = `${collectionsOnline}#/search/simple-search/object.objectType:tile`
+	test("uses a validated legacy search results URL", () => {
+		const returnUrl = `${collectionsOnline}#/search/simple-search/object.objectType:tile`
 
-		expect(legacyBackLink(referrer)).toEqual({
-			href: referrer,
+		expect(legacyBackLink(returnUrl)).toEqual({
+			href: returnUrl,
 			label: "Back to search results",
 		})
 	})
 
-	test("defaults to simple search for referrers outside legacy Collections Online", () => {
+	test("defaults to simple search for return URLs outside legacy Collections Online", () => {
 		expect(legacyBackLink("https://www.google.com/")).toEqual({
+			href: simpleSearch,
+			label: "Back to search",
+		})
+	})
+
+	test("defaults to simple search for other pages on the museum site", () => {
+		expect(legacyBackLink(`${museum.urls.parent}/visit`)).toEqual({
+			href: simpleSearch,
+			label: "Back to search",
+		})
+	})
+
+	test("rejects non-https return URLs", () => {
+		expect(legacyBackLink("http://www.example.com/collections-online")).toEqual({
 			href: simpleSearch,
 			label: "Back to search",
 		})

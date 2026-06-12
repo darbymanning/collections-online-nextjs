@@ -16,22 +16,34 @@ const defaultBackLink = (): BackLink => ({
 	label: "Back to search",
 })
 
-/** When the visitor arrived from the legacy Collections Online app, send them back there. */
-export function legacyBackLink(referrer: string | null | undefined): BackLink {
-	if (!referrer) return defaultBackLink()
+function normalizedPathname(url: URL): string {
+	return url.pathname.replace(/\/+/g, "/") || "/"
+}
+
+function isAllowedLegacyReturn(url: URL, legacy: URL): boolean {
+	if (url.protocol !== "https:") return false
+	if (url.origin !== legacy.origin) return false
+
+	const pathname = normalizedPathname(url)
+	return pathname === legacy.pathname || pathname.startsWith(`${legacy.pathname}/`)
+}
+
+/** Legacy links should pass `?return=` with `encodeURIComponent(window.location.href)`. */
+export function legacyBackLink(returnUrl: string | null | undefined): BackLink {
+	if (!returnUrl) return defaultBackLink()
 
 	try {
-		const url = new URL(referrer)
+		const url = new URL(returnUrl)
 		const legacy = museum.urls.legacy.collectionsOnline
 
-		if (url.origin === legacy.origin && url.pathname.startsWith(legacy.pathname)) {
+		if (isAllowedLegacyReturn(url, legacy)) {
 			return {
-				href: referrer,
+				href: returnUrl,
 				label: "Back to search results",
 			}
 		}
 	} catch {
-		// ignore malformed referrers
+		// ignore malformed return URLs
 	}
 
 	return defaultBackLink()
