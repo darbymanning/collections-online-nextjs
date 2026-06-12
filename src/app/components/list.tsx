@@ -5,11 +5,12 @@ import { useState } from "react"
 type Props = {
 	links: Array<{ label: string; href: string }>
 	association?: string
+	prefix?: string
 }
 
 // styled-jsx's class injection is dropped by React Compiler memoization,
 // so this component must opt out of it
-export function List({ links, association }: Props) {
+export function List({ links, association, prefix }: Props) {
 	"use no memo"
 
 	const [open, setOpen] = useState(false)
@@ -22,12 +23,14 @@ export function List({ links, association }: Props) {
 				<div className="views">
 					<div className="view closed">
 						<div>
+							{prefix ? `${prefix} ` : ""}
 							<a href={last.href}>{last.label}</a>
 							{association ? ` (${association})` : ""}
 						</div>
 					</div>
 					<div className="view opened">
 						<div>
+							{prefix ? `${prefix} ` : ""}
 							{links.map((link, index) => (
 								<span key={index}>
 									<a href={link.href}>{link.label}</a>
@@ -38,16 +41,18 @@ export function List({ links, association }: Props) {
 						</div>
 					</div>
 				</div>
-				<button
-					onClick={() => setOpen(!open)}
-					aria-expanded={open}
-					aria-label={open ? "Collapse place hierarchy" : "Expand place hierarchy"}
-				>
-					<span className="icon" aria-hidden="true">
-						<span className="bar-h" />
-						<span className="bar-v" />
-					</span>
-				</button>
+				{links.length > 1 && (
+					<button
+						onClick={() => setOpen(!open)}
+						aria-expanded={open}
+						aria-label={open ? "Collapse hierarchy" : "Expand hierarchy"}
+					>
+						<span className="icon" aria-hidden="true">
+							<span className="bar-h" />
+							<span className="bar-v" />
+						</span>
+					</button>
+				)}
 			</div>
 			<style jsx>{`
 				.row {

@@ -16,6 +16,6 @@ export const museum = {
 	urls: {
 		self,
 		parent: parent(self),
-		simpleSearch: new URL(parent(self) + "/collections-online#/search/simple-search"),
+		simpleSearch: new URL("/collections-online#/search/simple-search", parent(self)),
 	},
 }

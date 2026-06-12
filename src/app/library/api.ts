@@ -2,8 +2,8 @@ import { museum } from "./config"
 import type { CollectionObject, IIIFManifest } from "./types"
 
 export const api = {
-	async getCollectionObject(irn: CollectionObject["irn"]): Promise<CollectionObject> {
-		const url = new URL(`https://prd-online.glamdigital.io/v2/item/${irn}/full`)
+	async getCollectionObject(id: CollectionObject["id"]): Promise<CollectionObject> {
+		const url = new URL(`https://prd-online.glamdigital.io/v2/item/${id}/full`)
 
 		const response = await fetch(url)
 
@@ -19,7 +19,7 @@ export const api = {
 
 		switch (museum.ref) {
 			case "ash":
-				id = object.irn.split("-object-").pop()
+				id = object.irn
 				break
 
 			case "prm":
@@ -27,11 +27,14 @@ export const api = {
 				break
 		}
 
+		if (!id) return null
+
 		const url = new URL(`${museum.dams}${id}/manifest`)
 
 		const response = await fetch(url)
 
-		if (!response.ok) throw new Error(`Failed to load Dams IIIF manifest: ${response.status}`)
+		// Objects without digitised assets have no manifest
+		if (!response.ok) return null
 
 		return response.json()
 	},

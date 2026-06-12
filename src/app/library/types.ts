@@ -43,9 +43,9 @@ export const museums = {
 export type Museum = keyof typeof museums
 
 export type CollectionObject = {
-	id: string
+	id: `${Museum}-object-${string}`
 	type: string
-	irn: `${Museum}-object-${string}`
+	irn: string
 	isPublished: string
 	objectNumberSorting1: string
 	objectNumberSortedSorting1: string
