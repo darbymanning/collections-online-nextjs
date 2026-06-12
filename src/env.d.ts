@@ -18,4 +18,14 @@ declare global {
 	}
 }
 
+declare module "varlock/env" {
+	interface TypedEnvSchema {
+		MUSEUM: Museum
+		/** HTTP basic auth username — enables the gate when set with `BASIC_AUTH_PASS`. */
+		BASIC_AUTH_USER?: string
+		/** HTTP basic auth password — enables the gate when set with `BASIC_AUTH_USER`. */
+		BASIC_AUTH_PASS?: string
+	}
+}
+
 export {}
