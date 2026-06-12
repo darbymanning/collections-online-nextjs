@@ -42,51 +42,53 @@ export const museums = {
  * @see {@link museums} */
 export type Museum = keyof typeof museums
 
+/** A catalogue object from `prd-online.glamdigital.io`.
+ *
+ * The shape varies by museum — fields only returned by some museums are
+ * optional and annotated. Verified against `ash` and `prm` responses. */
 export type CollectionObject = {
 	id: `${Museum}-object-${string}`
 	type: string
 	irn: string
 	isPublished: string
+	museum: string
+	collection: string
+	domain: string
+	recordType: string
+	recordTitle: string
+	recordSubtitle: string
 	objectNumberSorting1: string
 	objectNumberSortedSorting1: string
-	numberOfObjects: string
-	recordType: string
-	dimensionsVirtualField: string
-	creditLine: string
-	acquisitionDatePreview: string
-	literatureVirtualField: string
-	header: string
-	subheader: string
-	currentLocationDisplay: string
-	webCategory: string
-	department: string
 	lastModified: string
-	catalogueQuality: string
-	domain: string
-	isValidated: string
-	multimediaQuality: string
-	showImages: string
 	hasCulturalWarning: boolean
-	referenceURL: string
-	redirectId: string
+	dimensionsVirtualField?: string
+	creditLine?: string
 	multimedia: Array<{
 		resourceSpaceId: string
 		isPublished: string
-		quality: string
-		lastModified: string
-		thumbnail: string
 		identifier: string
 		mimeType: string
 		path: string
 		rights: {}
 		irn: string
+		/** prm */
+		id?: string
+		ranking?: string
+		/** ash */
+		quality?: string
+		lastModified?: string
+		thumbnail?: string
 	}>
-	objectTitle: Array<{
-		title: string
-		type: string
-		sort: string
+	persons: Array<{
+		id?: string
+		/** prm */
+		primaryName?: string
+		role?: string
+		/** ash */
+		displayName?: string
+		attribution?: string
+		sort?: string
 	}>
-	persons: Array<any>
 	geographicalProvenance?: Array<
 		| {
 				place: string
@@ -98,16 +100,14 @@ export type CollectionObject = {
 	>
 	materialAndProcess: Array<{
 		type: string
-		sort: string
+		sort?: string
+		/** ash */
 		previewTxt?: string
-		matTechSearch: string
 		previewVoc?: string
-	}>
-	objectNumbers: Array<{
-		NumberVrt: string
-		sort: string
-		type: string
-		displayAccNo: string
+		matTechSearch?: string
+		/** prm */
+		materialIndex?: string
+		processIndex?: string
 	}>
 	datePeriod?: Array<
 		| {
@@ -119,32 +119,93 @@ export type CollectionObject = {
 		  }
 		| { from: string }
 	>
-	personsAssociated: Array<any>
-	provenance: Array<any>
-	inscriptionsAndMarks: Array<any>
-	provenancePerson: Array<any>
-	objectNames: Array<{
+
+	/* ash */
+	numberOfObjects?: string
+	acquisitionDatePreview?: string
+	literatureVirtualField?: string
+	header?: string
+	subheader?: string
+	currentLocationDisplay?: string
+	webCategory?: string
+	department?: string
+	catalogueQuality?: string
+	isValidated?: string
+	multimediaQuality?: string
+	showImages?: string
+	referenceURL?: string
+	redirectId?: string
+	objectTitle?: Array<{
+		title: string
+		type: string
+		sort: string
+	}>
+	objectNumbers?: Array<{
+		NumberVrt: string
+		sort: string
+		type: string
+		displayAccNo: string
+	}>
+	objectNames?: Array<{
 		objectName: string
 		objectNameSearch: string
 	}>
-	objectLinksA: Array<any>
-	objectLinksB: Array<any>
-	design: Array<any>
-	conservation: Array<any>
-	series: Array<{
+	personsAssociated?: Array<any>
+	provenance?: Array<any>
+	inscriptionsAndMarks?: Array<any>
+	provenancePerson?: Array<any>
+	objectLinksA?: Array<any>
+	objectLinksB?: Array<any>
+	design?: Array<any>
+	conservation?: Array<any>
+	series?: Array<{ sort: string }>
+	book?: Array<{ sort: string }>
+	onDisplayFilter?: string
+	catalogueQualityFilter?: string
+	averageDatePeriod?: number
+	multimediaQualityFilter?: Array<string>
+
+	/* prm */
+	description?: string
+	longDescription?: string
+	archaologyOrEthnography?: string
+	culturalGroupsVirtualField?: string
+	geographicalProvenanceVirtualField?: string
+	materialAndProcessVirtualField?: string
+	datePeriodVirtualField?: string
+	acquisitionDateVirtualField?: string
+	onDisplay?: string
+	objectNumbersAll?: string
+	researchAndResponses?: string
+	intNumberOfObjects?: string
+	culturalGroups?: Array<{
+		id: string
+		culturalGroup: string
 		sort: string
+		culturalGroupHierarchy: string
 	}>
-	book: Array<{
+	acquisitionDate?: Array<{
+		dateText: string
+		from: string
+		preview: string
 		sort: string
+		type: string
+		fromYear: string
+		toYear: string
 	}>
-	museum: string
-	collection: string
-	onDisplayFilter: string
-	catalogueQualityFilter: string
-	averageDatePeriod: number
-	multimediaQualityFilter: Array<string>
+	class?: Array<{ class: string }>
+	keywords?: Array<{ keyword: string; sort: string }>
+	dateCollected?: Array<{ date: string; sort: string }>
+	format?: Array<any>
+	photoProcess?: Array<any>
+	rights?: Array<any>
+	objectLinks?: Array<any>
+	objectLinks2?: Array<{ irn: string }>
+	objectGroups?: Array<{ id: string; isPublished: string }>
+	music?: Array<any>
+
 	_nested: {
-		geographicalProvenance: Array<{
+		geographicalProvenance?: Array<{
 			place: string
 			association: string
 			sort: string
@@ -152,8 +213,6 @@ export type CollectionObject = {
 		}>
 		persons: Array<any>
 	}
-	recordTitle: string
-	recordSubtitle: string
 }
 
 /** IIIF Image API 3.0 service endpoint.

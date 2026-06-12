@@ -6,14 +6,24 @@ import type { Props } from "../item/[id]/[[...slug]]/page"
 import Link from "next/link"
 
 export function CollectionObjectLayout({
+	labels,
 	title,
 	subTitle,
 	objectNumber,
+	onDisplay,
 	images,
 	imageCopyright,
+	collectionType,
+	longDescription,
 	geographicalProvenance,
+	culturalGroups,
+	persons,
 	datePeriod,
+	datePeriodText,
+	dateCollected,
+	acquisitionInformation,
 	materialAndProcess,
+	materialsList,
 	objectType,
 	dimensions,
 	numberOfItems,
@@ -21,6 +31,8 @@ export function CollectionObjectLayout({
 	museumLocation,
 	museumDepartment,
 	accessionNumbers,
+	objectNumbersAll,
+	researchAndResponses,
 	referenceURL,
 }: Props) {
 	// styled-jsx's class injection is dropped by React Compiler memoization,
@@ -32,6 +44,7 @@ export function CollectionObjectLayout({
 			<header>
 				<h1 className="title">{title}</h1>
 				<h2 className="sub-title">{subTitle}</h2>
+				{onDisplay && <p className="on-display">On display</p>}
 				<span className="object-numbers">{objectNumber}</span>
 				{images?.length ? (
 					<figure>
@@ -43,16 +56,55 @@ export function CollectionObjectLayout({
 			<section>
 				<h2 className="details-title">Details</h2>
 				<dl>
-					<div>
-						<dt>Title</dt>
-						<dd>{title}</dd>
-					</div>
+					{title !== objectNumber && (
+						<div>
+							<dt>Title</dt>
+							<dd>{title}</dd>
+						</div>
+					)}
+
+					{collectionType && (
+						<div>
+							<dt>Collection type</dt>
+							<dd>{collectionType}</dd>
+						</div>
+					)}
+
+					{longDescription && (
+						<div>
+							<dt>Long description</dt>
+							<dd>{longDescription}</dd>
+						</div>
+					)}
 
 					{geographicalProvenance && (
 						<div>
-							<dt>Associated place</dt>
+							<dt>{labels.place}</dt>
 							{geographicalProvenance.map((p, index) => (
 								<dd key={index}>{p?.links ? <List {...p} /> : p?.region}</dd>
+							))}
+						</div>
+					)}
+
+					{culturalGroups && (
+						<div>
+							<dt>Cultural groups</dt>
+							{culturalGroups.map((g, index) => (
+								<dd key={index}>
+									<a href={g.href}>{g.label}</a>
+								</dd>
+							))}
+						</div>
+					)}
+
+					{persons && (
+						<div>
+							<dt>{labels.persons}</dt>
+							{persons.map((p, index) => (
+								<dd key={index}>
+									{p.role ? `${p.role} ` : ""}
+									<a href={p.href}>{p.name}</a>
+								</dd>
 							))}
 						</div>
 					)}
@@ -68,14 +120,48 @@ export function CollectionObjectLayout({
 						</div>
 					)}
 
-					{materialAndProcess && (
+					{datePeriodText && (
 						<div>
-							<dt>Material and technique</dt>
-							{materialAndProcess.map((m, index) => (
+							<dt>Date / Period</dt>
+							<dd>{datePeriodText}</dd>
+						</div>
+					)}
+
+					{dateCollected && (
+						<div>
+							<dt>Date collected</dt>
+							{dateCollected.map((date, index) => (
+								<dd key={index}>{date}</dd>
+							))}
+						</div>
+					)}
+
+					{acquisitionInformation && (
+						<div>
+							<dt>Acquisition information</dt>
+							<dd>{acquisitionInformation}</dd>
+						</div>
+					)}
+
+					{(materialAndProcess || materialsList) && (
+						<div>
+							<dt>{labels.materials}</dt>
+							{materialAndProcess?.map((m, index) => (
 								<dd key={index}>
 									{m.links ? <List links={m.links} prefix={m.text} /> : m.text}
 								</dd>
 							))}
+							{materialsList && (
+								<dd>
+									{materialsList.map((m, index) => (
+										<span key={index}>
+											{m.type ? `${m.type} ` : ""}
+											<a href={m.href}>{m.label}</a>
+											{index < materialsList.length - 1 ? ", " : ""}
+										</span>
+									))}
+								</dd>
+							)}
 						</div>
 					)}
 
@@ -134,6 +220,20 @@ export function CollectionObjectLayout({
 						</div>
 					) : null}
 
+					{objectNumbersAll && (
+						<div>
+							<dt>Object numbers</dt>
+							<dd>{objectNumbersAll}</dd>
+						</div>
+					)}
+
+					{researchAndResponses && (
+						<div>
+							<dt>Research and responses</dt>
+							<dd>{researchAndResponses}</dd>
+						</div>
+					)}
+
 					{referenceURL && (
 						<div>
 							<dt>Reference URL</dt>
@@ -163,6 +263,11 @@ export function CollectionObjectLayout({
 				.sub-title {
 					font: 600 var(--f-h2);
 					text-align: center;
+				}
+
+				.on-display {
+					text-align: center;
+					font: var(--f-caption);
 				}
 
 				.object-numbers {
@@ -212,6 +317,7 @@ export function CollectionObjectLayout({
 
 				dd {
 					grid-column: 2;
+					white-space: pre-line;
 				}
 			`}</style>
 		</article>

@@ -2,10 +2,12 @@ import { museums } from "./types"
 
 function parent(url: URL): URL {
 	const parts = url.hostname.split(".")
+	// clone — mutating the argument would strip a level per call
+	const origin = new URL(url.origin)
 
-	if (parts.length > 2) url.hostname = parts.slice(1).join(".")
+	if (parts.length > 2) origin.hostname = parts.slice(1).join(".")
 
-	return new URL(url.origin)
+	return origin
 }
 
 const current = museums[process.env.MUSEUM]
