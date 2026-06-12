@@ -404,6 +404,11 @@ export function CollectionObjectLayout({
 				)}
 			</article>
 			<style jsx>{`
+				:global(a) {
+					text-decoration: underline;
+					font-weight: 500;
+				}
+
 				.back-link {
 					display: inline-flex;
 					align-items: center;
