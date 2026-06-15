@@ -138,6 +138,7 @@ export type FurtherItem = {
 	href: string
 	title: string
 	subTitle?: string
+	objectNumber?: string
 	image?: string
 }
 
@@ -186,6 +187,8 @@ export function furtherItems(items: Array<CollectionObject>): Array<FurtherItem>
 			href: `/item/${item.id}/${slugify(slugTitle)}`,
 			title: item.recordTitle,
 			subTitle: item.recordSubtitle || undefined,
+			// mirror the detail page's choice of identifier
+			objectNumber: item.objectNumberSorting1 ?? item.objectNumber,
 			image: thumbnail(item),
 		}
 	})

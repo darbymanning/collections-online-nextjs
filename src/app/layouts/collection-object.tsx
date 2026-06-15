@@ -63,7 +63,9 @@ export function CollectionObjectLayout({
 			 * overlaps the band — the accent fills the top ~50% of the image before the
 			 * page turns white at the seam (cf. ox.ac.uk/research). With no image the
 			 * band just gets normal padding and flows straight into the white page. */}
-			<header className={`px-[5vw] pt-6 text-white ${images?.length ? "pb-80" : "pb-12"}`}>
+			<header
+				className={`px-[5vw] pt-6 text-white selection:bg-background/20 selection:text-background ${images?.length ? "pb-80" : "pb-12"}`}
+			>
 				<Button href={backLink.href} revealIcon className="back-link text-background">
 					<svg aria-hidden>
 						<use href="/sprite.svg#arrow-left" />
@@ -74,7 +76,10 @@ export function CollectionObjectLayout({
 					<h1 className="text-center text-5xl font-semibold">{title}</h1>
 					<h2 className="text-center text-2xl font-semibold text-current/80">{subTitle}</h2>
 					{onDisplay && <p className="on-display text-center text-sm">On display</p>}
-					<span className="text-center text-lg font-bold text-current/80">{objectNumber}</span>
+					<hr className="w-10 mx-auto opacity-20" />
+					<span className="font-mono text-center text-xs text-current/80 tracking-wider">
+						{objectNumber}
+					</span>
 				</div>
 			</header>
 			<div className="bg-background px-[5vw] pb-[5vw]">
@@ -84,16 +89,21 @@ export function CollectionObjectLayout({
 					<figure className="-mt-68 grid gap-3">
 						<ImageViewer label={title} images={images} />
 						{imageCopyright && (
-							<figcaption className="text-center whitespace-pre-line text-xs">
-								{imageCopyright}
+							<figcaption className="text-xs text-pretty grid gap-1 max-w-3xl text-center mx-auto">
+								{imageCopyright
+									.split("\n")
+									.map((line) => line.trim())
+									.filter(Boolean)
+									.map((line, index) => (
+										<p key={index}>{line}</p>
+									))}
 							</figcaption>
 						)}
 					</figure>
 				) : null}
-				<article className="grid gap-12 pt-12">
+				<article className="grid lg:gap-30 lg:pt-30 gap-12 pt-12">
 					<section className="mx-auto grid w-full max-w-wrap-small gap-8">
-						<h2 className="text-center text-2xl font-semibold">Details</h2>
-						<dl className="grid text-sm grid-cols-[auto_60%] gap-y-1 [&>div]:col-span-full [&>div]:grid [&>div]:grid-cols-subgrid [&>div]:gap-x-4 [&>div]:gap-y-1 [&>div]:rounded-md [&>div]:px-4 [&>div]:py-3 [&_dd]:col-start-2 [&_dd]:min-w-0 [&_dd]:whitespace-pre-line [&_dt]:col-start-1 [&_dt]:self-start [&_dt]:font-bold [&>div]:odd:bg-accent/10">
+						<dl className="grid text-sm grid-cols-[auto_60%] gap-y-1 [&>div]:col-span-full [&>div]:grid [&>div]:grid-cols-subgrid [&>div]:gap-x-4 [&>div]:gap-y-1 [&>div]:rounded-md [&>div]:px-4 [&>div]:py-3 [&_dd]:col-start-2 [&_dd]:min-w-0 [&_dd]:whitespace-pre-line [&_dt]:col-start-1 [&_dt]:self-start [&_dt]:font-bold [&_dt]:text-accent [&>div]:odd:bg-accent/10">
 							{titleRow && (
 								<div>
 									<dt>Title</dt>

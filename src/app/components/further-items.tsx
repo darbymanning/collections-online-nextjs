@@ -11,8 +11,18 @@ import { useEffect, useState } from "react"
 // as featured (cf. ox.ac.uk's "Discover more" carousel)
 const SCALE_MIN = 0.85
 
+// fraction of the viewport every snap is inset by — matches the band's
+// `mx-[-5vw]` bleed and the list's `pl-[5vw]` lead, so a rested card lines up
+// with the heading above it on every breakpoint
+const GUTTER = 0.05
+
 export function FurtherItems({ title, items, more }: FurtherItemsSection) {
-	const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps" })
+	const [emblaRef, emblaApi] = useEmblaCarousel({
+		// align each snap to the content gutter (not the bled viewport edge), so
+		// the active card always rests inset while slides still bleed mid-scroll
+		align: () => window.innerWidth * GUTTER,
+		containScroll: "trimSnaps",
+	})
 
 	const [selected, setSelected] = useState(0)
 	const [snaps, setSnaps] = useState<Array<number>>([])
@@ -53,11 +63,12 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 					</Button>
 				)}
 			</div>
-			{/* viewport bleeds across the band padding to the screen edges; the
-			 * container insets the first card to the content margin on desktop but
-			 * runs flush to the left edge on mobile, so slides bleed off both sides */}
+			{/* viewport bleeds across the band padding to the screen edges so slides
+			 * run off both sides mid-scroll; the leading `pl-[5vw]` gives the first
+			 * card its gutter, and the embla `align` keeps every rested card inset to
+			 * match it (on every breakpoint) */}
 			<div className="further-items mx-[-5vw] overflow-hidden" ref={emblaRef}>
-				<ul className="flex touch-pan-y pl-[5vw] max-md:pl-0">
+				<ul className="flex touch-pan-y pl-[5vw]">
 					{items.map((item, index) => {
 						const hasImage = item.image && !failed.has(item.id)
 
@@ -69,7 +80,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 								<Link
 									href={item.href}
 									style={{ transform: `scale(${index === selected ? 1 : SCALE_MIN})` }}
-									className="group relative block aspect-[4/3] origin-center overflow-hidden rounded-2xl no-underline transition-transform duration-300 ease-out"
+									className="group relative block aspect-4/3 origin-center overflow-hidden rounded-2xl no-underline transition-transform duration-300 ease-out"
 								>
 									{hasImage ? (
 										<img
@@ -91,11 +102,35 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 										</span>
 									)}
 									<span
-										className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent"
+										className="absolute inset-0 bg-linear-to-t from-black/80 via-black/25 to-transparent"
 										aria-hidden
 									/>
-									<span className="absolute inset-x-0 bottom-0 line-clamp-3 p-4 text-lg font-semibold text-white">
-										{item.title}
+									{/* bottom-anchored, so the meta expanding below pushes the
+									 * title up to reveal it on hover */}
+									<span className="absolute inset-x-0 bottom-0 block p-4 text-white">
+										<span className="line-clamp-2 text-2xl font-semibold">
+											<span className="animated-underline group-hover:[--underline-w:100%]">
+												{item.title}
+											</span>
+										</span>
+										{(item.subTitle || item.objectNumber) && (
+											<span className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr]">
+												<span className="block min-h-0 overflow-hidden">
+													<span className="block pt-1.5 text-sm opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+														{item.subTitle && (
+															<span className="line-clamp-2 text-white/85">
+																{item.subTitle}
+															</span>
+														)}
+														{item.objectNumber && (
+															<span className="mt-1 block font-mono font-normal text-xs tracking-wider text-white/65">
+																{item.objectNumber}
+															</span>
+														)}
+													</span>
+												</span>
+											</span>
+										)}
 									</span>
 								</Link>
 							</li>
@@ -105,15 +140,16 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 			</div>
 			<div className="flex items-center justify-between gap-4">
 				<div className="flex flex-wrap gap-2">
-					{snaps.map((_, index) => (
-						<button
-							key={index}
-							onClick={() => emblaApi?.scrollTo(index)}
-							aria-label={`Go to slide ${index + 1}`}
-							aria-current={index === selected}
-							className="size-2.5 rounded-full bg-accent/25 transition-colors aria-[current=true]:bg-accent"
-						/>
-					))}
+					{snaps.length > 1 &&
+						snaps.map((_, index) => (
+							<button
+								key={index}
+								onClick={() => emblaApi?.scrollTo(index)}
+								aria-label={`Go to slide ${index + 1}`}
+								aria-current={index === selected}
+								className="size-2.5 rounded-full bg-accent/25 transition-colors aria-[current=true]:bg-accent"
+							/>
+						))}
 				</div>
 				<div className="flex gap-3">
 					<button

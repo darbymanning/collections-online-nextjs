@@ -149,6 +149,7 @@ onlyFor("ash")("furtherItems (ash)", () => {
 				href: "/item/ash-object-312375/tin-glazed-tile-in-italian-style",
 				title: "Tin-glazed tile in Italian style",
 				subTitle: "Medieval period (Britain) (CE 1066 - 1500)\nAN1921.320",
+				objectNumber: "AN1921.320",
 				image: "https://ash-online-collections-assets-prd.s3.eu-west-1.amazonaws.com/assets/ASH_RS12973_AN1921.00320.jpg",
 			},
 		])

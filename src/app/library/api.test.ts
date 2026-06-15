@@ -99,6 +99,9 @@ onlyFor("ash")("api.getFurtherItems (ash)", () => {
 			json({ results: [{ item: { id: "ash-object-1" } }] }),
 			json({ results: [{ item: { id: "ash-object-1" } }] }),
 			json({ results: [{ item: { id: "ash-object-0" } }, { item: { id: "ash-object-2" } }] }),
+			// each surviving record is refetched in full for the teaser cards
+			json({ id: "ash-object-1" }),
+			json({ id: "ash-object-2" }),
 		)
 
 		const items = await api.getFurtherItems(self)
@@ -111,6 +114,7 @@ onlyFor("ash")("api.getFurtherItems (ash)", () => {
 		fetchSpy.mockRejectedValueOnce(new Error("network down"))
 		fetchSpy.mockResolvedValueOnce(json({ results: [{ item: { id: "ash-object-1" } }] }))
 		fetchSpy.mockResolvedValueOnce(json(null, 500))
+		fetchSpy.mockResolvedValueOnce(json({ id: "ash-object-1" }))
 
 		const items = await api.getFurtherItems(self)
 
@@ -121,7 +125,7 @@ onlyFor("ash")("api.getFurtherItems (ash)", () => {
 onlyFor("hsm")("api.getFurtherItems (hsm)", () => {
 	test("fetches more-like-this results in one query", async () => {
 		const item = { id: "hsm-catalogue-1", multimedia: [{ identifier: "a.jpg" }] }
-		const fetchSpy = mockFetch(json({ results: [{ item }] }))
+		const fetchSpy = mockFetch(json({ results: [{ item }] }), json(item))
 
 		const items = await api.getFurtherItems(partial({ id: "hsm-catalogue-0" }))
 
@@ -133,9 +137,13 @@ onlyFor("hsm")("api.getFurtherItems (hsm)", () => {
 })
 
 onlyFor("oum")("api.getFurtherItems (oum)", () => {
-	test("refetches full records for results with stripped multimedia", async () => {
-		const slim = { id: "oum-catalogue-1", multimedia: [] }
-		const full = { id: "oum-catalogue-1", multimedia: [{ identifier: "a.jpg" }] }
+	test("refetches full records for the teaser cards", async () => {
+		const slim = { id: "oum-catalogue-1", multimedia: [{ identifier: "slim.jpg" }] }
+		const full = {
+			id: "oum-catalogue-1",
+			objectNumber: "MIN.1",
+			multimedia: [{ identifier: "a.jpg" }],
+		}
 		const fetchSpy = mockFetch(json({ results: [{ item: slim }] }), json(full))
 
 		const items = await api.getFurtherItems(partial({ id: "oum-catalogue-0" }))

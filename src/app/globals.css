@@ -22,6 +22,9 @@
 	/* DM Sans (via next/font) as the default sans family */
 	--font-sans: var(--f-dm-sans), sans-serif;
 
+	/* Geist Mono (via next/font) as the default monospace family */
+	--font-mono: var(--f-geist-mono), monospace;
+
 	/* Typography — our scale overrides Tailwind's named text sizes (so we use
 	 * text-sm/base/lg/2xl/4xl/5xl, not custom tokens). Every size scales fluidly
 	 * from a mobile floor (at 320px) to a desktop ceiling (at 1920px) in our clamp
@@ -86,7 +89,7 @@
 	}
 
 	/* Tailwind v4 defaults buttons to cursor:default — keep the pointer */
-	button {
+	button:not([disabled]) {
 		cursor: pointer;
 	}
 
@@ -96,4 +99,22 @@
 		font-weight: 500;
 		text-decoration: underline;
 	}
+
+	::selection {
+		background-color: var(--color-accent);
+		color: var(--color-background);
+	}
+}
+
+/* gradient-backed underline that wipes in from the left (cf. ox.ac.uk's teaser
+ * cards). The width is driven by --underline-w so a parent can animate it on
+ * hover, e.g. `group-hover:[--underline-w:100%]`. */
+@utility animated-underline {
+	--underline-w: 0%;
+	text-decoration: none;
+	background-image: linear-gradient(to right, currentColor, currentColor);
+	background-position: left bottom;
+	background-repeat: no-repeat;
+	background-size: var(--underline-w) 0.125rem;
+	transition: background-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

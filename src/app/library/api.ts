@@ -89,13 +89,11 @@ export const api = {
 					item.id !== object.id && items.findIndex((other) => other.id === item.id) === index,
 			)
 
-		if (museum.ref !== "oum") return related
-
-		// search-related strips oum multimedia — refetch those records so teasers get images
+		// search results carry trimmed records (no object number, and oum drops
+		// multimedia), so refetch each full record for the teaser cards; a failed
+		// fetch just falls back to the sparser search record.
 		return Promise.all(
 			related.map(async (item) => {
-				if (item.multimedia?.length) return item
-
 				try {
 					return await api.getCollectionObject(item.id)
 				} catch {
