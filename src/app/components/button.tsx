@@ -23,7 +23,9 @@ type Props = Link | Button
 
 type Rest = Omit<Link | Button, "children" | "revealIcon" | "size" | "className">
 
-function isLink(props: Rest): props is Omit<Link, "children" | "revealIcon" | "size" | "className"> {
+function isLink(
+	props: Rest,
+): props is Omit<Link, "children" | "revealIcon" | "size" | "className"> {
 	return props.href !== undefined
 }
 
@@ -47,7 +49,7 @@ export function Button({
 	const merged = {
 		...rest,
 		className: cn(
-			"group relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden rounded-md font-medium no-underline ring-2 ring-accent/20 text-accent transition-[color,box-shadow] duration-300 hover:text-white hover:ring-accent",
+			"group relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden rounded-md font-medium text-accent no-underline ring-2 ring-accent/20 transition-[color,box-shadow] duration-300 hover:text-white hover:ring-accent",
 			sizeClass[size],
 			revealIcon &&
 				"[&_svg]:h-[1em] [&_svg]:w-0 [&_svg]:opacity-0 [&_svg]:transition-all [&_svg]:duration-300 hover:[&_svg]:mx-1 hover:[&_svg]:w-[1em] hover:[&_svg]:opacity-100",

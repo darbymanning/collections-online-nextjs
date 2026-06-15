@@ -1,12 +1,40 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"ignorePatterns": ["package.json"],
-	"plugins": ["typescript", "unicorn", "oxc"],
+	"plugins": ["typescript", "unicorn", "oxc", "nextjs"],
 	"categories": {
 		"correctness": "error"
 	},
-	"rules": {},
+	"jsPlugins": [
+		"oxlint-tailwindcss",
+		{
+			"name": "react-hooks-js",
+			"specifier": "eslint-plugin-react-hooks"
+		},
+		{
+			"name": "react-no-manual-memo",
+			"specifier": "eslint-plugin-react-no-manual-memo"
+		}
+	],
+	"rules": {
+		"tailwindcss/enforce-canonical": "warn",
+		"tailwindcss/enforce-sort-order": "off",
+		"tailwindcss/enforce-shorthand": "warn",
+		"tailwindcss/no-unknown-classes": "warn",
+		"tailwindcss/no-duplicate-classes": "error",
+		"tailwindcss/no-conflicting-classes": "warn",
+		"tailwindcss/no-deprecated-classes": "warn",
+		"tailwindcss/no-unnecessary-arbitrary-value": "warn",
+		"react-hooks-js/set-state-in-render": "error",
+		"react-no-manual-memo/no-hook-memo": "error",
+		"nextjs/no-img-element": "off"
+	},
 	"env": {
 		"builtin": true
+	},
+	"settings": {
+		"tailwindcss": {
+			"entryPoint": "src/app/app.css"
+		}
 	}
 }

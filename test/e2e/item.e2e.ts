@@ -22,7 +22,7 @@ test("shows the default back link without a return URL", async ({ page }) => {
 
 	await page.goto(`/item/${museum.id}/${museum.slug}`)
 
-	const backLink = page.locator("a.back-link")
+	const backLink = page.getByTestId("back-link")
 	await expect(backLink).toHaveText("Back to search")
 	await expect(backLink).toHaveAttribute("href", museum.simpleSearchHref)
 })
@@ -35,7 +35,7 @@ test("shows the legacy search results back link when a return URL is provided", 
 
 	await page.goto(`/item/${museum.id}/${museum.slug}?return=${returnParam}`)
 
-	const backLink = page.locator("a.back-link")
+	const backLink = page.getByTestId("back-link")
 	await expect(backLink).toHaveText("Back to search results")
 	await expect(backLink).toHaveAttribute("href", museum.legacySearchReturn)
 })
@@ -46,7 +46,7 @@ test("shows the default back link for untrusted return URLs", async ({ page }) =
 
 	await page.goto(`/item/${museum.id}/${museum.slug}?return=${returnParam}`)
 
-	const backLink = page.locator("a.back-link")
+	const backLink = page.getByTestId("back-link")
 	await expect(backLink).toHaveText("Back to search")
 	await expect(backLink).toHaveAttribute("href", museum.simpleSearchHref)
 })
@@ -73,7 +73,7 @@ test("shows the museum's detail fields", async ({ page }) => {
 		await expect(page.locator(`dt:text-is("${label}")`)).toBeVisible()
 	}
 
-	if (museum.onDisplay) await expect(page.locator(".on-display")).toHaveText("On display")
+	if (museum.onDisplay) await expect(page.getByText("On display")).toHaveText("On display")
 })
 
 test("initialises the zoomable image viewer", async ({ page }) => {
@@ -83,7 +83,7 @@ test("initialises the zoomable image viewer", async ({ page }) => {
 	await page.goto(`/item/${museum.id}/${museum.slug}`)
 
 	// OpenSeadragon mounts canvases (viewer + navigator) once it initialises
-	const canvas = page.locator(".frame canvas").first()
+	const canvas = page.getByLabel(/^Zoomable image of/).locator("canvas").first()
 	await expect(canvas).toBeVisible({ timeout: 30_000 })
 
 	await page.getByRole("button", { name: "Zoom in" }).click()
@@ -97,7 +97,7 @@ test("pages through images with the thumbnails", async ({ page }) => {
 
 	await page.goto(`/item/${museum.id}/${museum.slug}`)
 
-	const thumbnails = page.locator(".thumbnails button")
+	const thumbnails = page.getByRole("button", { name: /^View image \d+ of \d+$/ })
 	await expect(thumbnails).toHaveCount(museum.imageCount)
 	await expect(thumbnails.first()).toHaveAttribute("aria-current", "true")
 
@@ -115,7 +115,9 @@ test("suggests related items to explore", async ({ page }) => {
 	await expect(page.getByRole("heading", { name: museum.furtherItemsHeading })).toBeVisible()
 
 	// the queries decide how many cards appear, but the known items always match something
-	expect(await page.locator('.further-items a[href^="/item/"]').count()).toBeGreaterThan(0)
+	expect(
+		await page.getByTestId("further-items").locator('a[href^="/item/"]').count(),
+	).toBeGreaterThan(0)
 
 	if (museum.furtherItemsMore) {
 		const more = page.getByRole("link", { name: "More related items" })
@@ -130,9 +132,12 @@ test("expands and collapses hierarchy trails", async ({ page }) => {
 	await page.goto(`/item/${museum.id}/${museum.slug}`)
 
 	// scope to one trail so the toggle and its expanded view stay paired
-	const row = page.locator(".row", { has: page.locator("button[aria-expanded]") }).first()
-	const toggle = row.locator("button[aria-expanded]")
-	const opened = row.locator(".opened")
+	const trail = page
+		.getByTestId("list")
+		.filter({ has: page.locator("button[aria-expanded]") })
+		.first()
+	const toggle = trail.locator("button[aria-expanded]")
+	const opened = trail.getByTestId("list-expanded")
 
 	await expect(toggle).toHaveAttribute("aria-expanded", "false")
 	await expect(opened).toHaveAttribute("inert", "")

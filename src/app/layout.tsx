@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import { DM_Sans, Geist_Mono } from "next/font/google"
-import "./globals.css"
+import "./app.css"
 import { museum } from "$library/config"
 import { openGraphDefaults, robotsMetadata } from "$library/seo"
+import { Header } from "$components/header"
 
 const dmSans = DM_Sans({
 	subsets: ["latin"],
@@ -32,7 +33,10 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en-GB" className={`${dmSans.variable} ${geistMono.variable} ${museum.ref}`}>
-			<body>{children}</body>
+			<body>
+				<Header />
+				{children}
+			</body>
 		</html>
 	)
 }

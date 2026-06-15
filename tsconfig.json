@@ -19,9 +19,11 @@
 			}
 		],
 		"paths": {
+			"$assets/*": ["./src/app/assets/*"],
 			"$components/*": ["./src/app/components/*"],
 			"$layouts/*": ["./src/app/layouts/*"],
 			"$library/*": ["./src/app/library/*"],
+			"$hooks/*": ["./src/app/hooks/*"],
 			"$fixtures/*": ["./test/fixtures/*"]
 		}
 	},

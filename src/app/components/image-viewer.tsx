@@ -26,6 +26,20 @@ export function ImageViewer({ label, images }: Props) {
 	const viewer = useRef<OpenSeadragon.Viewer>(null)
 	const [page, setPage] = useState(0)
 	const [fullscreen, setFullscreen] = useState(false)
+	const [scrollHint, setScrollHint] = useState(false)
+	const [isMac, setIsMac] = useState(false)
+	// scroll-to-zoom is gated behind a modifier key, except in fullscreen where
+	// there's no surrounding page to scroll; read live so the handler stays current
+	const fullscreenRef = useRef(false)
+	const hintTimer = useRef<ReturnType<typeof setTimeout>>(null)
+
+	useEffect(() => {
+		fullscreenRef.current = fullscreen
+	}, [fullscreen])
+
+	useEffect(() => {
+		setIsMac(/mac|iphone|ipad|ipod/i.test(navigator.userAgent))
+	}, [])
 
 	useEffect(() => {
 		let cancelled = false
@@ -56,6 +70,22 @@ export function ImageViewer({ label, images }: Props) {
 				maxZoomPixelRatio: 2,
 				visibilityRatio: 1,
 			})
+
+			// google-maps style: don't hijack the page scroll for zoom unless a
+			// modifier key is held; otherwise nudge the user towards it
+			viewer.current.addHandler("canvas-scroll", (event) => {
+				const original = event.originalEvent as MouseEvent
+				const zoomModifier = original.metaKey || original.ctrlKey
+
+				if (zoomModifier || fullscreenRef.current) return
+
+				event.preventDefaultAction = true
+				event.preventDefault = false
+
+				setScrollHint(true)
+				if (hintTimer.current) clearTimeout(hintTimer.current)
+				hintTimer.current = setTimeout(() => setScrollHint(false), 1500)
+			})
 		})
 
 		function onFullscreenChange() {
@@ -73,6 +103,7 @@ export function ImageViewer({ label, images }: Props) {
 
 		return () => {
 			cancelled = true
+			if (hintTimer.current) clearTimeout(hintTimer.current)
 			document.removeEventListener("fullscreenchange", onFullscreenChange)
 			document.removeEventListener("keydown", onKeyDown)
 			viewer.current?.destroy()
@@ -127,7 +158,7 @@ export function ImageViewer({ label, images }: Props) {
 		<div className="grid gap-3">
 			<div
 				ref={frame}
-				className="frame relative h-[34rem] overflow-hidden rounded-2xl bg-black data-[full]:fixed data-[full]:inset-0 data-[full]:z-[1] data-[full]:h-auto data-[full]:rounded-none"
+				className="relative h-136 overflow-hidden rounded-2xl bg-black data-full:z-1 data-[full]:fixed data-[full]:inset-0 data-[full]:h-auto data-[full]:rounded-none"
 				data-full={fullscreen ? "" : undefined}
 			>
 				<div
@@ -135,6 +166,15 @@ export function ImageViewer({ label, images }: Props) {
 					className="absolute inset-0"
 					aria-label={`Zoomable image of ${label}`}
 				/>
+				<div
+					aria-hidden={!scrollHint}
+					className="pointer-events-none absolute inset-0 grid place-items-center bg-black/40 opacity-0 transition-opacity duration-250 data-[show]:opacity-100"
+					data-show={scrollHint ? "" : undefined}
+				>
+					<p className="rounded-lg bg-black/70 px-4 py-2 text-center text-sm text-white">
+						Use {isMac ? "\u2318" : "Ctrl"} + scroll to zoom the image
+					</p>
+				</div>
 				<div className="absolute top-3 right-3 grid gap-2">
 					<button
 						onClick={() => zoomBy(2)}
@@ -187,14 +227,14 @@ export function ImageViewer({ label, images }: Props) {
 				</div>
 			</div>
 			{images.length > 1 && (
-				<div className="thumbnails flex justify-center gap-3">
+				<div className="flex justify-center gap-3">
 					{images.map((image, index) => (
 						<button
 							key={index}
 							onClick={() => goToPage(index)}
 							aria-label={`View image ${index + 1} of ${images.length}`}
 							aria-current={page === index}
-							className="overflow-hidden rounded-xl border-2 border-transparent p-0 leading-none opacity-60 transition-[opacity,border-color] duration-[250ms] hover:border-accent hover:opacity-100 aria-[current=true]:border-accent aria-[current=true]:opacity-100"
+							className="overflow-hidden rounded-xl border-2 border-transparent p-0 leading-none opacity-60 transition-[opacity,border-color] duration-250 hover:border-accent hover:opacity-100 aria-[current=true]:border-accent aria-[current=true]:opacity-100"
 						>
 							<img src={image.thumbnail} alt="" loading="lazy" className="h-16 w-auto" />
 						</button>

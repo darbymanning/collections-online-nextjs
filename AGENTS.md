@@ -24,3 +24,33 @@ The `*-deck.md` files are Marp slide versions of the same content; prefer the pl
 - **kebab-case** for filenames
 - Next.js file-system conventions (e.g. `page.tsx`, `layout.tsx`, `[id]`) take precedence over filename casing
 - Do not rename third-party imports, external API fields, or Next.js/React framework identifiers
+
+## Control flow
+
+Prefer single-line guard returns when the body is a single statement:
+
+```ts
+if (skills.includes(".agents/skills/nextjs")) return
+
+if (lines.length === 0) return
+```
+
+Avoid unnecessary braces for one-liners:
+
+```ts
+// prefer
+if (foo) return bar()
+
+// not
+if (foo) {
+	return bar()
+}
+```
+
+Use a block when the branch has multiple statements or is non-trivial.
+
+## Linting
+
+After editing code, **always check lint results** on the files you touched (use the IDE linter / `ReadLints` on changed paths). Fix new issues before finishing — do not leave lint errors you introduced.
+
+This project uses **oxlint** with `react-no-manual-memo/no-hook-memo`. React Compiler handles memoization — **do not** use `useCallback`, `useMemo`, or `memo` in components unless a rule explicitly allows it. Prefer plain functions; define effect-only handlers inside `useEffect` when they are only used there.

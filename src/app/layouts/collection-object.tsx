@@ -1,8 +1,10 @@
 import { Button } from "$components/button"
+import { Breadcrumbs } from "$components/breadcrumbs"
 import { List } from "$components/list"
 import { FurtherItems } from "$components/further-items"
 import { ImageViewer } from "$components/image-viewer"
 import { ImageDownloads } from "$components/image-downloads"
+import { museum } from "$library/config"
 import type { Props } from "../item/[id]/[[...slug]]/page"
 import type { FurtherItemsSection } from "$library/further-items"
 import type { BackLink } from "$library/utils"
@@ -63,6 +65,15 @@ export function CollectionObjectLayout({
 }: Props & { backLink: BackLink; furtherItems?: FurtherItemsSection }) {
 	return (
 		<div className="flex flex-col">
+			<Breadcrumbs
+				className="border-b border-b-current/10 px-[5vw] py-3 text-sm text-white"
+				items={[
+					{ label: "Home", href: museum.url.toString() },
+					// backLink.href keeps the visitor's search query when it came through
+					{ label: "Collections Online", href: backLink.href },
+					{ label: title },
+				]}
+			/>
 			{/* Accent header band: the museum colour bleeds up from <body> and the text
 			 * reverses to white. The image viewer below is pulled up so its top half
 			 * overlaps the band — the accent fills the top ~50% of the image before the
@@ -71,7 +82,12 @@ export function CollectionObjectLayout({
 			<header
 				className={`px-[5vw] pt-6 text-white selection:bg-background/20 selection:text-background ${images?.length ? "pb-80" : "pb-12"}`}
 			>
-				<Button href={backLink.href} revealIcon className="back-link text-background">
+				<Button
+					href={backLink.href}
+					revealIcon
+					className="mt-6 text-background"
+					data-testid="back-link"
+				>
 					<svg aria-hidden>
 						<use href="/sprite.svg#arrow-left" />
 					</svg>
@@ -80,9 +96,9 @@ export function CollectionObjectLayout({
 				<div className="mt-8 grid gap-4">
 					<h1 className="text-center text-5xl font-semibold">{title}</h1>
 					<h2 className="text-center text-2xl font-semibold text-current/80">{subTitle}</h2>
-					{onDisplay && <p className="on-display text-center text-sm">On display</p>}
-					<hr className="w-10 mx-auto opacity-20" />
-					<span className="font-mono text-center text-xs text-current/80 tracking-wider">
+					{onDisplay && <p className="text-center text-sm">On display</p>}
+					<hr className="mx-auto w-10 opacity-20" />
+					<span className="text-center font-mono text-xs tracking-wider text-current/80">
 						{objectNumber}
 					</span>
 				</div>
@@ -94,7 +110,7 @@ export function CollectionObjectLayout({
 					<figure className="-mt-68 grid gap-3">
 						<ImageViewer label={title} images={images} />
 						{(imageCopyright || imageRights) && (
-							<figcaption className="text-xs text-pretty grid gap-1 max-w-3xl text-center mx-auto">
+							<figcaption className="mx-auto grid max-w-3xl gap-1 text-center text-xs text-pretty">
 								{imageCopyright
 									?.split("\n")
 									.map((line) => line.trim())
@@ -140,7 +156,7 @@ export function CollectionObjectLayout({
 				) : null}
 				<article className="grid gap-gap pt-gap">
 					<section className="mx-auto grid w-full max-w-wrap-small gap-8">
-						<dl className="grid text-sm grid-cols-[auto_60%] gap-y-1 [&>div]:col-span-full [&>div]:grid [&>div]:grid-cols-subgrid [&>div]:gap-x-4 [&>div]:gap-y-1 [&>div]:rounded-md [&>div]:px-4 [&>div]:py-3 [&_dd]:col-start-2 [&_dd]:min-w-0 [&_dd]:whitespace-pre-line [&_dt]:col-start-1 [&_dt]:self-start [&_dt]:font-bold [&_dt]:text-accent [&>div]:odd:bg-accent/10 [&_a]:animated-underline [&_a]:font-semibold [&_a]:text-accent [&_a]:hover:[--underline-w:100%]">
+						<dl className="grid grid-cols-[auto_60%] gap-y-1 text-sm [&_a]:animated-underline [&_a]:font-semibold [&_a]:text-accent [&_a]:hover:[--underline-w:100%] [&_dd]:col-start-2 [&_dd]:min-w-0 [&_dd]:whitespace-pre-line [&_dt]:col-start-1 [&_dt]:self-start [&_dt]:font-bold [&_dt]:text-accent [&>div]:col-span-full [&>div]:grid [&>div]:grid-cols-subgrid [&>div]:gap-x-4 [&>div]:gap-y-1 [&>div]:rounded-md [&>div]:px-4 [&>div]:py-3 [&>div]:odd:bg-accent/10">
 							{titleRow && (
 								<div>
 									<dt>Title</dt>
@@ -463,7 +479,7 @@ export function CollectionObjectLayout({
 							)}
 						</dl>
 						{searchTerms && (
-							<p className="text-sm text-pretty mt-10">
+							<p className="mt-10 text-sm text-pretty">
 								<span>Search terms: </span>
 								{searchTerms.map((term, index) => (
 									<span key={term.label}>

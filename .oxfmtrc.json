@@ -3,5 +3,9 @@
 	"ignorePatterns": ["package.json"],
 	"semi": false,
 	"tabWidth": 3,
-	"useTabs": true
+	"useTabs": true,
+	"sortTailwindcss": {
+		"stylesheet": "src/app/app.css",
+		"functions": ["cn"]
+	}
 }

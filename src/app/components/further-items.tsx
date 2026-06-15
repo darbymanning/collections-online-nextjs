@@ -50,7 +50,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 		setFailed((ids) => (ids.has(id) ? ids : new Set(ids).add(id)))
 
 	return (
-		<div className="grid gap-6">
+		<div className="grid gap-6" data-testid="further-items">
 			{/* heading left, more-items button right (cf. ox.ac.uk's "Discover more") */}
 			<div className="flex flex-wrap items-center justify-between gap-4">
 				<h2 className="text-2xl font-semibold text-accent">{title}</h2>
@@ -67,7 +67,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 			 * run off both sides mid-scroll; the leading `pl-[5vw]` gives the first
 			 * card its gutter, and the embla `align` keeps every rested card inset to
 			 * match it (on every breakpoint) */}
-			<div className="further-items mx-[-5vw] overflow-hidden" ref={emblaRef}>
+			<div className="mx-[-5vw] overflow-hidden" ref={emblaRef}>
 				<ul className="flex touch-pan-y pl-[5vw]">
 					{items.map((item, index) => {
 						const hasImage = item.image && !failed.has(item.id)
@@ -88,7 +88,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 											alt=""
 											loading="lazy"
 											decoding="async"
-											className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+											className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
 											// images that 404 before hydration never fire onError
 											ref={(img) => {
 												if (img?.complete && img.naturalWidth === 0) fail(item.id)
@@ -97,7 +97,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 										/>
 									) : (
 										// no-image fallback: elegant accent card with a muted icon
-										<span className="grid h-full w-full place-items-center bg-accent text-[3rem] text-white/40">
+										<span className="grid size-full place-items-center bg-accent text-[3rem] text-white/40">
 											<ImageOff strokeWidth={1} aria-hidden />
 										</span>
 									)}
@@ -123,7 +123,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 															</span>
 														)}
 														{item.objectNumber && (
-															<span className="mt-1 block font-mono font-normal text-xs tracking-wider text-white/65">
+															<span className="mt-1 block font-mono text-xs font-normal tracking-wider text-white/65">
 																{item.objectNumber}
 															</span>
 														)}

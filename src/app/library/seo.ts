@@ -190,11 +190,14 @@ export function collectionObjectJsonLd(props: Props, canonical: string): JsonLd 
 		url: museum.url.toString(),
 	})
 
+	// Mirrors the visible header trail (Home › Collections Online › item). The
+	// structured data points at the stable Collections Online landing page rather
+	// than a visitor's search query, which the on-page link may carry instead.
 	const crumbs = [
-		{ name: museum.name, item: museum.urls.self.toString() },
-		props.collectionType ? { name: props.collectionType } : undefined,
+		{ name: "Home", item: museum.url.toString() },
+		{ name: "Collections Online", item: museum.urls.legacy.collectionsOnline.toString() },
 		{ name: props.title, item: canonical },
-	].filter((crumb): crumb is { name: string; item?: string } => Boolean(crumb))
+	]
 
 	const breadcrumb = {
 		"@type": "BreadcrumbList",

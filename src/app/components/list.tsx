@@ -14,10 +14,10 @@ export function List({ links, association, prefix }: Props) {
 	const last = links[links.length - 1]
 
 	return (
-		<div className="group" data-open={open ? "" : undefined}>
-			<div className="row flex items-start justify-between gap-2">
+		<div className="group" data-open={open ? "" : undefined} data-testid="list">
+			<div className="flex items-start justify-between gap-2">
 				<div className="min-w-0 flex-1">
-					<div className="closed grid grid-rows-[1fr] [transition:grid-template-rows_0.3s_ease] group-data-[open]:grid-rows-[0fr]">
+					<div className="grid grid-rows-[1fr] [transition:grid-template-rows_0.3s_ease] group-data-open:grid-rows-[0fr]">
 						<div className="min-h-0 overflow-hidden">
 							{prefix ? `${prefix} ` : ""}
 							<a href={last.href}>{last.label}</a>
@@ -25,8 +25,9 @@ export function List({ links, association, prefix }: Props) {
 						</div>
 					</div>
 					<div
-						className="opened grid grid-rows-[0fr] [transition:grid-template-rows_0.3s_ease] group-data-[open]:grid-rows-[1fr]"
+						className="grid grid-rows-[0fr] [transition:grid-template-rows_0.3s_ease] group-data-open:grid-rows-[1fr]"
 						inert={open ? false : true}
+						data-testid="list-expanded"
 					>
 						<div className="min-h-0 overflow-hidden">
 							{prefix ? `${prefix} ` : ""}
@@ -48,7 +49,7 @@ export function List({ links, association, prefix }: Props) {
 						className="mt-[0.1rem] shrink-0 p-1"
 					>
 						<span
-							className="relative block h-[14px] w-[14px] [transition:rotate_0.25s_ease] group-data-[open]:rotate-90"
+							className="relative block size-3.5 [transition:rotate_0.25s_ease] group-data-[open]:rotate-90"
 							aria-hidden="true"
 						>
 							<span className="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 rounded-[1px] bg-current [transition:all_0.25s_ease] group-data-[open]:scale-0" />
