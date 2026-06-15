@@ -6,6 +6,7 @@
 export const museums = {
 	ash: {
 		id: "ash-object-312375",
+		indexable: true,
 		slug: "tin-glazed-tile-in-italian-style",
 		h1: "Tin-glazed tile in Italian style",
 		pageTitle: "Tin-glazed tile in Italian style",
@@ -30,6 +31,7 @@ export const museums = {
 	},
 	oum: {
 		id: "oum-catalogue-36916",
+		indexable: true,
 		slug: "topaz-single-colourless-crystal",
 		h1: "Topaz (single colourless crystal)",
 		pageTitle: "Topaz (single colourless crystal)",
@@ -57,6 +59,7 @@ export const museums = {
 	// the page title (via generateMetadata) and the rendered subtitle
 	prm: {
 		id: "prm-object-79439",
+		indexable: false,
 		slug: "headdress-mask-representing-abam-a-predatory-fish",
 		h1: "1938.15.69",
 		pageTitle: "Headdress mask representing Abam, a predatory fish.",
@@ -83,6 +86,7 @@ export const museums = {
 	},
 	hsm: {
 		id: "hsm-catalogue-29715",
+		indexable: true,
 		slug: "two-cardboard-boxes-for-lab-snacks-issued-by-thorlabs-new-jersey-usa-early-21st-century",
 		h1: "Two Cardboard Boxes for 'Lab Snacks', Issued by Thorlabs, New Jersey, USA, Early 21st Century",
 		pageTitle:

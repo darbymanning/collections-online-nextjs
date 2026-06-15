@@ -115,11 +115,10 @@ onlyFor("ash", "prm")("furtherItemsSection (ash/prm)", () => {
 })
 
 onlyFor("oum", "hsm")("furtherItemsSection (oum/hsm)", () => {
-	test("uses the legacy related-items heading, explanation and more link", () => {
+	test("uses the legacy related-items heading and more link", () => {
 		const section = furtherItemsSection(object, [object])
 
 		expect(section?.title).toBe("Related Items")
-		expect(section?.description).toStartWith("These are some Items from our collections")
 		expect(section?.more).toEqual({
 			label: "More related items",
 			href: `${museum.urls.legacy.collectionsOnline}#/related-to/${object.id}/catalogue`,
@@ -130,6 +129,15 @@ onlyFor("oum", "hsm")("furtherItemsSection (oum/hsm)", () => {
 describe("furtherItemsSection (all museums)", () => {
 	test("returns undefined without items", () => {
 		expect(furtherItemsSection(object, [])).toBeUndefined()
+	})
+
+	test("titles narrative pages 'Find out more' with cards only", () => {
+		const narrative = partial({ ...object, type: "narrative" })
+
+		expect(furtherItemsSection(narrative, [object])).toEqual({
+			title: "Find out more",
+			items: furtherItems([object]),
+		})
 	})
 })
 

@@ -8,33 +8,32 @@ type Props = {
 	prefix?: string
 }
 
-// styled-jsx's class injection is dropped by React Compiler memoization,
-// so this component must opt out of it
 export function List({ links, association, prefix }: Props) {
-	"use no memo"
-
 	const [open, setOpen] = useState(false)
 
 	const last = links[links.length - 1]
 
 	return (
-		<div data-open={open ? "" : undefined}>
-			<div className="row">
-				<div className="views">
-					<div className="view closed">
-						<div>
+		<div className="group" data-open={open ? "" : undefined}>
+			<div className="row flex items-start justify-between gap-2">
+				<div className="min-w-0 flex-1">
+					<div className="closed grid grid-rows-[1fr] [transition:grid-template-rows_0.3s_ease] group-data-[open]:grid-rows-[0fr]">
+						<div className="min-h-0 overflow-hidden">
 							{prefix ? `${prefix} ` : ""}
 							<a href={last.href}>{last.label}</a>
 							{association ? ` (${association})` : ""}
 						</div>
 					</div>
-					<div className="view opened" inert={open ? false : true}>
-						<div>
+					<div
+						className="opened grid grid-rows-[0fr] [transition:grid-template-rows_0.3s_ease] group-data-[open]:grid-rows-[1fr]"
+						inert={open ? false : true}
+					>
+						<div className="min-h-0 overflow-hidden">
 							{prefix ? `${prefix} ` : ""}
 							{links.map((link, index) => (
 								<span key={index}>
 									<a href={link.href}>{link.label}</a>
-									{index < links.length - 1 && <span className="chevron"> &gt; </span>}
+									{index < links.length - 1 && <span className="opacity-50"> &gt; </span>}
 								</span>
 							))}
 							{association ? ` (${association})` : ""}
@@ -46,104 +45,18 @@ export function List({ links, association, prefix }: Props) {
 						onClick={() => setOpen(!open)}
 						aria-expanded={open}
 						aria-label={open ? "Collapse hierarchy" : "Expand hierarchy"}
+						className="mt-[0.1rem] shrink-0 p-1"
 					>
-						<span className="icon" aria-hidden="true">
-							<span className="bar-h" />
-							<span className="bar-v" />
+						<span
+							className="relative block h-[14px] w-[14px] [transition:rotate_0.25s_ease] group-data-[open]:rotate-90"
+							aria-hidden="true"
+						>
+							<span className="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 rounded-[1px] bg-current [transition:all_0.25s_ease] group-data-[open]:scale-0" />
+							<span className="absolute top-0 left-1/2 h-full w-0.5 -translate-x-1/2 rounded-[1px] bg-current" />
 						</span>
 					</button>
 				)}
 			</div>
-			<style jsx>{`
-				.row {
-					display: flex;
-					align-items: flex-start;
-					justify-content: space-between;
-					gap: 0.5rem;
-				}
-
-				.views {
-					flex: 1;
-					min-width: 0;
-				}
-
-				.view {
-					display: grid;
-					transition: grid-template-rows 0.3s ease;
-				}
-
-				.view > div {
-					overflow: hidden;
-					min-height: 0;
-				}
-
-				.closed {
-					grid-template-rows: 1fr;
-				}
-
-				[data-open] .closed {
-					grid-template-rows: 0fr;
-				}
-
-				.opened {
-					grid-template-rows: 0fr;
-				}
-
-				[data-open] .opened {
-					grid-template-rows: 1fr;
-				}
-
-				.chevron {
-					opacity: 0.5;
-				}
-
-				button {
-					cursor: pointer;
-					flex-shrink: 0;
-					padding: 0.25rem;
-					margin-top: 0.1rem;
-				}
-
-				.icon {
-					position: relative;
-					display: block;
-					width: 14px;
-					height: 14px;
-					transition: rotate 0.25s ease;
-				}
-
-				.bar-h,
-				.bar-v {
-					position: absolute;
-					background: currentColor;
-					border-radius: 1px;
-				}
-
-				.bar-h {
-					top: 50%;
-					left: 0;
-					width: 100%;
-					height: 2px;
-					translate: 0 -50%;
-					transition: all 0.25s ease;
-				}
-
-				.bar-v {
-					left: 50%;
-					top: 0;
-					width: 2px;
-					height: 100%;
-					translate: -50% 0;
-				}
-
-				[data-open] .icon {
-					rotate: 90deg;
-				}
-
-				[data-open] .bar-h {
-					scale: 0;
-				}
-			`}</style>
 		</div>
 	)
 }

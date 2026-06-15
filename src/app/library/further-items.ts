@@ -143,28 +143,27 @@ export type FurtherItem = {
 
 export type FurtherItemsSection = {
 	title: string
-	description?: string
 	more?: { label: string; href: string }
 	items: Array<FurtherItem>
 }
 
-/** The related-items section content, mirroring the legacy headings: oum/hsm
- * title theirs "Related Items" with an explanation and a "More related items"
- * link into the legacy related-results page; ash/prm use "Further items to
- * explore" with cards only. */
+/** The related-items section content, mirroring the legacy headings: narrative
+ * pages use "Find out more"; oum/hsm catalogue pages title theirs "Related Items"
+ * with a "More related items" link into the legacy related-results page; ash/prm
+ * use "Further items to explore". */
 export function furtherItemsSection(
 	object: CollectionObject,
 	items: Array<CollectionObject>,
 ): FurtherItemsSection | undefined {
 	if (!items.length) return undefined
 
+	// Narrative pages list their related items under the legacy "Find out more"
+	// heading — cards only, no more-items link.
+	if (object.type === "narrative") return { title: "Find out more", items: furtherItems(items) }
+
 	if (museum.ref === "oum" || museum.ref === "hsm")
 		return {
 			title: "Related Items",
-			description:
-				"These are some Items from our collections that share some of the same features as " +
-				"the object in the record you are viewing. They may have the same name, a similar " +
-				"description or are from the same place.",
 			more: {
 				label: "More related items",
 				href: `${museum.urls.legacy.collectionsOnline}#/related-to/${object.id}/catalogue`,

@@ -153,3 +153,43 @@ onlyFor("oum")("api.getFurtherItems (oum)", () => {
 		expect(await api.getFurtherItems(partial({ id: "oum-catalogue-0" }))).toEqual([slim] as never)
 	})
 })
+
+onlyFor("oum")("api.getFurtherItems (narrative)", () => {
+	const full = (id: string) => ({ id, multimedia: [{ identifier: `${id}.jpg` }] })
+
+	test("refetches the curated relatedObjects, deduplicating and dropping the page itself", async () => {
+		const fetchSpy = mockFetch(json(full("oum-catalogue-1")), json(full("oum-catalogue-2")))
+
+		const items = await api.getFurtherItems(
+			partial({
+				id: "oum-narrative-0",
+				type: "narrative",
+				relatedObjects: [
+					{ id: "oum-catalogue-1" },
+					{ id: "oum-catalogue-1" },
+					{ id: "oum-narrative-0" },
+					{ id: "oum-catalogue-2" },
+				],
+			}),
+		)
+
+		expect(items.map((item) => item.id)).toEqual(["oum-catalogue-1", "oum-catalogue-2"])
+		expect(String(fetchSpy.mock.calls[0]?.[0])).toBe(
+			"https://prd-online.glamdigital.io/v2/item/oum-catalogue-1/full",
+		)
+	})
+
+	test("keeps the partial record when the full fetch fails", async () => {
+		mockFetch(json(null, 500))
+
+		const items = await api.getFurtherItems(
+			partial({
+				id: "oum-narrative-0",
+				type: "narrative",
+				relatedObjects: [{ id: "oum-catalogue-1" }],
+			}),
+		)
+
+		expect(items).toEqual([{ id: "oum-catalogue-1" }] as never)
+	})
+})

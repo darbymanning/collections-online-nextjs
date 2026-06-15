@@ -1,4 +1,12 @@
 import { museum } from "./config"
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+/** Merge conditional class names, with later Tailwind utilities winning over
+ * earlier conflicting ones (the shadcn `cn` helper). */
+export function cn(...inputs: Array<ClassValue>): string {
+	return twMerge(clsx(inputs))
+}
 
 export const list = {
 	readable(list: Array<string>): string {

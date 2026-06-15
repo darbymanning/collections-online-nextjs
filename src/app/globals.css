@@ -1,86 +1,99 @@
-@import "kitto/unify";
+@import "tailwindcss";
 
-:root {
+@theme {
 	/* Colors */
-	--c-black: #000;
-	--c-white: #fff;
-	--c-gray-100: #f2f2f2;
-	--c-gray-200: #ddd;
-	--c-gray-600: #444;
+	--color-white: #fff;
+	--color-black: #000;
+	--color-gray-100: #f2f2f2;
+	--color-gray-200: #ddd;
+	--color-gray-600: #444;
 
-	--c-background: var(--c-white);
-	--c-foreground: var(--c-gray-600);
-	--c-border: var(--c-gray-200);
+	--color-background: var(--color-white);
+	--color-foreground: var(--color-black);
+	--color-border: var(--color-gray-200);
+	/* per-museum brand accent — overridden by the museum class on <html> below */
+	--color-accent: var(--color-foreground);
 
-	/* Radius */
-	--r-x: calc(infinity * 1px);
-	--r-24: 24px;
-	--r-20: 20px;
-	--r-14: 14px;
-	--r-10: 10px;
-	--r-6: 6px;
+	/* Wrap widths — kept deliberately; preferred over Tailwind's opinionated
+	 * `container`. Exposed as max-w-wrap / max-w-wrap-small. */
+	--container-wrap: 105rem;
+	--container-wrap-small: 50rem;
 
-	/* Sizes */
-	--s-wrap: 105rem;
-	--s-wrap-small: 50rem;
-	--s-4: 0.25rem;
-	--s-8: 0.5rem;
-	--s-12: 0.75rem;
-	--s-16: 1rem;
-	--s-32: 2rem;
-	--s-48: 3rem;
+	/* DM Sans (via next/font) as the default sans family */
+	--font-sans: var(--f-dm-sans), sans-serif;
 
-	/* Typography */
-	--f-family: var(--f-montserrat), sans-serif;
-	--f-h1: clamp(2rem, 5vw + 1rem, 3rem) / 1.1 var(--f-family);
-	--f-h2: clamp(1.8rem, 5vw + 1rem, 2.4rem) / 1.3 var(--f-family);
-	--f-h3: clamp(1.4rem, 5vw + 1rem, 1.8rem) / 1.3 var(--f-family);
-	--f-h6: clamp(1rem, 5vw + 1rem, 1.2rem) / 1.3 var(--f-family);
-	--f-caption: clamp(0.75rem, 5vw + 1rem, 1rem) / 1.3 var(--f-family);
+	/* Typography — our scale overrides Tailwind's named text sizes (so we use
+	 * text-sm/base/lg/2xl/4xl/5xl, not custom tokens). Every size scales fluidly
+	 * from a mobile floor (at 320px) to a desktop ceiling (at 1920px) in our clamp
+	 * idiom; floors/ceilings bracket the old desktop sizes. Sizes not listed keep
+	 * Tailwind's defaults. text-base is the body prose size (applied to <body> in
+	 * @layer base); text-sm←caption, text-lg←h6, text-2xl←h3, text-4xl←h2,
+	 * text-5xl←h1. */
+	--text-sm: clamp(0.875rem, 0.825rem + 0.25vw, 1.125rem);
+	--text-sm--line-height: 1.3;
+	--text-base: clamp(1rem, 0.95rem + 0.25vw, 1.25rem);
+	--text-base--line-height: 1.5;
+	--text-lg: clamp(1.0625rem, 1.0125rem + 0.25vw, 1.3125rem);
+	--text-lg--line-height: 1.3;
+	--text-2xl: clamp(1.5rem, 1.4125rem + 0.4375vw, 1.9375rem);
+	--text-2xl--line-height: 1.3;
+	--text-4xl: clamp(1.875rem, 1.725rem + 0.75vw, 2.625rem);
+	--text-4xl--line-height: 1.3;
+	--text-5xl: clamp(2rem, 1.725rem + 1.375vw, 3.375rem);
+	--text-5xl--line-height: 1.1;
 }
 
-body {
-	display: flex;
-	flex-direction: column;
-	color: var(--c-foreground);
-	background: var(--c-background);
-	font-family: var(--f-family);
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	padding: 5vw;
+/* Per-museum brand accents. The active museum's key is set as a class on <html>
+ * (see layout.tsx), so exactly one of these applies per deployment. Tweak the
+ * hexes here to refine each museum's accent. */
+.ash {
+	--color-accent: #0f5c8c;
 }
 
-* {
-	box-sizing: border-box;
-	padding: 0;
-	margin: 0;
+.oum {
+	--color-accent: #3d506c;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	all: unset;
+.prm {
+	--color-accent: #3c3c3b;
 }
 
-a {
-	text-decoration: none;
-	color: inherit;
+.hsm {
+	--color-accent: #0e6b75;
 }
 
-button,
-[type="button"] {
-	cursor: pointer;
-}
+@layer base {
+	body {
+		display: flex;
+		flex-direction: column;
+		min-height: 100dvh;
+		/* prose (details rows, descriptions) inherits the body base size */
+		font-size: var(--text-base);
+		color: var(--color-foreground);
+		/* the museum accent fills the page behind the white content card (the card
+		 * supplies its own bg + the 5vw inset that used to live here), so the header
+		 * band reads as accent and over-scrolling past the top reveals the colour —
+		 * an app-like edge rather than a white gutter */
+		background: var(--color-accent);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
 
-ul,
-ol {
-	margin-inline: 1em;
-}
+	/* lucide icons scale to the current font-size */
+	svg {
+		width: 1em;
+		height: 1em;
+	}
 
-svg {
-	width: 1em;
-	height: 1em;
+	/* Tailwind v4 defaults buttons to cursor:default — keep the pointer */
+	button {
+		cursor: pointer;
+	}
+
+	/* content links (search links in the details/description) underline; the
+	 * back-link and teaser cards opt out with `no-underline` */
+	article a {
+		font-weight: 500;
+		text-decoration: underline;
+	}
 }

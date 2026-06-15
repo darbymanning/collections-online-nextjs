@@ -17,7 +17,13 @@ One deployment per museum, selected with the `NEXT_PUBLIC_MUSEUM` environment va
 | `prm`                | Pitt Rivers Museum                          |
 | `hsm`                | History of Science Museum                   |
 
-Per-museum URLs and image sources are configured in [src/app/library/config.ts](src/app/library/config.ts).
+Per-museum URLs and image sources are configured in [src/app/library/config.ts](src/app/library/config.ts). Each museum also declares whether its pages may be indexed (`indexable`) and the schema.org type used for structured data (`schema`); both are required, so adding a museum forces an explicit choice. Pitt Rivers set `indexable: false` — their pages stay live for direct visitors but emit `noindex` and are kept out of search and AI answers.
+
+## SEO, AGO, and scrapers
+
+- **`robots.txt`** ([src/app/robots.ts](src/app/robots.ts)) explicitly welcomes the AI answer engines that cite and link back (ChatGPT, Claude, Perplexity, Google-Extended, …), blocks SEO-intel and content-scraping bots, and lets ordinary search engines crawl. The allow/block lists are plain data in [src/app/library/crawlers.ts](src/app/library/crawlers.ts).
+- **Indexing policy** is driven by each museum's `indexable` flag: the site-wide `robots` metadata, the per-response `X-Robots-Tag` header ([src/proxy.ts](src/proxy.ts)), and `robots.txt` all read from it. Unpublished records get `noindex` regardless.
+- **Rich metadata and structured data** — every item page emits a canonical URL, description, Open Graph/Twitter tags, and schema.org JSON-LD (the object, its holding museum, and a breadcrumb trail) for rich results and AI answers. See [src/app/library/seo.ts](src/app/library/seo.ts).
 
 ## Getting started
 

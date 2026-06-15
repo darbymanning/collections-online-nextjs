@@ -67,7 +67,11 @@ describe("props (all museums)", () => {
 
 describe("generateMetadata", () => {
 	test("titles the page and points the canonical at the slugged URL", async () => {
-		spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(object)))
+		// generateMetadata fetches the record and (for DAMs museums) its manifest,
+		// so hand back a fresh Response per call rather than one shared body
+		spyOn(globalThis, "fetch").mockImplementation(() =>
+			Promise.resolve(new Response(JSON.stringify(object))),
+		)
 
 		const metadata = await generateMetadata({ params: Promise.resolve({ id: object.id }) })
 

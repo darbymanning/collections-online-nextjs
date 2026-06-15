@@ -16,11 +16,11 @@ type Props = {
 	images: Array<Image>
 }
 
-// styled-jsx's class injection is dropped by React Compiler memoization,
-// so this component must opt out of it
-export function ImageViewer({ label, images }: Props) {
-	"use no memo"
+// rounded white control buttons floating over the viewer
+const controlClass =
+	"grid h-8 w-8 place-items-center rounded-full bg-white text-base/none font-bold text-gray-600 opacity-85 shadow-md ring-1 ring-black/5 transition-opacity duration-[250ms] hover:opacity-100"
 
+export function ImageViewer({ label, images }: Props) {
 	const frame = useRef<HTMLDivElement>(null)
 	const element = useRef<HTMLDivElement>(null)
 	const viewer = useRef<OpenSeadragon.Viewer>(null)
@@ -124,126 +124,83 @@ export function ImageViewer({ label, images }: Props) {
 	}
 
 	return (
-		<div className="root">
-			<div ref={frame} className="frame" data-full={fullscreen ? "" : undefined}>
-				<div ref={element} className="viewer" aria-label={`Zoomable image of ${label}`} />
-				<div className="controls">
-					<button onClick={() => zoomBy(2)} aria-label="Zoom in" title="Zoom in">
+		<div className="grid gap-3">
+			<div
+				ref={frame}
+				className="frame relative h-[34rem] overflow-hidden rounded-2xl bg-black data-[full]:fixed data-[full]:inset-0 data-[full]:z-[1] data-[full]:h-auto data-[full]:rounded-none"
+				data-full={fullscreen ? "" : undefined}
+			>
+				<div
+					ref={element}
+					className="absolute inset-0"
+					aria-label={`Zoomable image of ${label}`}
+				/>
+				<div className="absolute top-3 right-3 grid gap-2">
+					<button
+						onClick={() => zoomBy(2)}
+						aria-label="Zoom in"
+						title="Zoom in"
+						className={controlClass}
+					>
 						+
 					</button>
-					<button onClick={() => zoomBy(0.5)} aria-label="Zoom out" title="Zoom out">
+					<button
+						onClick={() => zoomBy(0.5)}
+						aria-label="Zoom out"
+						title="Zoom out"
+						className={controlClass}
+					>
 						&minus;
 					</button>
-					<button onClick={() => rotateBy(-90)} aria-label="Rotate left" title="Rotate left">
+					<button
+						onClick={() => rotateBy(-90)}
+						aria-label="Rotate left"
+						title="Rotate left"
+						className={controlClass}
+					>
 						&#x21ba;
 					</button>
-					<button onClick={() => rotateBy(90)} aria-label="Rotate right" title="Rotate right">
+					<button
+						onClick={() => rotateBy(90)}
+						aria-label="Rotate right"
+						title="Rotate right"
+						className={controlClass}
+					>
 						&#x21bb;
 					</button>
-					<button onClick={reset} aria-label="Reset view" title="Reset view">
+					<button
+						onClick={reset}
+						aria-label="Reset view"
+						title="Reset view"
+						className={controlClass}
+					>
 						&#x2302;
 					</button>
 					<button
 						onClick={toggleFullscreen}
 						aria-label={fullscreen ? "Exit full screen" : "Enter full screen"}
 						title={fullscreen ? "Exit full screen" : "Enter full screen"}
+						className={controlClass}
 					>
 						{fullscreen ? <>&#x2922;</> : <>&#x2921;</>}
 					</button>
 				</div>
 			</div>
 			{images.length > 1 && (
-				<div className="thumbnails">
+				<div className="thumbnails flex justify-center gap-3">
 					{images.map((image, index) => (
 						<button
 							key={index}
 							onClick={() => goToPage(index)}
 							aria-label={`View image ${index + 1} of ${images.length}`}
 							aria-current={page === index}
+							className="overflow-hidden rounded-xl border-2 border-transparent p-0 leading-none opacity-60 transition-[opacity,border-color] duration-[250ms] hover:border-accent hover:opacity-100 aria-[current=true]:border-accent aria-[current=true]:opacity-100"
 						>
-							<img src={image.thumbnail} alt="" loading="lazy" />
+							<img src={image.thumbnail} alt="" loading="lazy" className="h-16 w-auto" />
 						</button>
 					))}
 				</div>
 			)}
-			<style jsx>{`
-				.root {
-					display: grid;
-					gap: 0.75rem;
-				}
-
-				.frame {
-					position: relative;
-					height: 34rem;
-					background: var(--c-black);
-				}
-
-				.frame[data-full] {
-					position: fixed;
-					inset: 0;
-					height: auto;
-					z-index: 1;
-				}
-
-				.viewer {
-					position: absolute;
-					inset: 0;
-				}
-
-				.controls {
-					position: absolute;
-					top: 0.75rem;
-					right: 0.75rem;
-					display: grid;
-					gap: 0.5rem;
-				}
-
-				.controls button {
-					cursor: pointer;
-					width: 2rem;
-					height: 2rem;
-					display: grid;
-					place-items: center;
-					font: 700 1rem/1 var(--f-family);
-					color: var(--c-gray);
-					background: var(--c-white);
-					border-radius: var(--r-x);
-					opacity: 0.85;
-					transition: opacity 0.25s ease;
-				}
-
-				.controls button:hover {
-					opacity: 1;
-				}
-
-				.thumbnails {
-					display: flex;
-					justify-content: center;
-					gap: 0.5rem;
-				}
-
-				.thumbnails button {
-					cursor: pointer;
-					padding: 0;
-					line-height: 0;
-					border: 2px solid transparent;
-					opacity: 0.6;
-					transition:
-						opacity 0.25s ease,
-						border-color 0.25s ease;
-				}
-
-				.thumbnails button[aria-current="true"],
-				.thumbnails button:hover {
-					opacity: 1;
-					border-color: var(--c-gray);
-				}
-
-				.thumbnails img {
-					height: 4rem;
-					width: auto;
-				}
-			`}</style>
 		</div>
 	)
 }

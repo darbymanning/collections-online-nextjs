@@ -39,11 +39,32 @@ export const api = {
 
 		return response.json()
 	},
-	/** Records for the related-items section: random similarity matches for
-	 * ash/prm, relevance-ranked more-like-this results for oum/hsm. Queries can
-	 * return overlapping records — or the object itself — so results are
-	 * deduplicated. */
+	/** Records for the related-items section: a curated list for narrative pages,
+	 * random similarity matches for ash/prm, relevance-ranked more-like-this
+	 * results for oum/hsm. Queries can return overlapping records — or the object
+	 * itself — so results are deduplicated. */
 	async getFurtherItems(object: CollectionObject): Promise<Array<CollectionObject>> {
+		// Narrative records carry their related items directly (the legacy "Find
+		// out more" section), so skip the similarity queries. The entries are
+		// partial — no titles — so refetch each full record for the teaser cards.
+		if (object.type === "narrative") {
+			const related = (object.relatedObjects ?? []).filter(
+				(item, index, items) =>
+					item.id !== object.id && items.findIndex((other) => other.id === item.id) === index,
+			)
+
+			return Promise.all(
+				related.map(async (item) => {
+					try {
+						return await api.getCollectionObject(item.id)
+					} catch {
+						// keep the partial record so a failed fetch just yields a sparser card
+						return item as CollectionObject
+					}
+				}),
+			)
+		}
+
 		const responses = await Promise.all(
 			furtherItemsQueries(object).map(async (url) => {
 				try {

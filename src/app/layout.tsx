@@ -1,19 +1,23 @@
 import type { Metadata } from "next"
-import { Montserrat } from "next/font/google"
-import StyledJsxRegistry from "./registry"
+import { DM_Sans } from "next/font/google"
 import "./globals.css"
 import { museum } from "$library/config"
+import { openGraphDefaults, robotsMetadata } from "$library/seo"
 
-const montserrat = Montserrat({
+const dmSans = DM_Sans({
 	subsets: ["latin"],
-	variable: "--f-montserrat",
+	variable: "--f-dm-sans",
 })
 
 export const metadata: Metadata = {
 	// per-museum deployment domain; relative canonical/og URLs resolve against this
 	metadataBase: museum.urls.self,
-	title: "Collections Online",
-	description: "POC",
+	title: `${museum.name} — Collections Online`,
+	description: `Explore objects from the ${museum.name} collection.`,
+	applicationName: `${museum.name} Collections Online`,
+	// site-wide indexing policy; opted-out museums emit noindex everywhere
+	robots: robotsMetadata,
+	openGraph: { ...openGraphDefaults, url: museum.urls.self },
 }
 
 export default function RootLayout({
@@ -22,10 +26,8 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang="en-GB" className={montserrat.variable}>
-			<body>
-				<StyledJsxRegistry>{children}</StyledJsxRegistry>
-			</body>
+		<html lang="en-GB" className={`${dmSans.variable} ${museum.ref}`}>
+			<body>{children}</body>
 		</html>
 	)
 }

@@ -33,6 +33,10 @@ export type CollectionObject = {
 	hasCulturalWarning?: boolean
 	dimensionsVirtualField?: string
 	creditLine?: string
+	/** Narrative records carry a curated list of related catalogue objects — the
+	 * legacy "Find out more" section. The entries are partial (id, irn, media,
+	 * but no titles), so teasers refetch the full records. */
+	relatedObjects?: Array<{ id: CollectionObject["id"] }>
 	multimedia: Array<{
 		identifier: string
 		mimeType: string

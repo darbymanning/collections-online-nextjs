@@ -1,8 +1,10 @@
+import { cache } from "react"
 import type { Metadata } from "next"
 import { api } from "$library/api"
 import { furtherItemsSection } from "$library/further-items"
 import { slugify } from "$library/slug"
 import { derivative, legacyBackLink } from "$library/utils"
+import { collectionObjectJsonLd, imageUrls, metaDescription, openGraphDefaults } from "$library/seo"
 import { CollectionObjectLayout } from "$layouts/collection-object"
 import type { CollectionObject, IIIFManifest } from "$library/types"
 import { museum } from "$library/config"
@@ -18,22 +20,59 @@ type Params = {
 	}>
 }
 
+// generateMetadata and the page both need the record (and its manifest), so
+// memoize per request — React dedupes by argument, and the cached record gives
+// getDamsIiif a stable reference, so each upstream call happens at most once.
+const loadObject = cache((id: CollectionObject["id"]) => api.getCollectionObject(id))
+const loadIiif = cache((object: CollectionObject) => api.getDamsIiif(object))
+
+/** The slug-worthy title: the record title, unless that's just the object
+ * number, in which case the subtitle reads better. */
+function pageTitle(object: CollectionObject): string {
+	return object.recordTitle !== object.objectNumberSorting1
+		? object.recordTitle
+		: object.recordSubtitle
+}
+
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
 	const { id } = await params
-	const object = await api.getCollectionObject(id)
+	const object = await loadObject(id)
+	const iiif = await loadIiif(object)
 
-	// If the title is the same as the object number, use the record subtitle instead
-	const title =
-		object.recordTitle !== object.objectNumberSorting1
-			? object.recordTitle
-			: object.recordSubtitle
+	const title = pageTitle(object)
+	const path = `/item/${id}/${slugify(title)}`
+	const canonical = new URL(path, museum.urls.self).toString()
 
-	return {
+	const data = props(object, iiif)
+	const description = metaDescription(data)
+	const images = imageUrls(data).slice(0, 4)
+
+	const metadata: Metadata = {
 		title,
-		alternates: {
-			canonical: `/item/${id}/${slugify(title)}`,
+		description,
+		alternates: { canonical: path },
+		openGraph: {
+			...openGraphDefaults,
+			title,
+			description,
+			url: canonical,
+			images: images.map((url) => ({ url })),
+		},
+		twitter: {
+			card: images.length ? "summary_large_image" : "summary",
+			title,
+			description,
+			images,
 		},
 	}
+
+	// A record the museum hasn't published shouldn't surface in search even on an
+	// indexable museum. Otherwise leave `robots` unset so the site-wide policy
+	// from the layout applies — setting it to `undefined` here would instead clear
+	// that inherited policy when Next merges the two metadata objects.
+	if (object.isPublished === "No") metadata.robots = { index: false, follow: false }
+
+	return metadata
 }
 
 function links(str: string, filter: string) {
@@ -207,7 +246,7 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 		onDisplay:
 			(object.onDisplay ?? object.currentLocationDisplay)?.toLowerCase() === "on display",
 		images:
-			iiif?.items.flatMap((canvas) => {
+			iiif?.items?.flatMap((canvas) => {
 				const service = canvas.items[0]?.items[0]?.body.service[0]?.id
 				return service ? [{ service, thumbnail: canvas.thumbnail?.[0]?.id }] : []
 			}) ?? multimediaImages(object),
@@ -308,17 +347,31 @@ export type Props = ReturnType<typeof props>
 export default async function Page({ params, searchParams }: Params) {
 	const { id } = await params
 	const { return: returnUrl } = await searchParams
-	const object = await api.getCollectionObject(id)
-	const [iiif, relatedItems] = await Promise.all([
-		api.getDamsIiif(object),
-		api.getFurtherItems(object),
-	])
+	const object = await loadObject(id)
+	const [iiif, relatedItems] = await Promise.all([loadIiif(object), api.getFurtherItems(object)])
+
+	const data = props(object, iiif)
+	const canonical = new URL(
+		`/item/${id}/${slugify(pageTitle(object))}`,
+		museum.urls.self,
+	).toString()
+	const jsonLd = collectionObjectJsonLd(data, canonical)
 
 	return (
-		<CollectionObjectLayout
-			{...props(object, iiif)}
-			backLink={legacyBackLink(returnUrl)}
-			furtherItems={furtherItemsSection(object, relatedItems)}
-		/>
+		<>
+			{/* schema.org structured data for rich results and AI answer engines;
+			    escape `<` per the Next.js JSON-LD guidance to avoid XSS via record text */}
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+				}}
+			/>
+			<CollectionObjectLayout
+				{...data}
+				backLink={legacyBackLink(returnUrl)}
+				furtherItems={furtherItemsSection(object, relatedItems)}
+			/>
+		</>
 	)
 }
