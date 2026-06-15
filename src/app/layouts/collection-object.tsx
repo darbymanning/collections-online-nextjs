@@ -51,9 +51,12 @@ export function CollectionObjectLayout({
 	otherNumbers,
 	objectNumbersAll,
 	researchAndResponses,
+	associatedPublications,
+	searchTerms,
 	referenceURL,
 	description,
 	literatureVirtualField,
+	imageRights,
 	furtherItems,
 }: Props & { backLink: BackLink; furtherItems?: FurtherItemsSection }) {
 	return (
@@ -88,22 +91,53 @@ export function CollectionObjectLayout({
 					// seam: top half over the accent band, lower half on the white page
 					<figure className="-mt-68 grid gap-3">
 						<ImageViewer label={title} images={images} />
-						{imageCopyright && (
+						{(imageCopyright || imageRights) && (
 							<figcaption className="text-xs text-pretty grid gap-1 max-w-3xl text-center mx-auto">
 								{imageCopyright
-									.split("\n")
+									?.split("\n")
 									.map((line) => line.trim())
 									.filter(Boolean)
 									.map((line, index) => (
 										<p key={index}>{line}</p>
 									))}
+								{imageRights?.notPrmCopyright && (
+									<p>
+										Copyright of this material is not held by the museum, please contact
+										us for further information
+									</p>
+								)}
+								{imageRights && (
+									<>
+										<p>
+											<a
+												href={imageRights.termsHref}
+												className="animated-underline font-semibold text-accent hover:[--underline-w:100%]"
+											>
+												Terms and Conditions
+											</a>
+										</p>
+										<p>
+											If you wish to order a high-resolution image and/or licence its use
+											for print or web publication, exhibition, film, promotional product
+											or any other use, whether in the academic or commercial sector of
+											any print run, then please visit{" "}
+											<a
+												href={imageRights.photographicServicesHref}
+												className="animated-underline font-semibold text-accent hover:[--underline-w:100%]"
+											>
+												photographic services
+											</a>
+											.
+										</p>
+									</>
+								)}
 							</figcaption>
 						)}
 					</figure>
 				) : null}
-				<article className="grid lg:gap-30 lg:pt-30 gap-12 pt-12">
+				<article className="grid gap-gap pt-gap">
 					<section className="mx-auto grid w-full max-w-wrap-small gap-8">
-						<dl className="grid text-sm grid-cols-[auto_60%] gap-y-1 [&>div]:col-span-full [&>div]:grid [&>div]:grid-cols-subgrid [&>div]:gap-x-4 [&>div]:gap-y-1 [&>div]:rounded-md [&>div]:px-4 [&>div]:py-3 [&_dd]:col-start-2 [&_dd]:min-w-0 [&_dd]:whitespace-pre-line [&_dt]:col-start-1 [&_dt]:self-start [&_dt]:font-bold [&_dt]:text-accent [&>div]:odd:bg-accent/10">
+						<dl className="grid text-sm grid-cols-[auto_60%] gap-y-1 [&>div]:col-span-full [&>div]:grid [&>div]:grid-cols-subgrid [&>div]:gap-x-4 [&>div]:gap-y-1 [&>div]:rounded-md [&>div]:px-4 [&>div]:py-3 [&_dd]:col-start-2 [&_dd]:min-w-0 [&_dd]:whitespace-pre-line [&_dt]:col-start-1 [&_dt]:self-start [&_dt]:font-bold [&_dt]:text-accent [&>div]:odd:bg-accent/10 [&_a]:animated-underline [&_a]:font-semibold [&_a]:text-accent [&_a]:hover:[--underline-w:100%]">
 							{titleRow && (
 								<div>
 									<dt>Title</dt>
@@ -402,6 +436,15 @@ export function CollectionObjectLayout({
 								</div>
 							)}
 
+							{associatedPublications && (
+								<div>
+									<dt>Associated publications</dt>
+									{associatedPublications.map((publication, index) => (
+										<dd key={index}>{publication}</dd>
+									))}
+								</div>
+							)}
+
 							{referenceURL && (
 								<div>
 									<dt>Reference URL</dt>
@@ -416,6 +459,22 @@ export function CollectionObjectLayout({
 								</div>
 							)}
 						</dl>
+						{searchTerms && (
+							<p className="text-sm text-pretty">
+								<span className="font-bold text-accent">Search terms: </span>
+								{searchTerms.map((term, index) => (
+									<span key={term.label}>
+										{index > 0 && ", "}
+										<a
+											href={term.href}
+											className="animated-underline font-semibold text-accent hover:[--underline-w:100%]"
+										>
+											{term.label}
+										</a>
+									</span>
+								))}
+							</p>
+						)}
 					</section>
 					{literatureVirtualField && (
 						<section className="mx-auto grid w-full max-w-wrap-small gap-8 border-t border-border pt-12">
@@ -427,7 +486,7 @@ export function CollectionObjectLayout({
 						</section>
 					)}
 					{description && (
-						<section className="mx-auto grid w-full max-w-wrap-small gap-8 border-t border-border pt-12">
+						<section className="mx-auto grid w-full max-w-wrap-small gap-8 border-t border-border pt-gap">
 							<h2 className="text-center text-2xl font-semibold">Description</h2>
 							<p className="whitespace-pre-line">{description}</p>
 						</section>
@@ -435,7 +494,7 @@ export function CollectionObjectLayout({
 					{furtherItems && (
 						// full-bleed band tinted with the museum accent (cf. ox.ac.uk's
 						// "Explore" band); FurtherItems renders its own heading + button row
-						<section className="mx-[-5vw] bg-accent/12 px-[5vw] py-12">
+						<section className="mx-[-5vw] bg-accent/12 px-[5vw] py-gap">
 							<FurtherItems {...furtherItems} />
 						</section>
 					)}

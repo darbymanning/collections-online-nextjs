@@ -314,6 +314,32 @@ onlyFor("prm")("props (prm)", () => {
 		expect(result.objectNumbersAll).toBe("Accession number: 1938.15.69")
 		expect(result.dateCollected).toEqual(["1937"])
 	})
+
+	test("search terms concatenate class headings and keywords, deduped and linked", () => {
+		expect(result.searchTerms?.map((t) => t.label)).toEqual([
+			"Ornament",
+			"Clothing Headgear",
+			"Figure",
+			"Mask",
+			"Headdress",
+			"Fish Figure",
+		])
+		expect(result.searchTerms?.[1]?.href).toBe(`${search}/Clothing%20Headgear`)
+	})
+
+	test("has no associated publications when both fields are empty", () => {
+		expect(result.associatedPublications).toBeUndefined()
+	})
+
+	test("carries prm image rights guidance, with no third-party copyright notice", () => {
+		expect(result.imageRights?.notPrmCopyright).toBe(false)
+		expect(result.imageRights?.photographicServicesHref).toBe(
+			"https://prm.web.ox.ac.uk/photographic-services",
+		)
+		expect(result.imageRights?.termsHref).toBe(
+			"https://www.prm.ox.ac.uk/collections-online-terms-and-conditions",
+		)
+	})
 })
 
 onlyFor("hsm")("props (hsm)", () => {

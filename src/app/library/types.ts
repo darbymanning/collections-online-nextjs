@@ -175,6 +175,9 @@ export type CollectionObject = {
 	onDisplay?: string
 	objectNumbersAll?: string
 	researchAndResponses?: string
+	/** prm "Associated publications" — both render under the same label */
+	publicationHistory?: string | null
+	literature?: string | null
 	intNumberOfObjects?: string
 	culturalGroups?: Array<{
 		id: string
@@ -192,11 +195,11 @@ export type CollectionObject = {
 		toYear: string
 	}>
 	class?: Array<{ class: string }>
-	keywords?: Array<{ keyword: string; sort: string }>
+	keywords?: Array<{ keyword: string; sort?: string }>
 	dateCollected?: Array<{ date: string; sort: string }>
 	format?: Array<any>
 	photoProcess?: Array<any>
-	rights?: Array<any>
+	rights?: Array<{ type?: string }>
 	objectLinks?: Array<any>
 	objectLinks2?: Array<{ irn: string }>
 	objectGroups?: Array<{ id: string; isPublished: string }>

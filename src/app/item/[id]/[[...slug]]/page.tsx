@@ -202,6 +202,25 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 		]
 	})
 
+	// prm "Search terms": class headings + keywords, deduped, each its own
+	// simple-search query (cf. legacy ClassKeywordField)
+	const searchTermValues = [
+		...(object.class?.map((c) => c.class) ?? []),
+		...(object.keywords?.map((k) => k.keyword) ?? []),
+	].filter(Boolean)
+	const searchTerms = searchTermValues.length
+		? [...new Set(searchTermValues)].map((label) => ({
+				label,
+				href: `${museum.urls.legacy.simpleSearch}/${encodeURIComponent(label)}`,
+			}))
+		: undefined
+
+	// prm "Associated publications": literature and/or publication history, each
+	// shown verbatim (the legacy details list gives both fields the same label)
+	const associatedPublications = [object.literature, object.publicationHistory].filter(
+		(value): value is string => Boolean(value?.trim()),
+	)
+
 	// prm material/process entries are flat indexed terms rather than trails
 	const materialsList = object.materialAndProcess?.flatMap((m) => {
 		const key = m.materialIndex ? "materialIndex" : m.processIndex ? "processIndex" : undefined
@@ -337,8 +356,23 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 			: undefined,
 		objectNumbersAll: object.objectNumbersAll,
 		researchAndResponses: object.researchAndResponses?.replace(/\r\n/g, "\n"),
+		associatedPublications: associatedPublications.length ? associatedPublications : undefined,
+		searchTerms,
 		referenceURL: object.referenceURL,
 		literatureVirtualField: object.literatureVirtualField,
+		// prm shows extra rights guidance beneath the image copyright caption; the
+		// "not held by the museum" notice is driven by the record's rights entry
+		imageRights:
+			museum.ref === "prm"
+				? {
+						notPrmCopyright: object.rights?.[0]?.type === "Not PRM copyright",
+						termsHref: new URL(
+							"/collections-online-terms-and-conditions",
+							museum.urls.parent,
+						).toString(),
+						photographicServicesHref: "https://prm.web.ox.ac.uk/photographic-services",
+					}
+				: undefined,
 	}
 }
 

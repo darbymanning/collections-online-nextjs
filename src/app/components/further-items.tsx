@@ -147,7 +147,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 								onClick={() => emblaApi?.scrollTo(index)}
 								aria-label={`Go to slide ${index + 1}`}
 								aria-current={index === selected}
-								className="size-2.5 rounded-full bg-accent/25 transition-colors aria-[current=true]:bg-accent"
+								className="size-2.5 rounded-full bg-accent/25 transition-colors aria-current:bg-accent"
 							/>
 						))}
 				</div>
