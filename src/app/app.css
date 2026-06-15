@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@plugin "fluid-tailwindcss";
 
 @theme {
 	/* Colors */
@@ -12,8 +11,9 @@
 	--color-background: var(--color-white);
 	--color-foreground: var(--color-black);
 	--color-border: var(--color-gray-200);
-	/* per-museum brand accent — overridden by the museum class on <html> below */
-	--color-accent: var(--color-foreground);
+	/* per-museum brand primary — overridden by the museum class on <html> below */
+	--color-primary: var(--color-foreground);
+	--color-secondary: var(--color-foreground);
 
 	/* Wrap widths — kept deliberately; preferred over Tailwind's opinionated
 	 * `container`. Exposed as max-w-wrap / max-w-wrap-small. */
@@ -50,23 +50,24 @@
 	--spacing-gap: clamp(3rem, 1.25rem + 7vw, 8rem);
 }
 
-/* Per-museum brand accents. The active museum's key is set as a class on <html>
- * (see layout.tsx), so exactly one of these applies per deployment. Tweak the
- * hexes here to refine each museum's accent. */
+/* Per-museum brand primary colours. The active museum's key is set as a class on
+ * <html> (see layout.tsx), so exactly one of these applies per deployment. Tweak
+ * the hexes here to refine each museum's primary colour. */
 .ash {
-	--color-accent: #0f5c8c;
+	--color-primary: #0f5c8c;
 }
 
 .oum {
-	--color-accent: #3d506c;
+	--color-primary: #3d506c;
 }
 
 .prm {
-	--color-accent: #3c3c3b;
+	--color-primary: #3c3c3b;
+	--color-secondary: #c67c3d;
 }
 
 .hsm {
-	--color-accent: #0e6b75;
+	--color-primary: #0e6b75;
 }
 
 @layer base {
@@ -81,7 +82,7 @@
 		 * supplies its own bg + the 5vw inset that used to live here), so the header
 		 * band reads as accent and over-scrolling past the top reveals the colour —
 		 * an app-like edge rather than a white gutter */
-		background: var(--color-accent);
+		background: var(--color-primary);
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
@@ -105,7 +106,7 @@
 	}
 
 	::selection {
-		background-color: var(--color-accent);
+		background-color: var(--color-primary);
 		color: var(--color-background);
 	}
 }
@@ -121,4 +122,57 @@
 	background-repeat: no-repeat;
 	background-size: var(--underline-w) 0.125rem;
 	transition: background-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@utility accented {
+	@apply selection:bg-background/20 selection:text-background text-background bg-primary;
+}
+
+@utility search-icon {
+	outline: 2px solid;
+	outline-offset: -2px;
+	width: 1em;
+	height: 1em;
+	border-radius: calc(infinity * 1px);
+	display: flex;
+	position: relative;
+	transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+	&::after,
+	&::before {
+		content: "";
+		align-self: center;
+		margin: auto;
+		width: 100%;
+		height: 2px;
+		background-color: currentColor;
+		border-radius: 1em;
+		position: absolute;
+		translate: 10% 500%;
+		transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	&::before {
+		rotate: -45deg;
+		scale: 0 1;
+		transform-origin: bottom left;
+	}
+
+	&::after {
+		rotate: 45deg;
+		scale: 0.4 1;
+		transform-origin: bottom right;
+	}
+
+	[data-open] & {
+		outline-color: transparent;
+		outline-offset: -10px;
+
+		&::after,
+		&::before {
+			translate: none;
+			scale: none;
+			transform-origin: center;
+		}
+	}
 }

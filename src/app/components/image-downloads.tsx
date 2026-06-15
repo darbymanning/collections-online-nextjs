@@ -69,7 +69,7 @@ export function ImageDownloads({ images }: Props) {
 							<li key={image.url}>
 								<button
 									onClick={() => save(image)}
-									className="flex w-full cursor-pointer items-center gap-3 rounded-md p-2 text-left ring-2 ring-accent/20 transition-shadow duration-300 hover:ring-accent"
+									className="flex w-full cursor-pointer items-center gap-3 rounded-md p-2 text-left ring-2 ring-primary/20 transition-shadow duration-300 hover:ring-primary"
 								>
 									{image.thumbnail && (
 										<img
@@ -79,13 +79,13 @@ export function ImageDownloads({ images }: Props) {
 											className="size-12 shrink-0 rounded object-cover"
 										/>
 									)}
-									<span className="min-w-0 flex-1 text-xs font-semibold break-all text-accent">
+									<span className="min-w-0 flex-1 text-xs font-semibold break-all text-primary">
 										{image.filename}
 									</span>
 									<svg
 										viewBox="0 0 24 24"
 										aria-hidden
-										className="size-4 shrink-0 fill-none stroke-accent stroke-2"
+										className="size-4 shrink-0 fill-none stroke-primary stroke-2"
 									>
 										<path
 											d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"

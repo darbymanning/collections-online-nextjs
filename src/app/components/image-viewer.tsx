@@ -234,7 +234,7 @@ export function ImageViewer({ label, images }: Props) {
 							onClick={() => goToPage(index)}
 							aria-label={`View image ${index + 1} of ${images.length}`}
 							aria-current={page === index}
-							className="overflow-hidden rounded-xl border-2 border-transparent p-0 leading-none opacity-60 transition-[opacity,border-color] duration-250 hover:border-accent hover:opacity-100 aria-[current=true]:border-accent aria-[current=true]:opacity-100"
+							className="overflow-hidden rounded-xl border-2 border-transparent p-0 leading-none opacity-60 transition-[opacity,border-color] duration-250 hover:border-primary hover:opacity-100 aria-[current=true]:border-primary aria-[current=true]:opacity-100"
 						>
 							<img src={image.thumbnail} alt="" loading="lazy" className="h-16 w-auto" />
 						</button>

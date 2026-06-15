@@ -53,7 +53,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 		<div className="grid gap-6" data-testid="further-items">
 			{/* heading left, more-items button right (cf. ox.ac.uk's "Discover more") */}
 			<div className="flex flex-wrap items-center justify-between gap-4">
-				<h2 className="text-2xl font-semibold text-accent">{title}</h2>
+				<h2 className="text-2xl font-semibold text-primary">{title}</h2>
 				{more && (
 					<Button href={more.href} revealIcon>
 						{more.label}
@@ -97,7 +97,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 										/>
 									) : (
 										// no-image fallback: elegant accent card with a muted icon
-										<span className="grid size-full place-items-center bg-accent text-[3rem] text-white/40">
+										<span className="grid size-full place-items-center bg-primary text-[3rem] text-white/40">
 											<ImageOff strokeWidth={1} aria-hidden />
 										</span>
 									)}
@@ -147,7 +147,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 								onClick={() => emblaApi?.scrollTo(index)}
 								aria-label={`Go to slide ${index + 1}`}
 								aria-current={index === selected}
-								className="size-2.5 rounded-full bg-accent/25 transition-colors aria-current:bg-accent"
+								className="size-2.5 rounded-full bg-primary/25 transition-colors aria-current:bg-primary"
 							/>
 						))}
 				</div>
@@ -156,7 +156,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 						onClick={() => emblaApi?.scrollPrev()}
 						disabled={!canPrev}
 						aria-label="Previous items"
-						className="grid size-12 place-items-center rounded-full border-2 border-accent text-2xl text-accent transition-opacity disabled:opacity-40"
+						className="grid size-12 place-items-center rounded-full border-2 border-primary text-2xl text-primary transition-opacity disabled:opacity-40"
 					>
 						<ChevronLeft aria-hidden />
 					</button>
@@ -164,7 +164,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 						onClick={() => emblaApi?.scrollNext()}
 						disabled={!canNext}
 						aria-label="More items"
-						className="grid size-12 place-items-center rounded-full bg-accent text-2xl text-white transition-opacity disabled:opacity-40"
+						className="grid size-12 place-items-center rounded-full bg-primary text-2xl text-white transition-opacity disabled:opacity-40"
 					>
 						<ChevronRight aria-hidden />
 					</button>

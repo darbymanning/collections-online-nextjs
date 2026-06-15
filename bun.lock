@@ -26,7 +26,6 @@
         "babel-plugin-react-compiler": "1.0.0",
         "eslint-plugin-react-hooks": "7.1.1",
         "eslint-plugin-react-no-manual-memo": "1.0.4",
-        "fluid-tailwindcss": "1.1.5",
         "oxfmt": "0.54.0",
         "oxlint": "1.69.0",
         "oxlint-tailwindcss": "1.3.2",
@@ -421,8 +420,6 @@
     "flat-cache": ["flat-cache@4.0.1", "", { "dependencies": { "flatted": "^3.2.9", "keyv": "^4.5.4" } }, "sha512-f7ccFPK3SXFHpx15UIGyRJ/FJQctuKZ0zVuN3frBo4HnK3cay9VEW0R6yPYFHC0AgqhukPzKjq22t5DmAyqGyw=="],
 
     "flatted": ["flatted@3.4.2", "", {}, "sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA=="],
-
-    "fluid-tailwindcss": ["fluid-tailwindcss@1.1.5", "", { "peerDependencies": { "tailwindcss": "^4.0.0" } }, "sha512-Hw9qC1NXCesC5rkueo1JwgZSjC6DQBsapLkm7qrdsB8GWdYtGBu62Npng3JyorvGGefVrgoU1e1RoVRyu6ypTw=="],
 
     "fsevents": ["fsevents@2.3.2", "", { "os": "darwin" }, "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA=="],
 
