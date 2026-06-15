@@ -2,6 +2,7 @@ import { Button } from "$components/button"
 import { List } from "$components/list"
 import { FurtherItems } from "$components/further-items"
 import { ImageViewer } from "$components/image-viewer"
+import { ImageDownloads } from "$components/image-downloads"
 import type { Props } from "../item/[id]/[[...slug]]/page"
 import type { FurtherItemsSection } from "$library/further-items"
 import type { BackLink } from "$library/utils"
@@ -57,6 +58,7 @@ export function CollectionObjectLayout({
 	description,
 	literatureVirtualField,
 	imageRights,
+	imageDownloads,
 	furtherItems,
 }: Props & { backLink: BackLink; furtherItems?: FurtherItemsSection }) {
 	return (
@@ -133,6 +135,7 @@ export function CollectionObjectLayout({
 								)}
 							</figcaption>
 						)}
+						{imageDownloads?.length ? <ImageDownloads images={imageDownloads} /> : null}
 					</figure>
 				) : null}
 				<article className="grid gap-gap pt-gap">
@@ -460,8 +463,8 @@ export function CollectionObjectLayout({
 							)}
 						</dl>
 						{searchTerms && (
-							<p className="text-sm text-pretty">
-								<span className="font-bold text-accent">Search terms: </span>
+							<p className="text-sm text-pretty mt-10">
+								<span>Search terms: </span>
 								{searchTerms.map((term, index) => (
 									<span key={term.label}>
 										{index > 0 && ", "}

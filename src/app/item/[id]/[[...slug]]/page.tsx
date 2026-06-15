@@ -358,6 +358,25 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 		researchAndResponses: object.researchAndResponses?.replace(/\r\n/g, "\n"),
 		associatedPublications: associatedPublications.length ? associatedPublications : undefined,
 		searchTerms,
+		// prm offers full-resolution downloads of each digitised image (the legacy
+		// "Download images" accordion); ash hides it, museums without a DAMs have
+		// no IIIF services to build the URLs from
+		imageDownloads:
+			museum.ref === "prm"
+				? iiif?.items?.flatMap((canvas) => {
+						const service = canvas.items[0]?.items[0]?.body.service[0]?.id
+						const accession = object.objectNumberSorting1 ?? object.objectNumber
+						if (!service || !accession) return []
+						const resourceSpaceId = service.split("/").pop()
+						return [
+							{
+								url: `${service}/full/max/0/default.jpg`,
+								thumbnail: canvas.thumbnail?.[0]?.id,
+								filename: `RS${resourceSpaceId}_${museum.ref.toUpperCase()}${accession}.jpg`,
+							},
+						]
+					})
+				: undefined,
 		referenceURL: object.referenceURL,
 		literatureVirtualField: object.literatureVirtualField,
 		// prm shows extra rights guidance beneath the image copyright caption; the

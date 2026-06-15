@@ -7,6 +7,8 @@ type Base = {
 	/** hide any <svg> child at rest and reveal it (width + fade) on hover. Put the
 	 * icon before or after the text to control which side it appears on. */
 	revealIcon?: boolean
+	/** pill size — `base` (default) or a more compact `sm`. */
+	size?: "base" | "sm"
 }
 
 interface Link extends Base, Omit<ComponentPropsWithoutRef<typeof NextLink>, "children" | "href"> {
@@ -19,22 +21,34 @@ interface Button extends Base, Omit<ComponentPropsWithoutRef<"button">, "childre
 
 type Props = Link | Button
 
-type Rest = Omit<Link | Button, "children" | "revealIcon" | "className">
+type Rest = Omit<Link | Button, "children" | "revealIcon" | "size" | "className">
 
-function isLink(props: Rest): props is Omit<Link, "children" | "revealIcon" | "className"> {
+function isLink(props: Rest): props is Omit<Link, "children" | "revealIcon" | "size" | "className"> {
 	return props.href !== undefined
 }
+
+const sizeClass = {
+	base: "min-h-12 px-4 text-sm",
+	sm: "min-h-9 px-3 text-xs",
+} as const
 
 /** Outline pill: white at rest; on hover the accent fills up from below and the
  * text reverses to white. Renders a NextLink when given `href`, otherwise a
  * `<button>` — any extra link/button props are spread through. */
 export function Button(props: Link): ReactElement
 export function Button(props: Button): ReactElement
-export function Button({ children, revealIcon, className, ...rest }: Props): ReactElement {
+export function Button({
+	children,
+	revealIcon,
+	size = "base",
+	className,
+	...rest
+}: Props): ReactElement {
 	const merged = {
 		...rest,
 		className: cn(
-			"group relative inline-flex min-h-12 shrink-0 cursor-pointer items-center overflow-hidden rounded-md px-4 font-medium no-underline ring-2 ring-accent/20 text-accent transition-[color,box-shadow] duration-300 hover:text-white hover:ring-accent",
+			"group relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden rounded-md font-medium no-underline ring-2 ring-accent/20 text-accent transition-[color,box-shadow] duration-300 hover:text-white hover:ring-accent",
+			sizeClass[size],
 			revealIcon &&
 				"[&_svg]:h-[1em] [&_svg]:w-0 [&_svg]:opacity-0 [&_svg]:transition-all [&_svg]:duration-300 hover:[&_svg]:mx-1 hover:[&_svg]:w-[1em] hover:[&_svg]:opacity-100",
 			className,
@@ -49,7 +63,7 @@ export function Button({ children, revealIcon, className, ...rest }: Props): Rea
 				className="absolute inset-0 translate-y-full bg-accent transition-transform duration-300 ease-out group-hover:translate-y-0"
 				aria-hidden
 			/>
-			<span className="relative inline-flex items-center text-sm">{children}</span>
+			<span className="relative inline-flex items-center">{children}</span>
 		</>
 	)
 
