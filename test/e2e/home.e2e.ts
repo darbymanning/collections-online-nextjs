@@ -10,11 +10,11 @@ test("links to the new item page and the legacy site", async ({ page }) => {
 
 	await page.goto("/")
 
-	await expect(page.getByRole("link", { name: "New" })).toHaveAttribute(
+	await expect(page.getByRole("link", { name: "New Next.js app" })).toHaveAttribute(
 		"href",
 		`/item/${museum.id}/${museum.slug}`,
 	)
-	await expect(page.getByRole("link", { name: "Existing" })).toHaveAttribute(
+	await expect(page.getByRole("link", { name: "Existing legacy" })).toHaveAttribute(
 		"href",
 		museum.legacyHref,
 	)
@@ -24,7 +24,7 @@ test("navigates to the item page", async ({ page }) => {
 	const museum = currentMuseum()
 
 	await page.goto("/")
-	await page.getByRole("link", { name: "New" }).click()
+	await page.getByRole("link", { name: "New Next.js app" }).click()
 
 	await expect(page).toHaveURL(`/item/${museum.id}/${museum.slug}`)
 	await expect(page.getByRole("heading", { level: 1 })).toHaveText(museum.h1)

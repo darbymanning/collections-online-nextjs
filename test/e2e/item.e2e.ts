@@ -23,6 +23,9 @@ test("shows the default back link without a return URL", async ({ page }) => {
 	await page.goto(`/item/${museum.id}/${museum.slug}`)
 
 	const backLink = page.getByTestId("back-link")
+	// the Suspense fallback and the resolved client button briefly coexist in the
+	// streamed HTML — wait for hydration to settle on the single link first
+	await expect(backLink).toHaveCount(1)
 	await expect(backLink).toHaveText("Back to search")
 	await expect(backLink).toHaveAttribute("href", museum.simpleSearchHref)
 })
@@ -36,6 +39,9 @@ test("shows the legacy search results back link when a return URL is provided", 
 	await page.goto(`/item/${museum.id}/${museum.slug}?return=${returnParam}`)
 
 	const backLink = page.getByTestId("back-link")
+	// the Suspense fallback and the resolved client button briefly coexist in the
+	// streamed HTML — wait for hydration to settle on the single link first
+	await expect(backLink).toHaveCount(1)
 	await expect(backLink).toHaveText("Back to search results")
 	await expect(backLink).toHaveAttribute("href", museum.legacySearchReturn)
 })
@@ -47,6 +53,9 @@ test("shows the default back link for untrusted return URLs", async ({ page }) =
 	await page.goto(`/item/${museum.id}/${museum.slug}?return=${returnParam}`)
 
 	const backLink = page.getByTestId("back-link")
+	// the Suspense fallback and the resolved client button briefly coexist in the
+	// streamed HTML — wait for hydration to settle on the single link first
+	await expect(backLink).toHaveCount(1)
 	await expect(backLink).toHaveText("Back to search")
 	await expect(backLink).toHaveAttribute("href", museum.simpleSearchHref)
 })
