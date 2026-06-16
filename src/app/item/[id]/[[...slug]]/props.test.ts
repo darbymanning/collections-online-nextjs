@@ -69,9 +69,8 @@ describe("generateMetadata", () => {
 	test("titles the page and points the canonical at the slugged URL", async () => {
 		// generateMetadata fetches the record and (for DAMs museums) its manifest,
 		// so hand back a fresh Response per call rather than one shared body
-		spyOn(globalThis, "fetch").mockImplementation(() =>
-			Promise.resolve(new Response(JSON.stringify(object))),
-		)
+		spyOn(globalThis, "fetch").mockImplementation((() =>
+			Promise.resolve(new Response(JSON.stringify(object)))) as unknown as typeof fetch)
 
 		const metadata = await generateMetadata({ params: Promise.resolve({ id: object.id }) })
 
@@ -150,7 +149,7 @@ onlyFor("ash")("props (ash)", () => {
 
 	test("links the find-spot place hierarchy", () => {
 		const [findSpot] = result.geographicalProvenance ?? []
-		const labels = findSpot && "links" in findSpot ? findSpot.links.map((l) => l.label) : []
+		const labels = findSpot && "links" in findSpot ? (findSpot.links?.map((l) => l.label) ?? []) : []
 
 		expect(findSpot).toMatchObject({ association: "find spot" })
 		expect(labels).toHaveLength(9)
@@ -300,7 +299,7 @@ onlyFor("prm")("props (prm)", () => {
 
 	test("geographical provenance mixes place trails and plain regions", () => {
 		const [place, region] = result.geographicalProvenance ?? []
-		const labels = place && "links" in place ? place.links.map((l) => l.label) : []
+		const labels = place && "links" in place ? (place.links?.map((l) => l.label) ?? []) : []
 
 		expect(labels).toEqual(["Africa", "Western Africa", "Nigeria"])
 		expect(region).toEqual({ region: "Southern Nigeria  Niger Delta  Rivers State  Rumuji town" })

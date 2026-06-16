@@ -1,6 +1,6 @@
 import { cn } from "$library/utils"
 import NextLink from "next/link"
-import type { ComponentPropsWithoutRef, ReactElement, ReactNode } from "react"
+import type { ComponentPropsWithoutRef, CSSProperties, ReactElement, ReactNode } from "react"
 
 type Base = {
 	children: ReactNode
@@ -49,7 +49,7 @@ export function Button({
 }: Props): ReactElement {
 	const merged = {
 		...rest,
-		style: { "--fill": rest.fill ?? "var(--color-primary)" },
+		style: { "--fill": rest.fill ?? "var(--color-primary)" } as CSSProperties,
 		className: cn(
 			"group relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden rounded-md font-medium text-(--fill) no-underline ring-2 ring-(--fill/20) transition-[color,box-shadow] duration-300 hover:text-white hover:ring-(--fill)",
 			sizeClass[size],
