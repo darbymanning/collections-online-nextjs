@@ -34,8 +34,18 @@ export default function RootLayout({
 	return (
 		<html lang="en-GB" className={`${dmSans.variable} ${geistMono.variable} ${museum.ref}`}>
 			<body>
+				{/* first focusable element — sits just off the top edge and slides into
+				 * view only when focused */}
+				<a
+					href="#main-content"
+					className="fixed -top-16 left-2 z-50 rounded-md bg-foreground px-4 py-2 font-medium text-background transition-[top] focus:top-2"
+				>
+					Skip to content
+				</a>
 				<Header />
-				{children}
+				<main id="main-content" tabIndex={-1} className="flex flex-col focus:outline-none">
+					{children}
+				</main>
 			</body>
 		</html>
 	)

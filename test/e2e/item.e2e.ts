@@ -83,7 +83,10 @@ test("initialises the zoomable image viewer", async ({ page }) => {
 	await page.goto(`/item/${museum.id}/${museum.slug}`)
 
 	// OpenSeadragon mounts canvases (viewer + navigator) once it initialises
-	const canvas = page.getByLabel(/^Zoomable image of/).locator("canvas").first()
+	const canvas = page
+		.getByLabel(/^Zoomable image of/)
+		.locator("canvas")
+		.first()
 	await expect(canvas).toBeVisible({ timeout: 30_000 })
 
 	await page.getByRole("button", { name: "Zoom in" }).click()

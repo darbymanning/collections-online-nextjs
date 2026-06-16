@@ -1,4 +1,4 @@
-import { Button } from "$components/button"
+import { BackButton, BackButtonFallback } from "$components/back-button"
 import { Breadcrumbs } from "$components/breadcrumbs"
 import { List } from "$components/list"
 import { FurtherItems } from "$components/further-items"
@@ -7,11 +7,10 @@ import { ImageDownloads } from "$components/image-downloads"
 import { museum } from "$library/config"
 import type { Props } from "../item/[id]/[[...slug]]/page"
 import type { FurtherItemsSection } from "$library/further-items"
-import type { BackLink } from "$library/utils"
 import Link from "next/link"
+import { Suspense } from "react"
 
 export function CollectionObjectLayout({
-	backLink,
 	labels,
 	title,
 	titleRow,
@@ -62,15 +61,19 @@ export function CollectionObjectLayout({
 	imageRights,
 	imageDownloads,
 	furtherItems,
-}: Props & { backLink: BackLink; furtherItems?: FurtherItemsSection }) {
+}: Props & { furtherItems?: FurtherItemsSection }) {
 	return (
 		<div className="flex flex-col">
 			<Breadcrumbs
 				className="border-b border-b-current/10 px-[5vw] py-3 text-sm text-white"
 				items={[
 					{ label: "Home", href: museum.url.toString() },
-					// backLink.href keeps the visitor's search query when it came through
-					{ label: "Collections Online", href: backLink.href },
+					// the stable landing page (mirrors the BreadcrumbList JSON-LD); a
+					// visitor's search query lives on the back-link button instead
+					{
+						label: "Collections Online",
+						href: museum.urls.legacy.collectionsOnline.toString(),
+					},
 					{ label: title },
 				]}
 			/>
@@ -80,17 +83,9 @@ export function CollectionObjectLayout({
 			 * page turns white at the seam (cf. ox.ac.uk/research). With no image the
 			 * band just gets normal padding and flows straight into the white page. */}
 			<header className={`accented px-[5vw] pt-6 ${images?.length ? "pb-80" : "pb-12"}`}>
-				<Button
-					href={backLink.href}
-					revealIcon
-					className="mt-6 text-background"
-					data-testid="back-link"
-				>
-					<svg aria-hidden>
-						<use href="/sprite.svg#arrow-left" />
-					</svg>
-					{backLink.label}
-				</Button>
+				<Suspense fallback={<BackButtonFallback />}>
+					<BackButton />
+				</Suspense>
 				<div className="mt-8 grid gap-4">
 					<h1 className="text-center text-5xl font-semibold">{title}</h1>
 					<h2 className="text-center text-2xl font-semibold text-current/80">{subTitle}</h2>

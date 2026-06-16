@@ -2,12 +2,26 @@ import { museum } from "./config"
 import { furtherItemsQueries } from "./further-items"
 import type { CollectionObject, IIIFManifest, SearchResults } from "./types"
 
+/** The upstream has no record for this id (HTTP 404), as opposed to a transient
+ * failure. Lets pages render a proper Not Found for genuine misses while real
+ * errors still propagate. */
+export class RecordNotFoundError extends Error {
+	constructor(id: CollectionObject["id"]) {
+		super(`Collection object not found: ${id}`)
+		this.name = "RecordNotFoundError"
+	}
+}
+
 export const api = {
 	async getCollectionObject(id: CollectionObject["id"]): Promise<CollectionObject> {
 		const url = new URL(`https://prd-online.glamdigital.io/v2/item/${id}/full`)
 
 		const response = await fetch(url)
 
+		// a missing record is distinct from a transient error: the former should
+		// render a 404 (and let ISR cache it), the latter should keep the last good
+		// page and retry rather than caching a not-found
+		if (response.status === 404) throw new RecordNotFoundError(id)
 		if (!response.ok) throw new Error(`Failed to load collection object: ${response.status}`)
 
 		return response.json()

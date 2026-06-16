@@ -1,13 +1,253 @@
 "use client"
 import { museum } from "$library/config"
+import { cn } from "$library/utils"
 import Image from "next/image"
 import prmLogo from "$assets/prm-logo.svg"
 import { useHeaderScrollHide } from "$hooks/use-scroll-hide"
 import { ChevronDownIcon } from "lucide-react"
-import { useEffect, useRef, useState, type FormEvent } from "react"
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react"
 import { Button } from "$components/button"
+import Link from "next/link"
 
 type SearchScope = "collections-online" | "museum"
+
+/** Which overlay panel is open, if any. The two panels are mutually exclusive —
+ * opening one closes the other — so a single union beats two booleans. */
+type Panel = "search" | "menu"
+
+type MenuNode = { label: string; href: string; children?: Array<MenuNode> }
+
+/** A flattened drill-down layer: `items` are the rows it shows, `id` is the
+ * `/`-joined path of labels that selects it (root is `""`), and `parentId` is the
+ * layer "Go back" returns to (`null` at the root). `title`/`href` are the section
+ * this layer belongs to, shown as a heading link above its children (`null` at the
+ * root, which has no section heading). */
+type MenuPanelDef = {
+	id: string
+	parentId: string | null
+	title: string | null
+	href: string | null
+	items: Array<MenuNode>
+}
+
+/** Full prm.ox.ac.uk primary navigation — three levels deep in places. Any node
+ * with children drills into a deeper layer rather than navigating (cf. ox.ac.uk's
+ * menu). Hrefs are absolute for off-site destinations, otherwise resolved against
+ * the museum origin. */
+const menuLinks: Array<MenuNode> = [
+	{
+		label: "Visit us",
+		href: "/visit-us",
+		children: [
+			{ label: "Plan your visit", href: "/visit-us" },
+			{ label: "Accessibility", href: "/access" },
+			{
+				label: "Families",
+				href: "/families",
+				children: [{ label: "Family trails & crafts", href: "/family-trails-and-crafts" }],
+			},
+			{ label: "Visiting as a group", href: "/visiting-group" },
+			{ label: "Highlights", href: "/highlights" },
+		],
+	},
+	{
+		label: "What's on",
+		href: "/events",
+		children: [
+			{
+				label: "Exhibitions",
+				href: "/exhibitions-and-case-displays",
+				children: [{ label: "Past exhibitions", href: "/past-exhibitions" }],
+			},
+			{
+				label: "Events",
+				href: "/events",
+				children: [{ label: "Late Nights", href: "/late-nights" }],
+			},
+			{ label: "Past exhibitions", href: "https://prm.web.ox.ac.uk/past-exhibitions" },
+		],
+	},
+	{
+		label: "Collections",
+		href: "/collections",
+		children: [
+			{
+				label: "Collections overview",
+				href: "/collections",
+				children: [
+					{ label: "Highlights", href: "/highlights" },
+					{ label: "Ethnography and Archaeology", href: "/ethnography-archaeology" },
+					{
+						label: "Photographs, archives, sounds, and films",
+						href: "/photograph-collections",
+					},
+					{ label: "Library", href: "/library" },
+				],
+			},
+			{ label: "Collections online", href: "/collections-online" },
+			{ label: "Conservation", href: "/conservation" },
+			{
+				label: "Using our collections",
+				href: "/using-our-collections",
+				children: [
+					{ label: "Photographic services", href: "/photographic-services" },
+					{ label: "Balfour Library", href: "/library" },
+				],
+			},
+			{ label: "Returns", href: "https://prm.ox.ac.uk/returns" },
+			{
+				label: "Human Remains",
+				href: "https://www.prm.ox.ac.uk/human-remains-pitt-rivers-museum-university-oxford",
+			},
+			{
+				label: "Collections projects",
+				href: "/collections-projects-0",
+				children: [
+					{ label: "Changing Curatorial Legacies", href: "/changing-curatorial-legacies" },
+					{
+						label: "Rethinking Relationships",
+						href: "https://prm.ox.ac.uk/rethinking-relationships-0",
+					},
+				],
+			},
+			{ label: "Collections staff", href: "https://prm.web.ox.ac.uk/collections-staff" },
+		],
+	},
+	{
+		label: "Research",
+		href: "/research",
+		children: [
+			{ label: "Research overview", href: "/research" },
+			{ label: "Research team", href: "https://prm.web.ox.ac.uk/research-staff" },
+			{ label: "Research community", href: "/research-community" },
+			{ label: "Projects", href: "/research-projects-0" },
+			{ label: "Partnerships", href: "/featured-research-partnerships" },
+			{ label: "Publications", href: "https://prm.web.ox.ac.uk/featured-publications" },
+			{ label: "Public Engagement with Research", href: "/public-engagement-research" },
+			{ label: "Research project websites", href: "/collections-research-sites" },
+		],
+	},
+	{
+		label: "Learn",
+		href: "/learn",
+		children: [
+			{
+				label: "Primary schools",
+				href: "/primary-schools",
+				children: [
+					{ label: "Key stage 1", href: "/primary-schools/key-stage-1" },
+					{ label: "Key stage 2", href: "/primary-schools/key-stage-2" },
+				],
+			},
+			{
+				label: "Secondary schools & FE",
+				href: "/secondary-schools-and-further-learning",
+				children: [{ label: "Art visits & resources", href: "/art-learning-resources" }],
+			},
+			{ label: "Families", href: "/families" },
+			{ label: "Community partnerships", href: "/community-partnerships" },
+			{ label: "Higher education", href: "/higher-education" },
+			{ label: "Learning resources", href: "/learning-resources" },
+			{ label: "Visiting as a group", href: "/visiting-group" },
+		],
+	},
+	{
+		label: "Join & support",
+		href: "/join-support",
+		children: [
+			{ label: "Newsletter", href: "/newsletter" },
+			{
+				label: "Members",
+				href: "/membership",
+				children: [{ label: "Members' Magazine", href: "/members-magazine" }],
+			},
+			{
+				label: "Donate",
+				href: "https://prm.web.ox.ac.uk/make-donation",
+				children: [
+					{
+						label: "Donating objects or collections",
+						href: "/donating-objects-or-collections",
+					},
+				],
+			},
+			{ label: "Volunteering", href: "https://www.glam.ox.ac.uk/volunteering" },
+			{ label: "Working for us", href: "/working-for-us" },
+		],
+	},
+	{
+		label: "Shop",
+		href: "https://shop.ashmolean.org/collections/pitt-rivers-museum",
+		children: [
+			{ label: "Gift shop", href: "https://shop.ashmolean.org/brand/pitt-rivers-museum.html" },
+			{ label: "Prints and images", href: "https://www.prmprints.com/" },
+		],
+	},
+]
+
+/** Flatten the tree into one layer per node-with-children (root included), keyed
+ * by path, so every layer is rendered up front and we just toggle which is
+ * active — keeping each layer's enter animation independent. */
+function buildMenuPanels(): Array<MenuPanelDef> {
+	const panels: Array<MenuPanelDef> = []
+	function walk(
+		items: Array<MenuNode>,
+		id: string,
+		parentId: string | null,
+		title: string | null,
+		href: string | null,
+	) {
+		panels.push({ id, parentId, title, href, items })
+		for (const item of items) {
+			if (item.children?.length) {
+				walk(item.children, id ? `${id}/${item.label}` : item.label, id, item.label, item.href)
+			}
+		}
+	}
+	walk(menuLinks, "", null, null, null)
+	return panels
+}
+
+const menuPanels = buildMenuPanels()
+
+/** The layer one level up from `path` (root is `""`). */
+function parentPath(path: string): string {
+	const index = path.lastIndexOf("/")
+	return index === -1 ? "" : path.slice(0, index)
+}
+
+/** The Pitt Rivers court — the museum's signature interior, served from the main
+ * site's media library (cf. ox.ac.uk's menu feature image). */
+const featureImage =
+	"https://www.prm.ox.ac.uk/sites/default/files/styles/listing_landscape_textoverlay_left_bottom_image_1200/public/prm/images/media/pitt_rivers_18.5.22-1_copy.jpg"
+
+/** Off-site links keep their absolute URL; everything else resolves against the
+ * museum's main website. */
+function resolveHref(href: string): string {
+	return href.startsWith("http") ? href : `${museum.urls.parent.origin}${href}`
+}
+
+/** Per-item stagger: a transition-delay that grows with the row index, so menu
+ * items fade and slide in one after another (cf. the payload-test menu). */
+function delay(index: number): React.CSSProperties {
+	return { "--delay": `${120 + index * 45}ms` } as React.CSSProperties
+}
+
+/** Shared enter animation — items rest hidden (shifted + transparent) and, once
+ * their panel is active, slide to place and fade in on the staggered delay.
+ * Motion is dropped for visitors who prefer reduced motion. */
+const enter =
+	"translate-x-4 opacity-0 transition-[opacity,translate] duration-500 group-data-active/panel:translate-x-0 group-data-active/panel:opacity-100 group-data-active/panel:delay-(--delay) motion-reduce:transition-none"
+
+/** Same idea as `enter`, but the feature panel's copy reacts to the menu opening
+ * (not a layer activating), so it keys off the nav-level `group/menu`. */
+const featureEnter =
+	"translate-x-4 opacity-0 transition-[opacity,translate] duration-700 ease-out group-data-open/menu:translate-x-0 group-data-open/menu:opacity-100 group-data-open/menu:delay-(--delay) motion-reduce:transition-none"
+
+const rowClass = cn(
+	"group/item flex w-full items-center justify-between gap-4 border-b border-current/10 py-4 text-left font-medium",
+	enter,
+)
 
 /** Build the upstream search URL for the chosen scope. Collections Online is a
  * hash-routed SPA (`#/search/simple-search/{phrase}`); the museum site runs a
@@ -18,17 +258,83 @@ function searchUrl(scope: SearchScope, phrase: string): string {
 	return `${museum.urls.parent.origin}/search/site/${query}`
 }
 
+/** One sliding layer of the menu's left column. Only the active layer is visible
+ * and interactive; the rest sit transparent and inert beneath it, so the primary
+ * list and each submenu cross-fade in place. */
+function MenuPanel({ active, children }: { active: boolean; children: ReactNode }) {
+	return (
+		<div
+			data-active={active || undefined}
+			inert={!active}
+			className="group/panel pointer-events-none absolute inset-0 overflow-y-auto overscroll-contain px-[5vw] py-8 data-active:pointer-events-auto"
+		>
+			{children}
+		</div>
+	)
+}
+
 export function Header() {
 	const hidden = useHeaderScrollHide()
-	const [searchOpen, setSearchOpen] = useState(false)
+	const [open, setOpen] = useState<Panel | null>(null)
+	const [path, setPath] = useState("")
 	const [scope, setScope] = useState<SearchScope>("collections-online")
 	const [phrase, setPhrase] = useState("")
 	const headerRef = useRef<HTMLDivElement>(null)
+	const menuRef = useRef<HTMLElement>(null)
+	const menuButtonRef = useRef<HTMLButtonElement>(null)
+	const searchButtonRef = useRef<HTMLButtonElement>(null)
+	const searchInputRef = useRef<HTMLInputElement>(null)
+	const lastOpen = useRef<Panel | null>(null)
 
+	const searchOpen = open === "search"
+	const menuOpen = open === "menu"
+
+	// publish the header's height so the overlays can clear it; track it live
+	// (the logo settles after mount, and it changes across breakpoints)
 	useEffect(() => {
-		if (!headerRef.current) return
-		document.body.style.setProperty("--header-height", `${headerRef.current.offsetHeight}px`)
-	}, [headerRef])
+		const header = headerRef.current
+		if (!header) return
+		function publishHeight() {
+			const el = headerRef.current
+			if (el) document.body.style.setProperty("--header-height", `${el.offsetHeight}px`)
+		}
+		publishHeight()
+		const observer = new ResizeObserver(publishHeight)
+		observer.observe(header)
+		return () => observer.disconnect()
+	}, [])
+
+	// leaving the menu resets it back to the primary list
+	useEffect(() => {
+		if (open !== "menu") setPath("")
+	}, [open])
+
+	// Escape steps back: up one menu layer first, then closes the panel entirely
+	useEffect(() => {
+		if (!open) return
+		function onKeyDown(event: KeyboardEvent) {
+			if (event.key !== "Escape") return
+			if (open === "menu" && path) setPath(parentPath(path))
+			else setOpen(null)
+		}
+		window.addEventListener("keydown", onKeyDown)
+		return () => window.removeEventListener("keydown", onKeyDown)
+	}, [open, path])
+
+	// move focus into a panel as it opens (and on each menu drill) and back to its
+	// trigger when it closes, so keyboard focus never lands on the now-inert overlay
+	useEffect(() => {
+		const previous = lastOpen.current
+		lastOpen.current = open
+		if (open === "search") searchInputRef.current?.focus({ preventScroll: true })
+		else if (open === "menu") {
+			const target = menuRef.current?.querySelector<HTMLElement>(
+				"[data-active] a, [data-active] button",
+			)
+			target?.focus({ preventScroll: true })
+		} else if (previous === "search") searchButtonRef.current?.focus({ preventScroll: true })
+		else if (previous === "menu") menuButtonRef.current?.focus({ preventScroll: true })
+	}, [open, path])
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
@@ -41,26 +347,78 @@ export function Header() {
 		<>
 			<header
 				ref={headerRef}
-				data-hidden={hidden || undefined}
+				// keep the header pinned while a panel is open, even mid-scroll
+				data-hidden={(hidden && !open) || undefined}
 				className="sticky top-0 z-20 flex items-center justify-between border-b border-current/10 accented px-[5vw] py-4 transition-[translate,opacity] duration-500 data-hidden:pointer-events-none data-hidden:-translate-y-full data-hidden:opacity-0"
 			>
 				<a href={museum.url.toString()}>
 					<Image src={prmLogo} alt={museum.name} width={150} loading="eager" />
 				</a>
-				<div>
+				<div className="flex items-center gap-6">
+					<div className="flex gap-4 text-sm max-lg:hidden">
+						<Link
+							className="animated-underline hover:[--underline-w:100%]"
+							href={resolveHref("/about-us-0")}
+						>
+							About
+						</Link>
+						<Link
+							className="animated-underline hover:[--underline-w:100%]"
+							href={resolveHref("/hire-the-museum-0")}
+						>
+							Hire the Museum
+						</Link>
+						<Link
+							className="animated-underline hover:[--underline-w:100%]"
+							href={resolveHref("/newsletter")}
+						>
+							Newsletter
+						</Link>
+						<Link
+							className="animated-underline hover:[--underline-w:100%]"
+							href={resolveHref("https://ox.ac.uk/")}
+						>
+							University of Oxford
+						</Link>
+					</div>
 					<button
-						className="rounded-full p-2"
+						ref={searchButtonRef}
+						className="rounded-full"
 						data-open={searchOpen || undefined}
-						onClick={() => setSearchOpen(!searchOpen)}
+						aria-label={searchOpen ? "Close search" : "Search"}
+						aria-expanded={searchOpen}
+						aria-controls="site-search"
+						onClick={() => setOpen(searchOpen ? null : "search")}
 					>
-						<span className="search-icon"></span>
+						<span className="search-icon text-base"></span>
+					</button>
+					<button
+						ref={menuButtonRef}
+						className="group rounded-full"
+						data-open={menuOpen || undefined}
+						aria-label={menuOpen ? "Close menu" : "Open menu"}
+						aria-expanded={menuOpen}
+						aria-controls="main-menu"
+						onClick={() => setOpen(menuOpen ? null : "menu")}
+					>
+						{/* three-bar burger that folds into an X when open (cf. the
+						 * payload-test header): the middle bar collapses while the outer
+						 * bars slide to centre and cross */}
+						<span className="grid w-5 gap-1.25 [&>span]:h-0.5 [&>span]:w-full [&>span]:rounded-full [&>span]:bg-current [&>span]:transition [&>span]:duration-300">
+							<span className="origin-center group-data-open:translate-y-1.75 group-data-open:rotate-45" />
+							<span className="group-data-open:scale-x-0" />
+							<span className="origin-center group-data-open:-translate-y-1.75 group-data-open:-rotate-45" />
+						</span>
 					</button>
 				</div>
 			</header>
 			<form
+				id="site-search"
+				role="search"
+				aria-label="Site search"
 				onSubmit={handleSubmit}
 				data-open={searchOpen || undefined}
-				className="fixed z-10 flex w-full -translate-y-full items-center justify-center overflow-auto rounded-b-4xl accented pt-(--header-height) shadow-2xl transition-[translate] duration-500 data-open:translate-none"
+				className="fixed z-10 flex w-full -translate-y-full items-center justify-center overflow-auto rounded-b-4xl accented pt-(--header-height) transition-[translate,box-shadow] duration-500 data-open:translate-none data-open:shadow-2xl"
 				inert={!searchOpen}
 			>
 				<div className="grid w-full gap-4 p-[5vw] text-sm">
@@ -70,6 +428,7 @@ export function Header() {
 							<select
 								value={scope}
 								onChange={(event) => setScope(event.target.value as SearchScope)}
+								aria-label="Search scope"
 								className="w-full appearance-none rounded-md bg-background p-4 pr-8 text-foreground"
 							>
 								<option value="collections-online">Collections Online</option>
@@ -78,10 +437,12 @@ export function Header() {
 							<ChevronDownIcon className="absolute top-1/2 right-2 -translate-y-1/2 transform text-foreground" />
 						</div>
 						<input
+							ref={searchInputRef}
 							type="search"
 							value={phrase}
 							onChange={(event) => setPhrase(event.target.value)}
 							placeholder="Search by keyword"
+							aria-label="Search by keyword"
 							className="w-full appearance-none rounded-md bg-background p-4 text-foreground"
 						/>
 						<Button type="submit" fill="var(--color-secondary)" className="px-6 font-bold">
@@ -90,6 +451,147 @@ export function Header() {
 					</div>
 				</div>
 			</form>
+			<nav
+				id="main-menu"
+				ref={menuRef}
+				aria-label="Main menu"
+				data-open={menuOpen || undefined}
+				// full-height overlay that slides down from behind the still-visible
+				// sticky header (cf. ox.ac.uk's menu): links on the left, feature image
+				// on the right. Locked to the viewport (`inset-0` + `overflow-hidden`)
+				// with `grid-rows-[1fr]` stretching both columns, so the image fills the
+				// height and each column scrolls internally rather than the page.
+				className="group/menu fixed inset-0 z-10 grid -translate-y-full grid-rows-[1fr] overflow-hidden accented pt-(--header-height) transition-[translate,box-shadow] duration-500 data-open:translate-none data-open:shadow-2xl md:grid-cols-2"
+				inert={!menuOpen}
+			>
+				<div className="relative min-h-0 overflow-hidden">
+					{/* every layer is rendered up front; only the one matching `path` is
+					 * active, so drilling in and out is a cross-fade between layers */}
+					{menuPanels.map((panel) => (
+						<MenuPanel key={panel.id || "root"} active={menuOpen && path === panel.id}>
+							{panel.parentId !== null && (
+								<button
+									type="button"
+									onClick={() => setPath(panel.parentId ?? "")}
+									className={cn(
+										"group/item mb-6 inline-flex items-center gap-2 text-lg font-medium",
+										enter,
+									)}
+									style={delay(0)}
+								>
+									<svg
+										aria-hidden
+										className="text-xl transition-transform duration-300 group-hover/item:-translate-x-1"
+									>
+										<use href="/sprite.svg#arrow-left" />
+									</svg>
+									Go back
+								</button>
+							)}
+							{panel.href !== null && panel.title !== null && (
+								<h2
+									className={cn(
+										"mb-1 border-b border-current/10 pb-4 text-4xl font-semibold",
+										enter,
+									)}
+									style={delay(1)}
+								>
+									<a href={resolveHref(panel.href)} className="group/item inline-block">
+										<span className="animated-underline group-hover/item:[--underline-w:100%]">
+											{panel.title}
+										</span>
+									</a>
+								</h2>
+							)}
+							<ol className="grid">
+								{panel.items.map((item, index) => {
+									const hasChildren = !!item.children?.length
+									const childId = panel.id ? `${panel.id}/${item.label}` : item.label
+									// deeper layers offset the stagger past the "Go back" + heading rows
+									const style = delay(panel.parentId === null ? index : index + 2)
+									const className = cn(
+										rowClass,
+										panel.parentId === null ? "text-4xl" : "text-2xl",
+									)
+									const label = (
+										<span className="animated-underline group-hover/item:[--underline-w:100%]">
+											{item.label}
+										</span>
+									)
+									return (
+										<li key={item.label + index}>
+											{hasChildren ? (
+												<button
+													type="button"
+													onClick={() => setPath(childId)}
+													className={className}
+													style={style}
+												>
+													{label}
+													<svg
+														aria-hidden
+														className="shrink-0 text-2xl transition-transform duration-300 group-hover/item:translate-x-1"
+													>
+														<use href="/sprite.svg#arrow" />
+													</svg>
+												</button>
+											) : (
+												<a
+													href={resolveHref(item.href)}
+													className={className}
+													style={style}
+												>
+													{label}
+												</a>
+											)}
+										</li>
+									)
+								})}
+							</ol>
+						</MenuPanel>
+					))}
+				</div>
+				<aside className="relative hidden overflow-hidden md:block">
+					{/* slow ken-burns: rests zoomed in and eases back to 1:1 as the menu opens */}
+					<img
+						src={featureImage}
+						alt="The Pitt Rivers Museum court, filled with display cases"
+						loading="lazy"
+						decoding="async"
+						className="absolute inset-0 size-full scale-[1.2] object-cover transition-transform duration-1500 ease-out group-data-open/menu:scale-100 motion-reduce:transition-none"
+					/>
+					{/* darken the lower image so the feature copy stays legible */}
+					<span
+						className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent"
+						aria-hidden
+					/>
+					<div className="relative grid h-full content-end gap-4 p-[5vw] text-white md:p-10">
+						<h2 className={cn("text-4xl font-semibold", featureEnter)} style={delay(0)}>
+							Plan your visit
+						</h2>
+						<p
+							className={cn("max-w-prose text-pretty text-white/85", featureEnter)}
+							style={delay(1)}
+						>
+							Free entry, no booking required. Discover over half a million objects from
+							cultures across the world.
+						</p>
+						<div className={cn("mt-2 justify-self-start", featureEnter)} style={delay(2)}>
+							<Button
+								href={`${museum.urls.parent.origin}/visit-us`}
+								fill="var(--color-secondary)"
+								revealIcon
+								className="font-bold"
+							>
+								Plan your visit
+								<svg aria-hidden>
+									<use href="/sprite.svg#arrow" />
+								</svg>
+							</Button>
+						</div>
+					</div>
+				</aside>
+			</nav>
 		</>
 	)
 }

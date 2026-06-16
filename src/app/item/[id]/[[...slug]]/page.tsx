@@ -1,9 +1,10 @@
 import { cache } from "react"
+import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { api } from "$library/api"
+import { api, RecordNotFoundError } from "$library/api"
 import { furtherItemsSection } from "$library/further-items"
 import { slugify } from "$library/slug"
-import { derivative, legacyBackLink } from "$library/utils"
+import { derivative } from "$library/utils"
 import { collectionObjectJsonLd, imageUrls, metaDescription, openGraphDefaults } from "$library/seo"
 import { CollectionObjectLayout } from "$layouts/collection-object"
 import type { CollectionObject, IIIFManifest } from "$library/types"
@@ -15,15 +16,36 @@ type Params = {
 		// cosmetic only — never read, just makes URLs human-friendly
 		slug?: Array<string>
 	}>
-	searchParams: Promise<{
-		return?: string
-	}>
+}
+
+// Incremental Static Regeneration: serve a prerendered, crawlable page and
+// refresh it in the background at most once a day, matching the upstream's 24h
+// reindex — a shorter interval would just regenerate identical pages. The
+// visitor's `?return=` back link is resolved client-side (see BackButton) so the
+// page itself reads no request-time APIs and stays statically prerenderable.
+export const revalidate = 86400
+
+// Don't prebuild the catalogue at build time — it's far too large. An empty
+// list opts the route into static generation with on-demand ISR: each record is
+// generated on first request, cached, then revalidated on the interval above.
+// Unknown ids are generated on demand too (dynamicParams defaults to true).
+export function generateStaticParams(): Array<{ id: string; slug?: Array<string> }> {
+	return []
 }
 
 // generateMetadata and the page both need the record (and its manifest), so
 // memoize per request — React dedupes by argument, and the cached record gives
 // getDamsIiif a stable reference, so each upstream call happens at most once.
-const loadObject = cache((id: CollectionObject["id"]) => api.getCollectionObject(id))
+const loadObject = cache(async (id: CollectionObject["id"]) => {
+	try {
+		return await api.getCollectionObject(id)
+	} catch (error) {
+		// a genuine miss renders the 404 page (and ISR caches it); real errors
+		// propagate so the last good page keeps serving and Next retries instead
+		if (error instanceof RecordNotFoundError) notFound()
+		throw error
+	}
+})
 const loadIiif = cache((object: CollectionObject) => api.getDamsIiif(object))
 
 /** The slug-worthy title: the record title, unless that's just the object
@@ -397,9 +419,8 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 
 export type Props = ReturnType<typeof props>
 
-export default async function Page({ params, searchParams }: Params) {
+export default async function Page({ params }: Params) {
 	const { id } = await params
-	const { return: returnUrl } = await searchParams
 	const object = await loadObject(id)
 	const [iiif, relatedItems] = await Promise.all([loadIiif(object), api.getFurtherItems(object)])
 
@@ -422,7 +443,6 @@ export default async function Page({ params, searchParams }: Params) {
 			/>
 			<CollectionObjectLayout
 				{...data}
-				backLink={legacyBackLink(returnUrl)}
 				furtherItems={furtherItemsSection(object, relatedItems)}
 			/>
 		</>
