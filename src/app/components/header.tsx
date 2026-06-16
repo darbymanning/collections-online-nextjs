@@ -41,7 +41,13 @@ function buildMenuPanels(nav: Array<MenuItem>): Array<MenuPanelDef> {
 		panels.push({ id, parentId, title, href, items })
 		for (const item of items) {
 			if (item.children?.length) {
-				walk(item.children, id ? `${id}/${item.label}` : item.label, id, item.label, item.href ?? null)
+				walk(
+					item.children,
+					id ? `${id}/${item.label}` : item.label,
+					id,
+					item.label,
+					item.href ?? null,
+				)
 			}
 		}
 	}
@@ -334,7 +340,11 @@ export function Header() {
 													/>
 												</button>
 											) : item.href ? (
-												<a href={resolveHref(item.href)} className={className} style={style}>
+												<a
+													href={resolveHref(item.href)}
+													className={className}
+													style={style}
+												>
 													{label}
 												</a>
 											) : (

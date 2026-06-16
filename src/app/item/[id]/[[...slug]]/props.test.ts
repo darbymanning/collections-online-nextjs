@@ -149,7 +149,8 @@ onlyFor("ash")("props (ash)", () => {
 
 	test("links the find-spot place hierarchy", () => {
 		const [findSpot] = result.geographicalProvenance ?? []
-		const labels = findSpot && "links" in findSpot ? (findSpot.links?.map((l) => l.label) ?? []) : []
+		const labels =
+			findSpot && "links" in findSpot ? (findSpot.links?.map((l) => l.label) ?? []) : []
 
 		expect(findSpot).toMatchObject({ association: "find spot" })
 		expect(labels).toHaveLength(9)
