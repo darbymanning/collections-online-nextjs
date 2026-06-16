@@ -10,7 +10,7 @@ export const museums = {
 		slug: "tin-glazed-tile-in-italian-style",
 		h1: "Tin-glazed tile in Italian style",
 		pageTitle: "Tin-glazed tile in Italian style",
-		origin: "https://collections-online-nextjs.ashmolean.org",
+		origin: "https://co-ash.vercel.app",
 		legacyHref: "https://www.ashmolean.org/collections-online#/item/ash-object-312375",
 		simpleSearchHref: "https://www.ashmolean.org/collections-online#/search/simple-search",
 		legacySearchReturn:
@@ -35,7 +35,7 @@ export const museums = {
 		slug: "topaz-single-colourless-crystal",
 		h1: "Topaz (single colourless crystal)",
 		pageTitle: "Topaz (single colourless crystal)",
-		origin: "https://collections-online-nextjs.oumnh.ox.ac.uk",
+		origin: "https://co-oum.vercel.app",
 		legacyHref: "https://www.oumnh.ox.ac.uk/collections-online#/item/oum-catalogue-36916",
 		simpleSearchHref: "https://www.oumnh.ox.ac.uk/collections-online#/search/simple-search",
 		legacySearchReturn:
@@ -63,7 +63,7 @@ export const museums = {
 		slug: "headdress-mask-representing-abam-a-predatory-fish",
 		h1: "1938.15.69",
 		pageTitle: "Headdress mask representing Abam, a predatory fish.",
-		origin: "https://collections-online-nextjs.prm.ox.ac.uk",
+		origin: "https://co-prm.vercel.app",
 		legacyHref: "https://www.prm.ox.ac.uk/collections-online#/item/prm-object-79439",
 		simpleSearchHref: "https://www.prm.ox.ac.uk/collections-online#/search/simple-search",
 		legacySearchReturn:
@@ -91,7 +91,7 @@ export const museums = {
 		h1: "Two Cardboard Boxes for 'Lab Snacks', Issued by Thorlabs, New Jersey, USA, Early 21st Century",
 		pageTitle:
 			"Two Cardboard Boxes for 'Lab Snacks', Issued by Thorlabs, New Jersey, USA, Early 21st Century",
-		origin: "https://collections-online-nextjs.hsm.ox.ac.uk",
+		origin: "https://co-hsm.vercel.app",
 		legacyHref: "https://www.hsm.ox.ac.uk/collections-online#/item/hsm-catalogue-29715",
 		simpleSearchHref: "https://www.hsm.ox.ac.uk/collections-online#/search/simple-search",
 		legacySearchReturn:

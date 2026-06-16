@@ -58,8 +58,12 @@ test("serves a per-museum robots.txt", async ({ page }) => {
 	if (museum.indexable) {
 		// AI answer engines are explicitly welcomed (AGO)
 		expect(body).toContain("OAI-SearchBot")
+		// the externally hosted sitemap index is advertised (museum.sitemap in config)
+		expect(body).toContain("Sitemap: https://co-")
+		expect(body).toContain("-sitemap.vercel.app/sitemap.xml")
 	} else {
-		// opted-out museums don't advertise an AI allowlist
+		// opted-out museums don't advertise an AI allowlist or a sitemap
 		expect(body).not.toContain("OAI-SearchBot")
+		expect(body).not.toContain("Sitemap:")
 	}
 })

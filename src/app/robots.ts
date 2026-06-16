@@ -23,17 +23,6 @@ export default function robots(): MetadataRoute.Robots {
 		}
 	}
 
-	// Sitemaps are generated and hosted outside this app — the backend indexing
-	// stack writes the XML to static storage and we just point crawlers at it (see
-	// docs/seo-options.md). `SITEMAP_URL` carries the absolute URL(s) of that
-	// external sitemap (or sitemap index), set per deployment; for the Phase 0 POC
-	// it points at a small hand-written sitemap hosted separately. Comma-separate
-	// to advertise several files.
-	const sitemap = (process.env.SITEMAP_URL ?? "")
-		.split(",")
-		.map((url) => url.trim())
-		.filter(Boolean)
-
 	return {
 		rules: [
 			// AI answer engines we welcome (AGO) — explicit, so intent is visible
@@ -43,6 +32,10 @@ export default function robots(): MetadataRoute.Robots {
 			// everyone else, incl. Googlebot/Bingbot, may crawl everything
 			{ userAgent: "*", allow: "/" },
 		],
-		...(sitemap.length > 0 && { sitemap }),
+		// Sitemaps are generated and hosted outside this app — the backend indexing
+		// stack writes the XML to static storage and we just point crawlers at it
+		// (see docs/seo-options.md). The per-museum index URL lives in config
+		// (`museum.sitemap`); for the Phase 0 POC it's the separate sitemap app.
+		...(museum.sitemap && { sitemap: museum.sitemap.toString() }),
 	}
 }

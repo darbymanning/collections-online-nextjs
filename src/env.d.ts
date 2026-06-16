@@ -14,10 +14,6 @@ declare global {
 			 * @see {@link Museum}
 			 * @see {@link museumDirectory} */
 			NEXT_PUBLIC_MUSEUM: Museum
-			/** Absolute URL(s) of the external sitemap (or sitemap index) advertised in
-			 * `robots.txt`. Comma-separate to list several files. Generated and hosted
-			 * outside this app — see docs/seo-options.md. */
-			SITEMAP_URL?: string
 			/** HTTP basic auth password — platform env only, not in varlock schema. */
 			BASIC_AUTH_PASS?: string
 		}
@@ -27,9 +23,6 @@ declare global {
 declare module "varlock/env" {
 	interface TypedEnvSchema {
 		NEXT_PUBLIC_MUSEUM: Museum
-		/** Absolute URL(s) of the external sitemap (or sitemap index) advertised in
-		 * `robots.txt`. See docs/seo-options.md. */
-		SITEMAP_URL?: string
 		/** HTTP basic auth username — enables the gate when set with `BASIC_AUTH_PASS`. */
 		BASIC_AUTH_USER?: string
 	}

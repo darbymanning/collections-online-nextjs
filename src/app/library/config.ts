@@ -30,6 +30,11 @@ type MuseumConfig = {
 	 * `co.*` subdomain later. Drives canonical URLs, OG/JSON-LD, and the sitemap —
 	 * so it must equal the host the pages are actually served from. */
 	self: URL
+	/** Full URL of this museum's externally generated sitemap index, advertised in
+	 * `robots.txt`. The per-museum sitemap app (`co-<ref>-sitemap.vercel.app`),
+	 * generated outside this repo — see docs/seo-options.md. Omitted for museums
+	 * that opt out of indexing (Pitt Rivers), which advertise no sitemap. */
+	sitemap?: URL
 	/** The museum's main public website. */
 	url: URL
 	/** IIIF DAMs base, for museums that have one (ash, prm). */
@@ -60,6 +65,7 @@ export const museumDirectory = {
 		ref: "ash",
 		name: "Ashmolean Museum",
 		self: new URL("https://co-ash.vercel.app"),
+		sitemap: new URL("https://co-ash-sitemap.vercel.app/sitemap.xml"),
 		url: new URL("https://www.ashmolean.org"),
 		dams: new URL("https://dams.ashmus.ox.ac.uk/iiif/"),
 		// teaser thumbnails come straight from this S3 bucket, not the DAMs
@@ -75,6 +81,7 @@ export const museumDirectory = {
 		ref: "oum",
 		name: "Oxford University Museum of Natural History",
 		self: new URL("https://co-oum.vercel.app"),
+		sitemap: new URL("https://co-oum-sitemap.vercel.app/sitemap.xml"),
 		url: new URL("https://www.oumnh.ox.ac.uk"),
 		// no DAMs/IIIF — images are served straight from S3 via `multimedia` paths
 		multimedia: new URL(
@@ -106,6 +113,7 @@ export const museumDirectory = {
 		ref: "hsm",
 		name: "History of Science Museum",
 		self: new URL("https://co-hsm.vercel.app"),
+		sitemap: new URL("https://co-hsm-sitemap.vercel.app/sitemap.xml"),
 		url: new URL("https://www.hsm.ox.ac.uk"),
 		// no DAMs/IIIF — images are served straight from S3 via `multimedia` paths
 		multimedia: new URL(
