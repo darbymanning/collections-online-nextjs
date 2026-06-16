@@ -2,15 +2,14 @@
 
 import { Button } from "$components/button"
 import { legacyBackLink, type BackLink } from "$library/utils"
+import { ArrowLeft } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import type { ReactElement } from "react"
 
 function View({ href, label }: BackLink): ReactElement {
 	return (
-		<Button href={href} revealIcon className="mt-6 text-background" data-testid="back-link">
-			<svg aria-hidden>
-				<use href="/sprite.svg#arrow-left" />
-			</svg>
+		<Button href={href} revealIcon className="mt-6 text-on-band" data-testid="back-link">
+			<ArrowLeft aria-hidden />
 			{label}
 		</Button>
 	)

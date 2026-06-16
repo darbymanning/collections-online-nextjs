@@ -24,6 +24,10 @@ export const metadata: Metadata = {
 	// site-wide indexing policy; opted-out museums emit noindex everywhere
 	robots: robotsMetadata,
 	openGraph: { ...openGraphDefaults, url: museum.urls.self },
+	// per-museum favicon: an SVG of the museum's brand mark (public/icons/<ref>.svg)
+	// that carries its own `prefers-color-scheme` rule, so the browser flips the
+	// monochrome marks (Ashmolean, OUM) black↔white as the OS theme changes
+	icons: { icon: { url: `/icons/${museum.ref}.svg`, type: "image/svg+xml" } },
 }
 
 export default function RootLayout({
@@ -43,7 +47,7 @@ export default function RootLayout({
 					Skip to content
 				</a>
 				<Header />
-				<main id="main-content" tabIndex={-1} className="flex flex-col focus:outline-none">
+				<main id="main-content" tabIndex={-1} className="flex grow flex-col focus:outline-none">
 					{children}
 				</main>
 			</body>

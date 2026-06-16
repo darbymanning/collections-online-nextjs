@@ -3,7 +3,7 @@
 import { Button } from "$components/button"
 import type { FurtherItem, FurtherItemsSection } from "$library/further-items"
 import useEmblaCarousel from "embla-carousel-react"
-import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react"
+import { ArrowRight, ChevronLeft, ChevronRight, ImageOff } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
@@ -57,9 +57,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 				{more && (
 					<Button href={more.href} revealIcon>
 						{more.label}
-						<svg aria-hidden>
-							<use href="/sprite.svg#arrow" />
-						</svg>
+						<ArrowRight aria-hidden />
 					</Button>
 				)}
 			</div>
@@ -97,7 +95,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 										/>
 									) : (
 										// no-image fallback: elegant accent card with a muted icon
-										<span className="grid size-full place-items-center bg-primary text-[3rem] text-white/40">
+										<span className="grid size-full place-items-center bg-primary text-[3rem] text-on-accent/40">
 											<ImageOff strokeWidth={1} aria-hidden />
 										</span>
 									)}
@@ -164,7 +162,7 @@ export function FurtherItems({ title, items, more }: FurtherItemsSection) {
 						onClick={() => emblaApi?.scrollNext()}
 						disabled={!canNext}
 						aria-label="More items"
-						className="grid size-12 place-items-center rounded-full bg-primary text-2xl text-white transition-opacity disabled:opacity-40"
+						className="grid size-12 place-items-center rounded-full bg-primary text-2xl text-on-accent transition-opacity disabled:opacity-40"
 					>
 						<ChevronRight aria-hidden />
 					</button>

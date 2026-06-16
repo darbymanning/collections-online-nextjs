@@ -13,7 +13,8 @@
     "test": "bun scripts/test-unit.ts",
     "test:e2e": "playwright test",
     "test:all": "bun run test && bun run test:e2e",
-    "fixtures": "bun scripts/fixtures.ts"
+    "fixtures": "bun scripts/fixtures.ts",
+    "scrape": "bun scripts/scrape.ts"
   },
   "dependencies": {
     "@varlock/nextjs-integration": "1.1.3",

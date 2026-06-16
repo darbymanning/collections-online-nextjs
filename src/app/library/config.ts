@@ -1,10 +1,34 @@
+import type { StaticImageData } from "next/image"
+import prmLogo from "$assets/prm-logo.svg"
+import ashLogo from "$assets/ash-logo.svg"
+import oumLogo from "$assets/oum-logo.svg"
+import hsmLogo from "$assets/hsm-logo.svg"
+import prmHero from "$assets/prm-hero.jpg"
+import ashHero from "$assets/ash-hero.jpg"
+import oumHero from "$assets/oum-hero.jpg"
+import hsmHero from "$assets/hsm-hero.jpg"
+// `topLinks` and `nav` are scraped from each museum's live site — regenerate with
+// `bun run scrape` (see scripts/scrape.ts). Everything else here is hand-authored.
+import { nav as ashNav, topLinks as ashTopLinks } from "./scraped.ash"
+import { nav as oumNav, topLinks as oumTopLinks } from "./scraped.oum"
+import { nav as prmNav, topLinks as prmTopLinks } from "./scraped.prm"
+import { nav as hsmNav, topLinks as hsmTopLinks } from "./scraped.hsm"
+
+/** A node in a museum's burger-menu tree. A node with `children` drills into a
+ * deeper layer (and its `href`, when present, becomes that layer's heading link);
+ * a leaf links out via `href`. Mirrors each museum's own primary navigation. */
+export type MenuItem = { label: string; href?: string; children?: Array<MenuItem> }
+
 /** Shared shape every museum entry must satisfy. Listing it explicitly means
  * adding a new museum is a type error until it declares its SEO policy —
  * `indexable` and `schema` can't be forgotten. */
 type MuseumConfig = {
 	ref: string
 	name: string
-	/** Public Collections Online host for this deployment (the `co.*` subdomain). */
+	/** Public Collections Online host for this deployment. Phase 0 POC: the
+	 * per-museum Vercel deployment (`co-<ref>.vercel.app`), which becomes the real
+	 * `co.*` subdomain later. Drives canonical URLs, OG/JSON-LD, and the sitemap —
+	 * so it must equal the host the pages are actually served from. */
 	self: URL
 	/** The museum's main public website. */
 	url: URL
@@ -35,7 +59,7 @@ export const museumDirectory = {
 	ash: {
 		ref: "ash",
 		name: "Ashmolean Museum",
-		self: new URL("https://collections-online-nextjs.ashmolean.org"),
+		self: new URL("https://co-ash.vercel.app"),
 		url: new URL("https://www.ashmolean.org"),
 		dams: new URL("https://dams.ashmus.ox.ac.uk/iiif/"),
 		// teaser thumbnails come straight from this S3 bucket, not the DAMs
@@ -50,7 +74,7 @@ export const museumDirectory = {
 	oum: {
 		ref: "oum",
 		name: "Oxford University Museum of Natural History",
-		self: new URL("https://collections-online-nextjs.oumnh.ox.ac.uk"),
+		self: new URL("https://co-oum.vercel.app"),
 		url: new URL("https://www.oumnh.ox.ac.uk"),
 		// no DAMs/IIIF — images are served straight from S3 via `multimedia` paths
 		multimedia: new URL(
@@ -64,7 +88,7 @@ export const museumDirectory = {
 	prm: {
 		ref: "prm",
 		name: "Pitt Rivers Museum",
-		self: new URL("https://collections-online-nextjs.prm.ox.ac.uk"),
+		self: new URL("https://co-prm.vercel.app"),
 		url: new URL("https://www.prm.ox.ac.uk"),
 		dams: new URL("https://dams.prm.ox.ac.uk/iiif/"),
 		// teaser thumbnails come straight from this S3 bucket, not the DAMs
@@ -81,7 +105,7 @@ export const museumDirectory = {
 	hsm: {
 		ref: "hsm",
 		name: "History of Science Museum",
-		self: new URL("https://collections-online-nextjs.hsm.ox.ac.uk"),
+		self: new URL("https://co-hsm.vercel.app"),
 		url: new URL("https://www.hsm.ox.ac.uk"),
 		// no DAMs/IIIF — images are served straight from S3 via `multimedia` paths
 		multimedia: new URL(
@@ -92,6 +116,80 @@ export const museumDirectory = {
 	},
 } as const satisfies Record<string, MuseumConfig>
 
+/** Everything the shared header renders for a museum: branding, the utility links
+ * across the top, the feature panel's image + copy, and the burger-menu tree.
+ * Sourced from each museum's own website. */
+type HeaderConfig = {
+	logo: StaticImageData
+	/** rendered logo width in px — logos differ in aspect ratio, so each museum
+	 * picks its own to land on a comparable header height */
+	logoWidth: number
+	hero: StaticImageData
+	heroAlt: string
+	topLinks: Array<{ label: string; href: string }>
+	feature: { title: string; text: string; href: string; label: string }
+	nav: Array<MenuItem>
+}
+
+const headers = {
+	prm: {
+		logo: prmLogo,
+		logoWidth: 150,
+		hero: prmHero,
+		heroAlt: "The Pitt Rivers Museum court, filled with display cases",
+		topLinks: prmTopLinks,
+		feature: {
+			title: "Plan your visit",
+			text: "Free entry, no booking required. Discover over half a million objects from cultures around the world.",
+			href: "/visit-us",
+			label: "Plan your visit",
+		},
+		nav: prmNav,
+	},
+	ash: {
+		logo: ashLogo,
+		logoWidth: 200,
+		hero: ashHero,
+		heroAlt: "The neoclassical façade of the Ashmolean Museum",
+		topLinks: ashTopLinks,
+		feature: {
+			title: "Plan your visit",
+			text: "Free entry to Britain's first public museum — art and archaeology from across the world.",
+			href: "/plan-your-visit",
+			label: "Plan your visit",
+		},
+		nav: ashNav,
+	},
+	oum: {
+		logo: oumLogo,
+		logoWidth: 56,
+		hero: oumHero,
+		heroAlt: "The neo-Gothic main court of the Museum of Natural History",
+		topLinks: oumTopLinks,
+		feature: {
+			title: "Plan your visit",
+			text: "Free entry, no booking required. Meet dinosaurs, dodos and the wonders of the natural world.",
+			href: "/visit-us",
+			label: "Plan your visit",
+		},
+		nav: oumNav,
+	},
+	hsm: {
+		logo: hsmLogo,
+		logoWidth: 150,
+		hero: hsmHero,
+		heroAlt: "Historic instruments in the gallery of the History of Science Museum",
+		topLinks: hsmTopLinks,
+		feature: {
+			title: "Plan your visit",
+			text: "Free entry to the world's finest collection of historic scientific instruments.",
+			href: "/plan-your-visit",
+			label: "Plan your visit",
+		},
+		nav: hsmNav,
+	},
+} satisfies Record<string, HeaderConfig>
+
 const current = museumDirectory[process.env.NEXT_PUBLIC_MUSEUM]
 const self = current.self
 const parent = new URL(current.url.origin)
@@ -100,6 +198,7 @@ const simpleSearch = new URL("#/search/simple-search", collectionsOnline)
 
 export const museum = {
 	...current,
+	header: headers[process.env.NEXT_PUBLIC_MUSEUM],
 	urls: {
 		self,
 		parent,

@@ -37,6 +37,12 @@ export function generateStaticParams(): Array<{ id: string; slug?: Array<string>
 // memoize per request — React dedupes by argument, and the cached record gives
 // getDamsIiif a stable reference, so each upstream call happens at most once.
 const loadObject = cache(async (id: CollectionObject["id"]) => {
+	// ids are namespaced by museum (e.g. "hsm-catalogue-43032"); the upstream
+	// serves every museum from one endpoint, so without this guard an ash
+	// deployment would happily render an hsm record under ash's branding. A
+	// foreign id is a 404 here, not a redirect — each museum has its own host.
+	if (!id.startsWith(`${museum.ref}-`)) notFound()
+
 	try {
 		return await api.getCollectionObject(id)
 	} catch (error) {

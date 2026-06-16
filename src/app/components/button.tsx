@@ -9,7 +9,17 @@ type Base = {
 	revealIcon?: boolean
 	/** pill size — `base` (default) or a more compact `sm`. */
 	size?: "base" | "sm"
+	/** accent colour: rest text + ring, and the fill that slides up on hover.
+	 * Defaults to the brand primary. */
 	fill?: string
+	/** text colour once the fill covers the button on hover. Defaults to
+	 * `--color-on-accent` (the accent's reverse colour); override when the fill
+	 * isn't a brand accent (e.g. a button sitting on the accent band itself). */
+	onFill?: string
+	/** rest text + ring (the outline before hover) colour. Defaults to `fill`, so the
+	 * outline previews the colour that slides up on hover; override when that fill is
+	 * too dark to read as an outline (e.g. a deep accent on a photo — see `.oum`). */
+	outline?: string
 }
 
 interface Link extends Base, Omit<ComponentPropsWithoutRef<typeof NextLink>, "children" | "href"> {
@@ -22,11 +32,17 @@ interface Button extends Base, Omit<ComponentPropsWithoutRef<"button">, "childre
 
 type Props = Link | Button
 
-type Rest = Omit<Link | Button, "children" | "revealIcon" | "size" | "className">
+type Rest = Omit<
+	Link | Button,
+	"children" | "revealIcon" | "size" | "className" | "fill" | "onFill" | "outline"
+>
 
 function isLink(
 	props: Rest,
-): props is Omit<Link, "children" | "revealIcon" | "size" | "className"> {
+): props is Omit<
+	Link,
+	"children" | "revealIcon" | "size" | "className" | "fill" | "onFill" | "outline"
+> {
 	return props.href !== undefined
 }
 
@@ -45,13 +61,20 @@ export function Button({
 	revealIcon,
 	size = "base",
 	className,
+	fill,
+	onFill,
+	outline,
 	...rest
 }: Props): ReactElement {
 	const merged = {
 		...rest,
-		style: { "--fill": rest.fill ?? "var(--color-primary)" } as CSSProperties,
+		style: {
+			"--fill": fill ?? "var(--color-primary)",
+			"--rest": outline ?? fill ?? "var(--color-primary)",
+			"--on-fill": onFill ?? "var(--color-on-accent)",
+		} as CSSProperties,
 		className: cn(
-			"group relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden rounded-md font-medium text-(--fill) no-underline ring-2 ring-(--fill/20) transition-[color,box-shadow] duration-300 hover:text-white hover:ring-(--fill)",
+			"group relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden rounded-md font-medium text-(--rest) no-underline ring-2 ring-(--rest/20) transition-[color,box-shadow] duration-300 hover:text-(--on-fill) hover:ring-(--fill)",
 			sizeClass[size],
 			revealIcon &&
 				"[&_svg]:h-[1em] [&_svg]:w-0 [&_svg]:opacity-0 [&_svg]:transition-all [&_svg]:duration-300 hover:[&_svg]:mx-1 hover:[&_svg]:w-[1em] hover:[&_svg]:opacity-100",

@@ -1,6 +1,6 @@
 import { museum } from "$library/config"
 import { slugify } from "$library/slug"
-import Link from "next/link"
+import { Button } from "$components/button"
 
 let id: string
 let title: string
@@ -30,9 +30,18 @@ switch (process.env.NEXT_PUBLIC_MUSEUM) {
 
 export default function Home() {
 	return (
-		<>
-			<Link href={`/item/${id}/${slugify(title)}`}>New</Link>
-			<Link href={`${museum.urls.legacy.collectionsOnline}#/item/${id}`}>Existing</Link>
-		</>
+		<main className="grid flex-1 content-center justify-center gap-5 bg-white text-center">
+			<pre className="font-mono text-sm tracking-wider text-foreground/60">{id}</pre>
+			<ol className="flex gap-6">
+				<li>
+					<Button href={`/item/${id}/${slugify(title)}`}>New Next.js app</Button>
+				</li>
+				<li>
+					<Button href={`${museum.urls.legacy.collectionsOnline}#/item/${id}`}>
+						Existing legacy
+					</Button>
+				</li>
+			</ol>
+		</main>
 	)
 }

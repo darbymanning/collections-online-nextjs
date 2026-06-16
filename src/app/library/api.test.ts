@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, mock, spyOn, test } from "bun:test"
-import { api } from "./api"
+import { api, RecordNotFoundError } from "./api"
 import { museum } from "./config"
 import type { CollectionObject } from "./types"
 
@@ -34,11 +34,19 @@ describe("api.getCollectionObject", () => {
 		expect(object).toEqual(partial({ id: "ash-object-312375" }))
 	})
 
-	test("throws on a non-ok response", async () => {
+	test("throws RecordNotFoundError on a missing record (404)", async () => {
 		mockFetch(json(null, 404))
 
-		expect(api.getCollectionObject("ash-object-0")).rejects.toThrow(
-			"Failed to load collection object: 404",
+		await expect(api.getCollectionObject("ash-object-0")).rejects.toBeInstanceOf(
+			RecordNotFoundError,
+		)
+	})
+
+	test("throws on a transient non-ok response", async () => {
+		mockFetch(json(null, 500))
+
+		await expect(api.getCollectionObject("ash-object-0")).rejects.toThrow(
+			"Failed to load collection object: 500",
 		)
 	})
 })
