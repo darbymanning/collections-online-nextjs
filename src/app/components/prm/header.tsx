@@ -3,6 +3,7 @@ import { museum } from "$library/config"
 import { cn } from "$library/utils"
 import Image from "next/image"
 import prmLogo from "$assets/prm-logo.svg"
+import prmHero from "$assets/prm-hero.jpg"
 import { useHeaderScrollHide } from "$hooks/use-scroll-hide"
 import { ChevronDownIcon } from "lucide-react"
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react"
@@ -215,11 +216,6 @@ function parentPath(path: string): string {
 	const index = path.lastIndexOf("/")
 	return index === -1 ? "" : path.slice(0, index)
 }
-
-/** The Pitt Rivers court — the museum's signature interior, served from the main
- * site's media library (cf. ox.ac.uk's menu feature image). */
-const featureImage =
-	"https://www.prm.ox.ac.uk/sites/default/files/styles/listing_landscape_textoverlay_left_bottom_image_1200/public/prm/images/media/pitt_rivers_18.5.22-1_copy.jpg"
 
 /** Off-site links keep their absolute URL; everything else resolves against the
  * museum's main website. */
@@ -553,12 +549,13 @@ export function Header() {
 				</div>
 				<aside className="relative hidden overflow-hidden md:block">
 					{/* slow ken-burns: rests zoomed in and eases back to 1:1 as the menu opens */}
-					<img
-						src={featureImage}
+					<Image
+						src={prmHero}
 						alt="The Pitt Rivers Museum court, filled with display cases"
-						loading="lazy"
-						decoding="async"
-						className="absolute inset-0 size-full scale-[1.2] object-cover transition-transform duration-1500 ease-out group-data-open/menu:scale-100 motion-reduce:transition-none"
+						fill
+						sizes="(min-width: 768px) 50vw, 0px"
+						placeholder="blur"
+						className="scale-[1.2] object-cover transition-transform duration-1500 ease-out group-data-open/menu:scale-100 motion-reduce:transition-none"
 					/>
 					{/* darken the lower image so the feature copy stays legible */}
 					<span
