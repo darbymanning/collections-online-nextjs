@@ -63,7 +63,7 @@ export function CollectionObjectLayout({
 	imageDownloads,
 	furtherItems,
 }: Props & { furtherItems?: FurtherItemsSection }) {
-	const breadcrumbClassName = "border-b border-b-current/10 px-[5vw] py-3 text-sm text-on-band"
+	const breadcrumbClassName = "border-b border-b-current/10 pl-[5vw] text-sm text-on-band"
 
 	return (
 		<div className="flex flex-col">
@@ -146,7 +146,7 @@ export function CollectionObjectLayout({
 				) : null}
 				<article className="grid gap-gap pt-gap">
 					<section className="mx-auto grid w-full max-w-wrap-small gap-8">
-						<dl className="grid grid-cols-[auto_60%] gap-y-1 text-sm [&_a]:animated-underline [&_a]:font-semibold [&_a]:text-primary [&_a]:hover:[--underline-w:100%] [&_dd]:col-start-2 [&_dd]:min-w-0 [&_dd]:whitespace-pre-line [&_dt]:col-start-1 [&_dt]:self-start [&_dt]:font-bold [&_dt]:text-primary [&>div]:col-span-full [&>div]:grid [&>div]:grid-cols-subgrid [&>div]:justify-items-start [&>div]:gap-x-4 [&>div]:gap-y-1 [&>div]:rounded-md [&>div]:px-4 [&>div]:py-3 [&>div]:odd:bg-primary/10">
+						<dl className="grid grid-cols-[auto_60%] gap-y-1 text-sm [&_a]:animated-underline [&_a]:font-semibold [&_a]:text-primary [&_a]:hover:[--underline-w:100%] [&_dd]:col-start-2 [&_dd]:min-w-0 [&_dd]:justify-self-stretch [&_dd]:wrap-break-word [&_dd]:whitespace-pre-line [&_dt]:col-start-1 [&_dt]:self-start [&_dt]:font-bold [&_dt]:text-primary [&>div]:col-span-full [&>div]:grid [&>div]:grid-cols-subgrid [&>div]:justify-items-start [&>div]:gap-x-4 [&>div]:gap-y-1 [&>div]:rounded-md [&>div]:px-4 [&>div]:py-3 [&>div]:odd:bg-primary/10">
 							{titleRow && (
 								<div>
 									<dt>Title</dt>
@@ -458,10 +458,7 @@ export function CollectionObjectLayout({
 								<div>
 									<dt>Reference URL</dt>
 									<dd>
-										<a
-											href={referenceURL}
-											className="block overflow-hidden text-ellipsis whitespace-nowrap"
-										>
+										<a href={referenceURL} className="block truncate">
 											{referenceURL}
 										</a>
 									</dd>

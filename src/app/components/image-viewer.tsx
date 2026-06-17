@@ -16,6 +16,12 @@ type Props = {
 	images: Array<Image>
 }
 
+// gestureSettingsTouch is a live, mutable settings object the viewer reads per
+// gesture, but it isn't in OpenSeadragon's public type definitions
+type ViewerWithGestures = OpenSeadragon.Viewer & {
+	gestureSettingsTouch: OpenSeadragon.GestureSettings
+}
+
 // rounded white control buttons floating over the viewer
 const controlClass =
 	"grid h-8 w-8 place-items-center rounded-full bg-white text-base/none font-bold text-gray-600 opacity-85 shadow-md ring-1 ring-black/5 transition-opacity duration-[250ms] hover:opacity-100"
@@ -26,15 +32,37 @@ export function ImageViewer({ label, images }: Props) {
 	const viewer = useRef<OpenSeadragon.Viewer>(null)
 	const [page, setPage] = useState(0)
 	const [fullscreen, setFullscreen] = useState(false)
-	const [scrollHint, setScrollHint] = useState(false)
+	// usage hint shown over the viewer: "scroll" nudges towards ⌘/Ctrl+scroll to zoom
+	// (mouse), "touch" towards two-finger panning (cf. google maps embed)
+	const [hint, setHint] = useState<"scroll" | "touch" | "">("")
 	const [isMac, setIsMac] = useState(false)
-	// scroll-to-zoom is gated behind a modifier key, except in fullscreen where
-	// there's no surrounding page to scroll; read live so the handler stays current
+	// scroll-to-zoom and one-finger pan are gated except in fullscreen, where there's
+	// no surrounding page to scroll; read live so the handlers stay current
 	const fullscreenRef = useRef(false)
 	const hintTimer = useRef<ReturnType<typeof setTimeout>>(null)
 
+	// flash a usage hint over the viewer, then fade it out
+	function showHint(kind: "scroll" | "touch") {
+		setHint(kind)
+		if (hintTimer.current) clearTimeout(hintTimer.current)
+		hintTimer.current = setTimeout(() => setHint(""), 1500)
+	}
+
+	// Cooperative gestures (cf. google maps embed): out of fullscreen a one-finger
+	// drag scrolls the page rather than panning the image — only two fingers pan and
+	// zoom. In fullscreen there's no page to scroll, so one-finger panning is restored.
+	function applyTouchMode(isFullscreen: boolean) {
+		const v = viewer.current
+		if (!v) return
+		const touchAction = isFullscreen ? "none" : "pan-y"
+		v.canvas.style.touchAction = touchAction
+		v.container.style.touchAction = touchAction
+		;(v as ViewerWithGestures).gestureSettingsTouch.dragToPan = isFullscreen
+	}
+
 	useEffect(() => {
 		fullscreenRef.current = fullscreen
+		applyTouchMode(fullscreen)
 	}, [fullscreen])
 
 	useEffect(() => {
@@ -65,11 +93,17 @@ export function ImageViewer({ label, images }: Props) {
 				navigatorPosition: "BOTTOM_RIGHT",
 				navigatorBorderColor: "transparent",
 				gestureSettingsMouse: { clickToZoom: true, dblClickToZoom: true },
+				// cooperative touch gestures: one finger scrolls the page, two pan/zoom
+				gestureSettingsTouch: { dragToPan: false },
 				// the default WebGL drawer logs "Error creating texture" in some browsers
 				drawer: "canvas",
 				maxZoomPixelRatio: 2,
 				visibilityRatio: 1,
 			})
+
+			// OpenSeadragon pins touch-action:none on its canvas, which traps page
+			// scroll on touch; relax it (and re-enable one-finger pan in fullscreen)
+			applyTouchMode(fullscreenRef.current)
 
 			// google-maps style: don't hijack the page scroll for zoom unless a
 			// modifier key is held; otherwise nudge the user towards it
@@ -82,9 +116,7 @@ export function ImageViewer({ label, images }: Props) {
 				event.preventDefaultAction = true
 				event.preventDefault = false
 
-				setScrollHint(true)
-				if (hintTimer.current) clearTimeout(hintTimer.current)
-				hintTimer.current = setTimeout(() => setScrollHint(false), 1500)
+				showHint("scroll")
 			})
 		})
 
@@ -98,14 +130,29 @@ export function ImageViewer({ label, images }: Props) {
 			if (event.key === "Escape" && !document.fullscreenElement) setFullscreen(false)
 		}
 
+		// while a single finger drags over the embedded viewer the page scrolls, so
+		// nudge the user towards two-finger panning; two fingers pan/zoom, clear it
+		function onTouchMove(event: TouchEvent) {
+			if (fullscreenRef.current) return
+			if (event.touches.length >= 2) {
+				if (hintTimer.current) clearTimeout(hintTimer.current)
+				setHint("")
+				return
+			}
+			showHint("touch")
+		}
+
+		const frameElement = frame.current
 		document.addEventListener("fullscreenchange", onFullscreenChange)
 		document.addEventListener("keydown", onKeyDown)
+		frameElement?.addEventListener("touchmove", onTouchMove, { passive: true })
 
 		return () => {
 			cancelled = true
 			if (hintTimer.current) clearTimeout(hintTimer.current)
 			document.removeEventListener("fullscreenchange", onFullscreenChange)
 			document.removeEventListener("keydown", onKeyDown)
+			frameElement?.removeEventListener("touchmove", onTouchMove)
 			viewer.current?.destroy()
 			viewer.current = null
 		}
@@ -167,12 +214,14 @@ export function ImageViewer({ label, images }: Props) {
 					aria-label={`Zoomable image of ${label}`}
 				/>
 				<div
-					aria-hidden={!scrollHint}
+					aria-hidden={!hint}
 					className="pointer-events-none absolute inset-0 grid place-items-center bg-black/40 opacity-0 transition-opacity duration-250 data-[show]:opacity-100"
-					data-show={scrollHint ? "" : undefined}
+					data-show={hint ? "" : undefined}
 				>
 					<p className="rounded-lg bg-black/70 px-4 py-2 text-center text-sm text-white">
-						Use {isMac ? "\u2318" : "Ctrl"} + scroll to zoom the image
+						{hint === "touch"
+							? "Use two fingers to move the image"
+							: `Use ${isMac ? "\u2318" : "Ctrl"} + scroll to zoom the image`}
 					</p>
 				</div>
 				<div className="absolute top-3 right-3 grid gap-2">
