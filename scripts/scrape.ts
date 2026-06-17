@@ -37,13 +37,9 @@ type TopLink = { label: string; href: string }
 
 /** Footer types — mirror `FooterData` in `config.ts`. */
 type SocialPlatform = "facebook" | "instagram" | "x" | "youtube" | "bluesky"
-type FooterPartner =
-	| "research-england"
-	| "athena-swan"
-	| "arts-council-england"
-	| "heritage-fund"
-	| "it-services"
-	| "oxford-mosaic"
+// Oxford Mosaic + IT Services are deliberately excluded — every site carries them,
+// so the footer hard-codes a single "powered by" mark rather than scraping them.
+type FooterPartner = "research-england" | "athena-swan" | "arts-council-england" | "heritage-fund"
 type FooterLink = { label: string; href: string }
 type Footer = {
 	social: Array<{ platform: SocialPlatform; href: string }>
@@ -162,13 +158,13 @@ function extractFromPage(): Scraped {
 	const PARTNERS: Array<{ key: FooterPartner; re: RegExp }> = [
 		{ key: "research-england", re: /re\.ukri\.org|research[\s-]*england/i },
 		{ key: "athena-swan", re: /athena[\s-]*swan|equality-charters\/athena/i },
-		{ key: "arts-council-england", re: /artscouncil|arts[\s-]*council/i },
+		// PRM's Arts Council logo has no real alt text — just the file name `grant_jpeg_black`
+		{ key: "arts-council-england", re: /artscouncil|arts[\s-]*council|grant[\s_]*jpeg/i },
+		// `tnlhlf` = The National Lottery Heritage Fund (PRM's heritage logo file name)
 		{
 			key: "heritage-fund",
-			re: /heritagefund|heritage[\s-]*fund|national[\s-]*lottery[\s-]*heritage/i,
+			re: /heritagefund|heritage[\s-]*fund|national[\s-]*lottery|tnlhlf/i,
 		},
-		{ key: "it-services", re: /\bit[\s-]*services/i },
-		{ key: "oxford-mosaic", re: /oxford[\s-]*mosaic/i },
 	]
 	const LEGAL =
 		/privacy|terms|accessibility|cookie|image policy|copyright|modern slavery|data protection/i
@@ -178,10 +174,8 @@ function extractFromPage(): Scraped {
 
 	const footerEl = document.querySelector("#footer")
 	const bottomEl = document.querySelector("#footer-bottom")
-	// the "Powered by Oxford Mosaic" / IT Services credit sits in a sibling banner
-	const mosaicEl = document.querySelector('[aria-label*="Oxford Mosaic" i]')
 	const isElement = (el: Element | null): el is Element => el !== null
-	const regions = [footerEl, bottomEl, mosaicEl].filter(isElement)
+	const regions = [footerEl, bottomEl].filter(isElement)
 
 	const social: Array<{ platform: SocialPlatform; href: string }> = []
 	const socialSeen = new Set<string>()

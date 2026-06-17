@@ -52,7 +52,7 @@ export function RichText({ children, className }: Props) {
 		.filter(Boolean)
 
 	return (
-		<div className={cn("grid gap-4 wrap-break-word", className)}>
+		<div className={cn("grid gap-4 wrap-anywhere", className)}>
 			{paragraphs.map((paragraph, index) => (
 				<p key={index}>{linkify(paragraph)}</p>
 			))}

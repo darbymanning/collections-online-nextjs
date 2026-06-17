@@ -1,5 +1,6 @@
 import { museum, type FooterPartner, type SocialPlatform } from "$library/config"
 import { Button } from "$components/button"
+import { OxfordMosaicLogo } from "$components/oxford-mosaic-logo"
 import { cn } from "$library/utils"
 import Image, { type StaticImageData } from "next/image"
 import type { IconType } from "react-icons"
@@ -16,8 +17,6 @@ import researchEnglandLogo from "$assets/research-england-logo.svg"
 import athenaSwanLogo from "$assets/athena-swan-logo.svg"
 import artsCouncilLogo from "$assets/arts-council-england-logo.svg"
 import heritageFundLogo from "$assets/heritage-fund-logo.svg"
-import itServicesLogo from "$assets/it-services-logo.svg"
-import oxfordMosaicLogo from "$assets/oxford-mosaic-logo.svg"
 
 /** Brand glyph + accessible label for each social platform. lucide dropped its
  * brand icons, so the marks come from react-icons (Simple Icons). */
@@ -95,17 +94,6 @@ const partners: Record<
 		logo: heritageFundLogo,
 		url: "https://www.heritagefund.org.uk/",
 	},
-	"it-services": {
-		label: "University of Oxford IT Services",
-		logo: itServicesLogo,
-		url: "https://www.it.ox.ac.uk/",
-		light: true,
-	},
-	"oxford-mosaic": {
-		label: "Built on Oxford Mosaic",
-		logo: oxfordMosaicLogo,
-		url: "https://www.mosaic.ox.ac.uk/",
-	},
 }
 
 /** Off-site links keep their absolute URL; site-relative paths resolve against
@@ -134,9 +122,9 @@ function FootLink({ href, children }: { href: string; children: string }) {
 
 type LogoItem = { logo: StaticImageData; label: string; url: string; light?: boolean }
 
-/** An affiliation logo card. Marks are greyscaled and a few supplied ones are
- * white-on-transparent (IT Services, the Pitt Rivers mark) — those carry `light`
- * and are darkened so they read. */
+/** An affiliation logo card. Marks are greyscaled; the Pitt Rivers mark is partly
+ * white-on-transparent (for its dark site), so it carries `light` and is darkened
+ * to read on the white footer. */
 function LogoLink({ logo, label, url, light }: LogoItem) {
 	return (
 		<a
@@ -300,23 +288,32 @@ export function Footer() {
 				</div>
 			</div>
 
-			{/* dark copyright bar — legal links + copyright */}
+			{/* copyright bar — Oxford Mosaic credit, then legal links + copyright */}
 			<div className="accented">
-				<div className="mx-auto flex max-w-wrap flex-wrap items-center gap-x-6 gap-y-3 px-[5vw] py-5">
-					<p>
-						© {new Date().getFullYear()} {museum.name}
-					</p>
-					{footer.legal.length > 0 && (
-						<ul className="flex flex-wrap gap-x-5 gap-y-2 lg:ml-auto">
-							{footer.legal.map((link) => (
-								<li key={link.label}>
-									<Button variant="link" href={resolveHref(link.href)}>
-										{link.label}
-									</Button>
-								</li>
-							))}
-						</ul>
-					)}
+				<div className="mx-auto grid max-w-wrap gap-5 px-[5vw] fl-py-4/9">
+					<a
+						href="https://www.mosaic.ox.ac.uk/"
+						aria-label="Powered by Oxford Mosaic"
+						className="justify-self-start opacity-80 transition-opacity hover:opacity-100"
+					>
+						<OxfordMosaicLogo className="fl-h-10/12 w-auto" />
+					</a>
+					<div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+						<small>
+							© {new Date().getFullYear()} {museum.name}
+						</small>
+						{footer.legal.length > 0 && (
+							<ul className="flex flex-wrap gap-x-5 gap-y-2 lg:ml-auto">
+								{footer.legal.map((link) => (
+									<li key={link.label}>
+										<Button variant="link" href={resolveHref(link.href)}>
+											{link.label}
+										</Button>
+									</li>
+								))}
+							</ul>
+						)}
+					</div>
 				</div>
 			</div>
 		</footer>

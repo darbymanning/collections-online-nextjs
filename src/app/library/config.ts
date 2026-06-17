@@ -23,16 +23,15 @@ export type MenuItem = { label: string; href?: string; children?: Array<MenuItem
  * accessible labels in `footer.tsx`. */
 export type SocialPlatform = "facebook" | "instagram" | "x" | "youtube" | "bluesky"
 
-/** Funder / accreditation / platform logos a museum carries in its footer. The
- * key selects a local logo asset + label + link in `footer.tsx`; the scrape only
- * records which ones each museum actually shows. */
+/** Funder / accreditation logos a museum carries in its footer. The key selects a
+ * local logo asset + label + link in `footer.tsx`; the scrape only records which
+ * ones each museum actually shows. (Oxford Mosaic + IT Services are excluded —
+ * every site has them, so the footer hard-codes a single "powered by" mark.) */
 export type FooterPartner =
 	| "research-england"
 	| "athena-swan"
 	| "arts-council-england"
 	| "heritage-fund"
-	| "it-services"
-	| "oxford-mosaic"
 
 /** A museum's scraped footer content. The sitemap columns are derived from `nav`
  * (the museums' own footer link-lists are messy and inconsistent), and the Oxford

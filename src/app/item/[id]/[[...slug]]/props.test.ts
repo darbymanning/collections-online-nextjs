@@ -315,6 +315,38 @@ onlyFor("prm")("props (prm)", () => {
 		expect(result.dateCollected).toEqual(["1937"])
 	})
 
+	test("repeats the record description as its own row", () => {
+		expect(result.recordDescription).toBe("Headdress mask representing Abam, a predatory fish.")
+	})
+
+	test("links each photographic process term to its facet search", () => {
+		const photo = {
+			...object,
+			photoProcess: [
+				{ photoProcess: "Print albumen paper", type: "Photographic process", sort: "1" },
+			],
+		} as CollectionObject
+
+		expect(props(photo, iiif).photographicProcess).toEqual([
+			{
+				label: "Print albumen paper",
+				href: `${search}/photoProcess.photoProcess:Print%20albumen%20paper`,
+			},
+		])
+	})
+
+	test("drops empty cultural groups and collected dates instead of rendering blank rows", () => {
+		const sparse = { ...object, culturalGroups: [], dateCollected: [] } as CollectionObject
+		const sparseResult = props(sparse, iiif)
+
+		expect(sparseResult.culturalGroups).toBeUndefined()
+		expect(sparseResult.dateCollected).toBeUndefined()
+		// the photographic process field is likewise absent when the record has none
+		expect(
+			props({ ...object, photoProcess: [] } as CollectionObject, iiif).photographicProcess,
+		).toBeUndefined()
+	})
+
 	test("search terms concatenate class headings and keywords, deduped and linked", () => {
 		expect(result.searchTerms?.map((t) => t.label)).toEqual([
 			"Ornament",

@@ -2,7 +2,7 @@
  * AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
  * Pitt Rivers Museum's navigation and footer, scraped from https://www.prm.ox.ac.uk
- * on 2026-06-16T21:11:33.176Z by `bun run scrape`.
+ * on 2026-06-17T13:16:38.157Z by `bun run scrape`.
  *
  * Regenerate with: bun run scrape --museums=prm
  *
@@ -184,6 +184,6 @@ export const footer: FooterData = {
 		{ label: "Privacy policy", href: "/privacy-policy" },
 		{ label: "Accessibility", href: "/accessibility" },
 	],
-	partners: ["research-england", "oxford-mosaic", "it-services"],
+	partners: ["research-england", "arts-council-england", "heritage-fund"],
 	newsletter: "/newsletter",
 }

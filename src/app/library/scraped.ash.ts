@@ -2,7 +2,7 @@
  * AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
  * Ashmolean Museum's navigation and footer, scraped from https://www.ashmolean.org
- * on 2026-06-16T21:11:32.217Z by `bun run scrape`.
+ * on 2026-06-17T13:16:37.206Z by `bun run scrape`.
  *
  * Regenerate with: bun run scrape --museums=ash
  *
@@ -181,6 +181,6 @@ export const footer: FooterData = {
 		{ label: "Accessibility", href: "/platform-accessibility" },
 		{ label: "Cookies", href: "/cookies" },
 	],
-	partners: ["research-england", "arts-council-england", "oxford-mosaic", "it-services"],
+	partners: ["research-england", "arts-council-england"],
 	newsletter: "/newsletter",
 }

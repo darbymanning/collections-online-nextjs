@@ -307,6 +307,9 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 		subcollection: object.subcollection,
 		longDescription: object.longDescription,
 		briefDescription: object.briefDescription,
+		// prm's record-level description (the legacy "Description" row). It mirrors the
+		// subtitle, but the legacy details list repeats it as its own field, so do the same.
+		recordDescription: object.description || undefined,
 		subject: searchLinks(object.subject, "subject:"),
 		itemType: object.object?.objectType
 			? {
@@ -339,9 +342,11 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 						}
 				}),
 		datePeriodText: object.datePeriodVirtualField?.trim(),
-		dateCollected:
-			object.dateCollected?.toSorted(bySort).map((d) => d.date) ??
-			(object.collectedDisplayDate?.length ? object.collectedDisplayDate : undefined),
+		dateCollected: object.dateCollected?.length
+			? object.dateCollected.toSorted(bySort).map((d) => d.date)
+			: object.collectedDisplayDate?.length
+				? object.collectedDisplayDate
+				: undefined,
 		acquisitionInformation: object.acquisitionDateVirtualField?.trim(),
 		locality: object.locality?.length ? object.locality.map((l) => l.summaryData) : undefined,
 		geographicalProvenance: object.geographicalProvenance?.map((p) => {
@@ -352,15 +357,27 @@ export function props(object: CollectionObject, iiif: IIIFManifest | null) {
 				}
 			else if ("region" in p) return { region: p.region }
 		}),
-		culturalGroups: object.culturalGroups?.toSorted(bySort).map((g) => ({
-			label: g.culturalGroup,
-			href: encodeURI(
-				`${museum.urls.legacy.simpleSearch}/culturalGroups.culturalGroupHierarchy:${g.culturalGroupHierarchy}`,
-			),
-		})),
+		culturalGroups: object.culturalGroups?.length
+			? object.culturalGroups.toSorted(bySort).map((g) => ({
+					label: g.culturalGroup,
+					href: encodeURI(
+						`${museum.urls.legacy.simpleSearch}/culturalGroups.culturalGroupHierarchy:${g.culturalGroupHierarchy}`,
+					),
+				}))
+			: undefined,
 		persons: persons?.length ? persons : undefined,
 		materialAndProcess: materials(object.materialAndProcess),
 		materialsList: materialsList?.length ? materialsList : undefined,
+		// prm photographs record their print process here (the legacy "Photographic
+		// process" row); each term links to its simple-search facet like the others
+		photographicProcess: object.photoProcess?.length
+			? object.photoProcess.toSorted(bySort).map((p) => ({
+					label: p.photoProcess,
+					href: encodeURI(
+						`${museum.urls.legacy.simpleSearch}/photoProcess.photoProcess:${p.photoProcess}`,
+					),
+				}))
+			: undefined,
 		objectType:
 			object.objectNames?.map((n) => ({
 				links: links(n.objectName, "objectNames.objectName:"),

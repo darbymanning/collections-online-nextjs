@@ -2,7 +2,7 @@
  * AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
  * History of Science Museum's navigation and footer, scraped from https://www.hsm.ox.ac.uk
- * on 2026-06-16T21:11:33.543Z by `bun run scrape`.
+ * on 2026-06-17T13:16:38.492Z by `bun run scrape`.
  *
  * Regenerate with: bun run scrape --museums=hsm
  *
@@ -169,6 +169,6 @@ export const footer: FooterData = {
 		{ label: "Accessibility", href: "/accessibility" },
 		{ label: "Cookies", href: "/cookies" },
 	],
-	partners: ["research-england", "oxford-mosaic", "it-services"],
+	partners: ["research-england", "arts-council-england"],
 	newsletter: "/mailing-list",
 }

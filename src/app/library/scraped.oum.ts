@@ -2,7 +2,7 @@
  * AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
  * Oxford University Museum of Natural History's navigation and footer, scraped from https://www.oumnh.ox.ac.uk
- * on 2026-06-16T21:11:32.867Z by `bun run scrape`.
+ * on 2026-06-17T13:16:37.731Z by `bun run scrape`.
  *
  * Regenerate with: bun run scrape --museums=oum
  *
@@ -76,11 +76,10 @@ export const nav: Array<MenuItem> = [
 			},
 			{
 				label: "Exhibitions",
-				href: "/exhibitions-and-displays",
+				href: "/34-critical-raw-materials-shaping-our-future",
 				children: [
-					{ label: "Current Exhibitions", href: "/exhibitions-and-displays" },
 					{
-						label: "Our Next Exhibition",
+						label: "Current Exhibition",
 						href: "/34-critical-raw-materials-shaping-our-future",
 					},
 					{ label: "Past Exhibitions", href: "/past-exhibitions-0" },
@@ -232,13 +231,6 @@ export const footer: FooterData = {
 		{ label: "Terms of Use and Copyright", href: "/copyright-0" },
 		{ label: "Website Accessibility Statement", href: "/website-accessibility-statement" },
 	],
-	partners: [
-		"research-england",
-		"arts-council-england",
-		"heritage-fund",
-		"athena-swan",
-		"oxford-mosaic",
-		"it-services",
-	],
+	partners: ["research-england", "arts-council-england", "heritage-fund", "athena-swan"],
 	newsletter: "/newsletter",
 }

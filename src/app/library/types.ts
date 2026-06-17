@@ -198,7 +198,7 @@ export type CollectionObject = {
 	keywords?: Array<{ keyword: string; sort?: string }>
 	dateCollected?: Array<{ date: string; sort: string }>
 	format?: Array<any>
-	photoProcess?: Array<any>
+	photoProcess?: Array<{ photoProcess: string; type?: string; sort?: string }>
 	rights?: Array<{ type?: string }>
 	/** Curated links to other catalogue records — the legacy "Related" section.
 	 * The relationship is bidirectional and authored on either end, so a given

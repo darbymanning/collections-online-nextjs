@@ -24,8 +24,8 @@ test("renders the site footer with its shared affiliations", async ({ page }) =>
 	await expect(footer.getByRole("link", { name: "Facebook" })).toBeVisible()
 
 	// affiliations every deployment carries: a Research England funder logo and the
-	// University of Oxford crest (exact — "University of Oxford IT Services" also
-	// carries the funder name)
+	// University of Oxford crest in the logo column (exact match keeps it off any
+	// other "Oxford …" labels)
 	await expect(footer.getByRole("link", { name: "Research England" })).toBeVisible()
 	await expect(
 		footer.getByRole("link", { name: "University of Oxford", exact: true }),
