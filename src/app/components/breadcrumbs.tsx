@@ -1,3 +1,4 @@
+import { cn } from "$library/utils"
 import { ChevronRightIcon } from "lucide-react"
 import Link from "next/link"
 import type { ReactElement } from "react"
@@ -23,7 +24,7 @@ export function Breadcrumbs({
 }): ReactElement {
 	return (
 		<nav aria-label="Breadcrumb" className={className}>
-			<ol className="scroll-fade grid grid-flow-col items-center justify-start gap-x-2 gap-y-1 py-3 whitespace-nowrap">
+			<ol className="grid scroll-fade grid-flow-col items-center justify-start gap-x-2 gap-y-1 py-3 whitespace-nowrap clip-focus">
 				{items.map((item, index) => {
 					const isLast = index === items.length - 1
 
@@ -33,11 +34,14 @@ export function Breadcrumbs({
 								<Link
 									href={item.href}
 									aria-label={item.icon ? item.label : undefined}
-									className={
-										item.icon
-											? "transition-opacity hover:opacity-70"
-											: "animated-underline font-medium hover:[--underline-w:100%]"
-									}
+									className={cn(
+										{ "transition-opacity hover:opacity-70": item.icon },
+										{
+											"animated-underline font-medium hover:[--underline-w:100%]":
+												!item.icon,
+										},
+										"rounded p-1",
+									)}
 								>
 									{item.icon ?? item.label}
 								</Link>

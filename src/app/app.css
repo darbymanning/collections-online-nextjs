@@ -3,15 +3,21 @@
 
 @theme {
 	/* Colors */
-	--color-white: #fff;
-	--color-black: #000;
-	--color-gray-100: #f2f2f2;
-	--color-gray-200: #ddd;
-	--color-gray-600: #444;
+	--color-white: oklch(1 0 0);
+	--color-black: oklch(0 0 0);
+	--color-gray-100: oklch(0.92 0 0);
+	--color-gray-200: oklch(0.85 0 0);
+	--color-gray-600: oklch(0.4 0 0);
 
 	--color-background: var(--color-white);
 	--color-foreground: var(--color-black);
 	--color-border: var(--color-gray-200);
+	/* keyboard focus ring colour (see the `*:focus-visible` base rule). A soft neutral
+	 * grey on the white content card (shadcn's `--ring`) rather than hard black. The
+	 * `.accented` chrome (header band, menu, footer, item hero) repoints it at
+	 * `--color-on-band` for a high-contrast ring on a coloured band — a mid-grey would
+	 * vanish on the light ash band. Exposed as ring-ring / outline-ring for a bespoke ring. */
+	--color-ring: var(--color-gray-600);
 	/* per-museum brand primary — overridden by the museum class on <html> below */
 	--color-primary: var(--color-foreground);
 	--color-secondary: var(--color-foreground);
@@ -83,7 +89,7 @@
  * primary` is the deep brand colour (header band); `--color-secondary` is the
  * accent used for the search/CTA buttons. Tweak the hexes here to refine them. */
 .ash {
-	--color-primary: #a3b09a;
+	--color-primary: oklch(0.7408 0.0342 132.39);
 	--color-secondary: var(--color-primary);
 	/* the accent is light, so reverse text reads as the dark foreground, not white */
 	--color-on-accent: var(--color-foreground);
@@ -93,8 +99,8 @@
 }
 
 .oum {
-	--color-primary: #a8c8da;
-	--color-secondary: #3d506c;
+	--color-primary: oklch(0.8151 0.0427 232.65);
+	--color-secondary: oklch(0.4275 0.0525 257.94);
 	/* unusually, the primary is the light colour and the secondary the deep one, so
 	 * the light chrome (band, menu, primary-filled buttons) reverses to the deep
 	 * secondary… */
@@ -107,13 +113,13 @@
 }
 
 .prm {
-	--color-primary: #3c3c3b;
-	--color-secondary: #c67c3d;
+	--color-primary: oklch(0.3558 0.0017 106.49);
+	--color-secondary: oklch(0.6530 0.1207 58.57);
 }
 
 .hsm {
-	--color-secondary: #b01f8c;
-	--color-primary: #f5a81c;
+	--color-secondary: oklch(0.5221 0.2058 340.85);
+	--color-primary: oklch(0.7870 0.1607 74.68);
 	/* both brand colours live in the multicolour logo, so a coloured header strip
 	 * clashes — the chrome uses a plain white band with dark text instead, while the
 	 * brand colours still drive the buttons and the smaller accents */
@@ -156,6 +162,34 @@
 		text-decoration: underline;
 	}
 
+	/* shadcn-style: hold a transparent ring (and a collapsed halo) at rest on interactive
+	 * elements, with a short transition, so the focus ring fades in/out rather than popping.
+	 * `:where()` keeps specificity at zero, so component classes — and the `*:focus-visible`
+	 * colour below — still win; it just supplies the from-state the transition animates. A
+	 * few components with their own `transition` (Button, `animated-underline`, the image
+	 * viewer's controls) re-list `outline-color`/`box-shadow` so they animate too. */
+	:where(a, button, input, select, textarea, summary, [tabindex]) {
+		outline: 2px solid transparent;
+		outline-offset: 2px;
+		box-shadow: 0 0 0 0 transparent;
+		transition: outline-color 150ms ease, box-shadow 150ms ease;
+	}
+
+	/* one focus ring for everything, replacing the UA's blue outline. Scoped to
+	 * `:focus-visible` so it only shows for keyboard/assistive navigation, never on
+	 * mouse click. Two parts, both following each element's border-radius: a crisp
+	 * `outline` (the always-present indicator — it never collides with Tailwind
+	 * `ring-*` utilities and reads even on a filled button, where it sits on the
+	 * surrounding colour), plus a soft `box-shadow` halo for a shadcn-style glow. The
+	 * offset lifts the outline clear of the element (and of the resting `ring-2` on
+	 * outline buttons). Colour adapts — see `--color-ring`; both flip inset and the
+	 * halo drops inside clipping ancestors — see `clip-focus`. */
+	*:focus-visible {
+		outline: 2px solid var(--color-ring);
+		outline-offset: 2px;
+		box-shadow: 0 0 0 var(--ring-halo, 6px) color-mix(in oklab, var(--color-ring) 18%, transparent);
+	}
+
 	::selection {
 		background-color: var(--color-primary);
 		color: var(--color-on-accent);
@@ -172,11 +206,36 @@
 	background-position: left bottom;
 	background-repeat: no-repeat;
 	background-size: var(--underline-w) 0.125rem;
-	transition: background-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	/* the last two keep the focus ring's fade in step with the rest (see the
+	 * `:where(…)` focus transition) — this class owns `transition`, so it must re-list them */
+	transition:
+		background-size 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+		outline-color 150ms ease,
+		box-shadow 150ms ease;
+}
+
+/* an outset focus ring is sliced off when a focusable element sits inside an
+ * `overflow: hidden/clip` ancestor (e.g. the collapse-animation boxes in the List,
+ * which must clip to animate their height). Put this on such a container (or the
+ * focusable element itself) to flip the ring *inset* — drawn just inside the element,
+ * so there's nothing to clip. `overflow-clip-margin` would also un-clip, but it would
+ * leak the collapsed (0fr) content, so the inset offset is the safe lever here. */
+@utility clip-focus {
+	&:focus-visible,
+	& :focus-visible {
+		outline-offset: -2px;
+		/* the soft halo is an outer box-shadow, so it would clip here — collapse it to
+		 * nothing (a literal `box-shadow: none` gets pruned as a no-op by lightningcss);
+		 * the inset outline carries the focus cleanly inside the clipped box */
+		--ring-halo: 0px;
+	}
 }
 
 @utility accented {
 	@apply bg-band text-on-band selection:bg-on-band/20 selection:text-on-band;
+	/* on the band the focus ring tracks the band's reverse text colour (light on a
+	 * dark band, dark on a light one) so it always contrasts — see `--color-ring` */
+	--color-ring: var(--color-on-band);
 }
 
 /* `@media (overflow-block: scroll)` matches scrolling screens (true on screens,
@@ -294,356 +353,5 @@
 			scale: none;
 			transform-origin: center;
 		}
-	}
-}
-
-/* The OUM brand swift keels over on the not-found page (see not-found.tsx): it
- * tips with gathering speed, overshoots as it swings past 90°, then jiggles to a
- * stop on its side. Pivots about its centre, and only the motion-safe variant
- * carries it — reduced-motion visitors just get the swift level. */
-@utility topple {
-	transform-origin: center;
-	animation: topple 1.2s linear 0.4s both;
-}
-
-@keyframes topple {
-	0% {
-		transform: rotate(0deg);
-		animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.2);
-	}
-	55% {
-		transform: rotate(96deg);
-		animation-timing-function: ease-out;
-	}
-	70% {
-		transform: rotate(84deg);
-		animation-timing-function: ease-in;
-	}
-	83% {
-		transform: rotate(92deg);
-		animation-timing-function: ease-out;
-	}
-	93% {
-		transform: rotate(88deg);
-		animation-timing-function: ease-in;
-	}
-	100% {
-		transform: rotate(90deg);
-	}
-}
-
-/* The Ashmolean "A" glitches on the not-found page (see not-found.tsx). Three
- * stacked copies of the mark — a clean, readable base plus a warm and a cool
- * channel ghost — carry a steady chromatic split that tears into horizontal bands
- * and jolts sideways in bursts: the classic broken-signal look, done with
- * clip-path + transform (steps() for hard digital cuts) so it's GPU-cheap and
- * needs no canvas or rAF. The two ghosts run on different durations so their
- * tears desync; hovering cranks the intensity var (--g) and speeds every loop up
- * — dragging the corruption louder, like the original's mouseover. Motion-safe
- * only: reduced-motion visitors get the clean, still mark.
- *
- * --g scales every offset, so one hover rule re-tunes the whole effect. */
-.ash-glitch {
-	--g: 0.6;
-	color: var(--color-foreground);
-	/* keep the ghosts' multiply blend off the rest of the page */
-	isolation: isolate;
-}
-
-.ash-glitch svg {
-	fill: currentColor;
-}
-
-.ash-glitch .ghost {
-	mix-blend-mode: multiply;
-	opacity: 0.85;
-	will-change: transform;
-}
-
-.ash-glitch .ghost-warm {
-	color: #ff1f5a;
-}
-
-.ash-glitch .ghost-cool {
-	color: #15cfe0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-	.ash-glitch .ghost-warm {
-		animation: ash-glitch-warm 1.5s steps(1) infinite;
-	}
-
-	.ash-glitch .ghost-cool {
-		animation: ash-glitch-cool 1.9s steps(1) infinite;
-	}
-
-	.ash-glitch:hover {
-		--g: 2.8;
-	}
-
-	/* the base only joins in (jolts + tears) once provoked */
-	.ash-glitch:hover .base {
-		animation: ash-glitch-base 0.5s steps(1) infinite;
-	}
-
-	.ash-glitch:hover .ghost-warm {
-		animation-duration: 0.55s;
-	}
-
-	.ash-glitch:hover .ghost-cool {
-		animation-duration: 0.62s;
-	}
-}
-
-/* warm channel: a steady ~1px split (clip-path: inset(0) = whole mark) punctuated
- * by two big band-tears per loop */
-@keyframes ash-glitch-warm {
-	0% {
-		transform: translateX(calc(var(--g) * -1px));
-		clip-path: inset(0);
-	}
-	20% {
-		transform: translateX(calc(var(--g) * 1px));
-		clip-path: inset(0);
-	}
-	38% {
-		transform: translateX(calc(var(--g) * -5px));
-		clip-path: inset(14% 0 62% 0);
-	}
-	46% {
-		transform: translateX(calc(var(--g) * -1px));
-		clip-path: inset(0);
-	}
-	64% {
-		transform: translateX(calc(var(--g) * 1px));
-		clip-path: inset(0);
-	}
-	78% {
-		transform: translateX(calc(var(--g) * 6px));
-		clip-path: inset(58% 0 18% 0);
-	}
-	86% {
-		transform: translateX(calc(var(--g) * -1px));
-		clip-path: inset(0);
-	}
-	100% {
-		transform: translateX(calc(var(--g) * -1px));
-		clip-path: inset(0);
-	}
-}
-
-/* cool channel: split the other way, tears on different rows/beats */
-@keyframes ash-glitch-cool {
-	0% {
-		transform: translateX(calc(var(--g) * 1px));
-		clip-path: inset(0);
-	}
-	24% {
-		transform: translateX(calc(var(--g) * 7px));
-		clip-path: inset(40% 0 36% 0);
-	}
-	32% {
-		transform: translateX(calc(var(--g) * 1px));
-		clip-path: inset(0);
-	}
-	54% {
-		transform: translateX(calc(var(--g) * -1px));
-		clip-path: inset(0);
-	}
-	70% {
-		transform: translateX(calc(var(--g) * -7px));
-		clip-path: inset(6% 0 74% 0);
-	}
-	80% {
-		transform: translateX(calc(var(--g) * 1px));
-		clip-path: inset(0);
-	}
-	100% {
-		transform: translateX(calc(var(--g) * 1px));
-		clip-path: inset(0);
-	}
-}
-
-/* base: clean at rest; on hover it shudders and tears too, for full meltdown */
-@keyframes ash-glitch-base {
-	0%,
-	100% {
-		transform: translateX(0);
-		clip-path: inset(0);
-	}
-	25% {
-		transform: translateX(calc(var(--g) * 1.5px));
-		clip-path: inset(38% 0 40% 0);
-	}
-	50% {
-		transform: translateX(calc(var(--g) * -1.5px));
-		clip-path: inset(0);
-	}
-	75% {
-		transform: translateX(calc(var(--g) * 1px));
-		clip-path: inset(70% 0 8% 0);
-	}
-}
-
-/* The PRM brand mark is four rectangular frames. On the not-found page (see
- * not-found.tsx) we drop them in from far above the viewBox: each tumbles under
- * gravity, slams onto the floor with a squash, bounces twice and settles into a
- * row — a little heap of fallen blocks rather than the tidy logo. Per-piece vars
- * (set in the markup) give each its own start height, drift, spin and resting
- * lean; staggered delays land them left-to-right so they read as knocking into
- * one another. Every piece pivots about its own centre (fill-box), and only the
- * motion-safe variant runs — reduced-motion visitors just get the settled row.
- *
- * Vars: --dx/--dy start offset (up and to one side), --spin start rotation,
- * --tilt final resting lean, --kick impact overshoot, --delay landing stagger. */
-@utility prm-drop {
-	transform-box: fill-box;
-	transform-origin: center;
-	animation: prm-drop 1.5s both;
-	animation-delay: var(--delay, 0s);
-}
-
-@keyframes prm-drop {
-	0% {
-		transform: translate(var(--dx, 0), var(--dy, -320px)) rotate(var(--spin, 0deg)) scale(1);
-		animation-timing-function: cubic-bezier(0.45, 0, 0.9, 0.35);
-	}
-	/* first hard impact — squash flat against the floor, overshoot past the lean */
-	50% {
-		transform: translate(0, 0) rotate(calc(var(--tilt, 0deg) - var(--kick, 5deg)))
-			scale(1.08, 0.9);
-		animation-timing-function: cubic-bezier(0.16, 0.84, 0.3, 1);
-	}
-	/* bounce up, stretch tall, swing the lean back the other way */
-	64% {
-		transform: translate(0, -16px) rotate(calc(var(--tilt, 0deg) + var(--kick, 5deg)))
-			scale(0.97, 1.03);
-		animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.4);
-	}
-	/* second, smaller impact */
-	78% {
-		transform: translate(0, 0) rotate(calc(var(--tilt, 0deg) - 2deg)) scale(1.04, 0.96);
-		animation-timing-function: cubic-bezier(0.16, 0.84, 0.3, 1);
-	}
-	88% {
-		transform: translate(0, -5px) rotate(calc(var(--tilt, 0deg) + 1deg)) scale(1);
-		animation-timing-function: ease-in;
-	}
-	100% {
-		transform: translate(0, 0) rotate(var(--tilt, 0deg)) scale(1);
-	}
-}
-
-/* The HSM not-found mark is the word "404" filled with the museum's overlapping
- * brand circles — clipped to the glyphs by a mask, over an amber base. The
- * numbers hold still while the circles behind them drift, orbit and breathe on
- * desynced loops, so the colour flows around inside the digits like liquid
- * through stained glass. The mask never moves (we only transform the masked
- * circles), so nothing but the colour shifts; where a circle drifts away the
- * amber base shows through, never the page. Pure CSS transforms, no canvas or
- * rAF. Motion-safe only; reduced motion gets the still, colourful 404.
- *
- * --s scales every drift/orbit from one place, if you want to retune the travel. */
-.hsm-swirl {
-	--s: 1;
-}
-
-.hsm-swirl .swirl-group > * {
-	transform-box: fill-box;
-	transform-origin: center;
-	will-change: transform;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-	.hsm-swirl .swirl-group > *:nth-child(1) {
-		animation: hsm-swirl-1 12s ease-in-out -3s infinite;
-	}
-	.hsm-swirl .swirl-group > *:nth-child(2) {
-		animation: hsm-swirl-2 10s ease-in-out -6s infinite;
-	}
-	.hsm-swirl .swirl-group > *:nth-child(3) {
-		animation: hsm-swirl-3 8s ease-in-out -2s infinite;
-	}
-	.hsm-swirl .swirl-group > *:nth-child(4) {
-		animation: hsm-swirl-4 9s ease-in-out -5s infinite;
-	}
-	.hsm-swirl .swirl-group > *:nth-child(5) {
-		animation: hsm-swirl-5 7s ease-in-out -1s infinite;
-	}
-}
-
-/* each circle drifts on its own small closed loop (start == end so it's seamless),
- * the two small ellipses also breathe; offsets scale with --s */
-@keyframes hsm-swirl-1 {
-	0%,
-	100% {
-		transform: translate(0, 0);
-	}
-	33% {
-		transform: translate(calc(var(--s) * 5px), calc(var(--s) * -3px));
-	}
-	66% {
-		transform: translate(calc(var(--s) * -3px), calc(var(--s) * -6px));
-	}
-}
-
-@keyframes hsm-swirl-2 {
-	0%,
-	100% {
-		transform: translate(0, 0);
-	}
-	33% {
-		transform: translate(calc(var(--s) * -4px), calc(var(--s) * 4px));
-	}
-	66% {
-		transform: translate(calc(var(--s) * 4px), calc(var(--s) * 2px));
-	}
-}
-
-@keyframes hsm-swirl-3 {
-	0%,
-	100% {
-		transform: translate(0, 0);
-	}
-	25% {
-		transform: translate(calc(var(--s) * 4px), calc(var(--s) * 3px));
-	}
-	50% {
-		transform: translate(calc(var(--s) * 6px), calc(var(--s) * -3px));
-	}
-	75% {
-		transform: translate(calc(var(--s) * 1px), calc(var(--s) * -4px));
-	}
-}
-
-@keyframes hsm-swirl-4 {
-	0%,
-	100% {
-		transform: translate(0, 0) scale(1);
-	}
-	25% {
-		transform: translate(calc(var(--s) * -5px), calc(var(--s) * 2px)) scale(1.06);
-	}
-	50% {
-		transform: translate(calc(var(--s) * -2px), calc(var(--s) * 5px)) scale(1);
-	}
-	75% {
-		transform: translate(calc(var(--s) * 3px), calc(var(--s) * 3px)) scale(0.96);
-	}
-}
-
-@keyframes hsm-swirl-5 {
-	0%,
-	100% {
-		transform: translate(0, 0) scale(1);
-	}
-	25% {
-		transform: translate(calc(var(--s) * 5px), calc(var(--s) * -4px)) scale(1.1);
-	}
-	50% {
-		transform: translate(calc(var(--s) * -4px), calc(var(--s) * -2px)) scale(0.94);
-	}
-	75% {
-		transform: translate(calc(var(--s) * -2px), calc(var(--s) * 4px)) scale(1.05);
 	}
 }

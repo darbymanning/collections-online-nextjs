@@ -63,7 +63,10 @@ export function CollectionObjectLayout({
 	imageDownloads,
 	furtherItems,
 }: Props & { furtherItems?: FurtherItemsSection }) {
-	const breadcrumbClassName = "border-b border-b-current/10 pl-[5vw] text-sm text-on-band"
+	// sits on the band that bleeds up from <body> (not inside `.accented`), so it carries
+	// the band's reverse text colour — and its focus ring colour — itself
+	const breadcrumbClassName =
+		"border-b border-b-current/10 pl-[5vw] text-sm text-on-band [--color-ring:var(--color-on-band)]"
 
 	return (
 		<div className="flex flex-col">
@@ -119,7 +122,7 @@ export function CollectionObjectLayout({
 										<p>
 											<a
 												href={imageRights.termsHref}
-												className="animated-underline font-semibold text-primary hover:[--underline-w:100%]"
+												className="rounded animated-underline font-semibold text-primary hover:[--underline-w:100%]"
 											>
 												Terms and Conditions
 											</a>
@@ -131,7 +134,7 @@ export function CollectionObjectLayout({
 											any print run, then please visit{" "}
 											<a
 												href={imageRights.photographicServicesHref}
-												className="animated-underline font-semibold text-primary hover:[--underline-w:100%]"
+												className="rounded animated-underline font-semibold text-primary hover:[--underline-w:100%]"
 											>
 												photographic services
 											</a>
@@ -187,7 +190,9 @@ export function CollectionObjectLayout({
 									<dt>Subject</dt>
 									{subject.map((s, index) => (
 										<dd key={index}>
-											<a href={s.href}>{s.label}</a>
+											<a className="rounded" href={s.href}>
+												{s.label}
+											</a>
 										</dd>
 									))}
 								</div>
@@ -197,7 +202,9 @@ export function CollectionObjectLayout({
 								<div>
 									<dt>Item type</dt>
 									<dd>
-										<a href={itemType.href}>{itemType.label}</a>
+										<a className="rounded" href={itemType.href}>
+											{itemType.label}
+										</a>
 									</dd>
 								</div>
 							)}
@@ -225,7 +232,9 @@ export function CollectionObjectLayout({
 									<dt>Cultural groups</dt>
 									{culturalGroups.map((g, index) => (
 										<dd key={index}>
-											<a href={g.href}>{g.label}</a>
+											<a className="rounded" href={g.href}>
+												{g.label}
+											</a>
 										</dd>
 									))}
 								</div>
@@ -237,7 +246,9 @@ export function CollectionObjectLayout({
 									{persons.map((p, index) => (
 										<dd key={index}>
 											{p.role ? `${p.role} ` : ""}
-											<a href={p.href}>{p.name}</a>
+											<a className="rounded" href={p.href}>
+												{p.name}
+											</a>
 										</dd>
 									))}
 								</div>
@@ -248,7 +259,13 @@ export function CollectionObjectLayout({
 									<dt>Date</dt>
 									{datePeriod.map((d, index) => (
 										<dd key={index}>
-											{d?.period ? <Link href={d.link}>{d.period}</Link> : d?.from}
+											{d?.period ? (
+												<Link className="rounded" href={d.link}>
+													{d.period}
+												</Link>
+											) : (
+												d?.from
+											)}
 										</dd>
 									))}
 								</div>
@@ -311,7 +328,9 @@ export function CollectionObjectLayout({
 											{materialsList.map((m, index) => (
 												<span key={index}>
 													{m.type ? `${m.type} ` : ""}
-													<a href={m.href}>{m.label}</a>
+													<a className="rounded" href={m.href}>
+														{m.label}
+													</a>
 													{index < materialsList.length - 1 ? ", " : ""}
 												</span>
 											))}
@@ -325,7 +344,9 @@ export function CollectionObjectLayout({
 									<dt>Physical material</dt>
 									{physicalMaterial.map((m, index) => (
 										<dd key={index}>
-											<a href={m.href}>{m.label}</a>
+											<a className="rounded" href={m.href}>
+												{m.label}
+											</a>
 										</dd>
 									))}
 								</div>
@@ -336,7 +357,9 @@ export function CollectionObjectLayout({
 									<dt>Physical medium</dt>
 									{physicalMedium.map((m, index) => (
 										<dd key={index}>
-											<a href={m.href}>{m.label}</a>
+											<a className="rounded" href={m.href}>
+												{m.label}
+											</a>
 										</dd>
 									))}
 								</div>
@@ -347,7 +370,9 @@ export function CollectionObjectLayout({
 									<dt>Physical technique</dt>
 									{physicalTechnique.map((m, index) => (
 										<dd key={index}>
-											<a href={m.href}>{m.label}</a>
+											<a className="rounded" href={m.href}>
+												{m.label}
+											</a>
 										</dd>
 									))}
 								</div>
@@ -458,7 +483,7 @@ export function CollectionObjectLayout({
 								<div>
 									<dt>Reference URL</dt>
 									<dd>
-										<a href={referenceURL} className="block truncate">
+										<a href={referenceURL} className="block truncate rounded">
 											{referenceURL}
 										</a>
 									</dd>
@@ -473,7 +498,7 @@ export function CollectionObjectLayout({
 										{index > 0 && ", "}
 										<a
 											href={term.href}
-											className="animated-underline font-semibold text-primary hover:[--underline-w:100%]"
+											className="rounded animated-underline font-semibold text-primary hover:[--underline-w:100%]"
 										>
 											{term.label}
 										</a>

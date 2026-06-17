@@ -169,6 +169,18 @@ export function Header() {
 		else if (previous === "menu") menuButtonRef.current?.focus({ preventScroll: true })
 	}, [open, path])
 
+	// while an overlay is open, take the page behind it (the main content and
+	// footer it covers) out of the tab order and the a11y tree, so focus can't
+	// reach what's sitting under the overlay. The header stays interactive — it's
+	// above the overlay and holds the controls that close it.
+	useEffect(() => {
+		const behind = [document.getElementById("main-content"), document.querySelector("footer")]
+		for (const el of behind) el?.toggleAttribute("inert", open !== null)
+		return () => {
+			for (const el of behind) el?.removeAttribute("inert")
+		}
+	}, [open])
+
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault()
 		const trimmed = phrase.trim()
@@ -184,7 +196,7 @@ export function Header() {
 				data-hidden={(hidden && !open) || undefined}
 				className="sticky top-0 z-20 flex items-center justify-between border-b border-current/10 accented px-[5vw] py-4 transition-[translate,opacity] duration-500 data-hidden:pointer-events-none data-hidden:-translate-y-full data-hidden:opacity-0"
 			>
-				<a href={museum.url.toString()}>
+				<a className="rounded" href={museum.url.toString()}>
 					<Image
 						src={museum.header.logo}
 						alt={museum.name}
@@ -197,7 +209,7 @@ export function Header() {
 						{museum.header.topLinks.map((link) => (
 							<Link
 								key={link.href}
-								className="animated-underline hover:[--underline-w:100%]"
+								className="rounded animated-underline hover:[--underline-w:100%]"
 								href={resolveHref(link.href)}
 							>
 								{link.label}
@@ -278,7 +290,7 @@ export function Header() {
 									type="button"
 									onClick={() => setPath(panel.parentId ?? "")}
 									className={cn(
-										"group/item mb-6 inline-flex items-center gap-2 text-lg font-medium",
+										"group/item mb-6 inline-flex items-center gap-2 rounded text-lg font-medium",
 										enter,
 									)}
 									style={delay(0)}
@@ -318,6 +330,7 @@ export function Header() {
 									const className = cn(
 										rowClass,
 										panel.parentId === null ? "text-4xl" : "text-2xl",
+										"rounded",
 									)
 									const label = (
 										<span className="animated-underline group-hover/item:[--underline-w:100%]">

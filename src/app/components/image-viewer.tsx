@@ -26,7 +26,7 @@ type ViewerWithGestures = OpenSeadragon.Viewer & {
 
 // rounded white control buttons floating over the viewer
 const controlClass =
-	"grid h-8 w-8 place-items-center rounded-full bg-white text-base/none font-bold text-gray-600 opacity-85 shadow-md ring-1 ring-black/5 transition-opacity duration-[250ms] hover:opacity-100"
+	"grid h-8 w-8 place-items-center rounded-full bg-white text-base/none font-bold text-gray-600 opacity-85 shadow-md ring-1 ring-black/5 transition-[opacity,outline-color] duration-[250ms] hover:opacity-100"
 
 export function ImageViewer({ label, images }: Props) {
 	const frame = useRef<HTMLDivElement>(null)
@@ -209,7 +209,7 @@ export function ImageViewer({ label, images }: Props) {
 		<div className="grid gap-3">
 			<div
 				ref={frame}
-				className="relative h-136 overflow-hidden rounded-2xl bg-black data-full:z-1 data-[full]:fixed data-[full]:inset-0 data-[full]:h-auto data-[full]:rounded-none"
+				className="relative h-136 overflow-hidden rounded-2xl bg-black [--color-ring:var(--color-white)] data-full:z-1 data-[full]:fixed data-[full]:inset-0 data-[full]:h-auto data-[full]:rounded-none"
 				data-full={fullscreen ? "" : undefined}
 			>
 				<div

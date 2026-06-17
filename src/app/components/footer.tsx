@@ -125,7 +125,7 @@ const columns = museum.header.nav.map((section) => ({
 /** A footer link with the shared hover underline. */
 function FootLink({ href, children }: { href: string; children: string }) {
 	return (
-		<a href={href} className="animated-underline font-medium hover:[--underline-w:100%]">
+		<a href={href} className="rounded animated-underline font-medium hover:[--underline-w:100%]">
 			{children}
 		</a>
 	)
@@ -307,7 +307,7 @@ export function Footer() {
 								<li key={link.label}>
 									<a
 										href={resolveHref(link.href)}
-										className="animated-underline hover:[--underline-w:100%]"
+										className="rounded animated-underline hover:[--underline-w:100%]"
 									>
 										{link.label}
 									</a>
