@@ -24,7 +24,7 @@ export function Breadcrumbs({
 }): ReactElement {
 	return (
 		<nav aria-label="Breadcrumb" className={className}>
-			<ol className="grid scroll-fade grid-flow-col items-center justify-start gap-x-2 gap-y-1 py-3 whitespace-nowrap clip-focus">
+			<ol className="grid scroll-fade grid-flow-col items-center justify-start gap-x-2 gap-y-1 py-3 pr-4 whitespace-nowrap clip-focus">
 				{items.map((item, index) => {
 					const isLast = index === items.length - 1
 

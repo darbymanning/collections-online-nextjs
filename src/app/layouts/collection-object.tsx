@@ -93,7 +93,9 @@ export function CollectionObjectLayout({
 			 * band just gets normal padding and flows straight into the white page. */}
 			<header className={`accented px-[5vw] pt-12 ${images?.length ? "pb-80" : "pb-12"}`}>
 				<div className="grid gap-4">
-					<h1 className="text-center text-5xl font-semibold">{title}</h1>
+					<h1 className="mx-auto max-w-7xl text-center text-5xl font-semibold text-balance">
+						{title}
+					</h1>
 					<h2 className="text-center text-2xl font-semibold text-current/80">{subTitle}</h2>
 					{onDisplay && <p className="text-center text-sm">On display</p>}
 					<hr className="mx-auto w-10 opacity-20" />
