@@ -5,8 +5,10 @@ import {
 import { Button } from "$components/button"
 import { List } from "$components/list"
 import { FurtherItems } from "$components/further-items"
+import { RelatedItems } from "$components/related-items"
 import { ImageViewer } from "$components/image-viewer"
 import { ImageDownloads } from "$components/image-downloads"
+import { RichText } from "$components/rich-text"
 import type { Props } from "../item/[id]/[[...slug]]/page"
 import type { FurtherItemsSection } from "$library/further-items"
 import Link from "next/link"
@@ -62,8 +64,9 @@ export function CollectionObjectLayout({
 	literatureVirtualField,
 	imageRights,
 	imageDownloads,
+	related,
 	furtherItems,
-}: Props & { furtherItems?: FurtherItemsSection }) {
+}: Props & { related?: FurtherItemsSection; furtherItems?: FurtherItemsSection }) {
 	// sits on the band that bleeds up from <body> (not inside `.accented`), so it carries
 	// the band's reverse text colour — and its focus ring colour — itself
 	const breadcrumbClassName =
@@ -105,13 +108,7 @@ export function CollectionObjectLayout({
 						<ImageViewer label={title} images={images} />
 						{(imageCopyright || imageRights) && (
 							<figcaption className="mx-auto grid max-w-3xl gap-1 text-center text-xs text-pretty">
-								{imageCopyright
-									?.split("\n")
-									.map((line) => line.trim())
-									.filter(Boolean)
-									.map((line, index) => (
-										<p key={index}>{line}</p>
-									))}
+								{imageCopyright && <RichText className="gap-1">{imageCopyright}</RichText>}
 								{imageRights?.notPrmCopyright && (
 									<p>
 										Copyright of this material is not held by the museum, please contact
@@ -469,7 +466,9 @@ export function CollectionObjectLayout({
 							{researchAndResponses && (
 								<div>
 									<dt>Research and responses</dt>
-									<dd>{researchAndResponses}</dd>
+									<dd>
+										<RichText>{researchAndResponses}</RichText>
+									</dd>
 								</div>
 							)}
 
@@ -523,7 +522,14 @@ export function CollectionObjectLayout({
 					{description && (
 						<section className="mx-auto grid w-full max-w-wrap-small gap-8 border-t border-border pt-gap">
 							<h2 className="text-center text-2xl font-semibold">Description</h2>
-							<p className="whitespace-pre-line">{description}</p>
+							<RichText>{description}</RichText>
+						</section>
+					)}
+					{related && (
+						// curated, museum-authored links — kept in-column (not the full-bleed
+						// band below) so it reads as part of the record rather than discovery
+						<section className="mx-[-5vw] border-t border-border px-[5vw] pt-gap-sm">
+							<RelatedItems {...related} />
 						</section>
 					)}
 					{furtherItems && (

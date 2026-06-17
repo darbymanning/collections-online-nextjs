@@ -1,5 +1,6 @@
 import { museum } from "./config"
 import { furtherItemsQueries } from "./further-items"
+import { relatedItemsQuery } from "./related-items"
 import type { CollectionObject, IIIFManifest, SearchResults } from "./types"
 
 /** The upstream has no record for this id (HTTP 404), as opposed to a transient
@@ -115,5 +116,43 @@ export const api = {
 				}
 			}),
 		)
+	},
+	/** Records for the curated "Related" section (prm only): the catalogue
+	 * objects the museum has explicitly linked via `objectLinks`/`objectLinks2`.
+	 * One irn search resolves them all, then each full record is refetched for the
+	 * teaser cards (search results omit the object number). */
+	async getRelatedItems(object: CollectionObject): Promise<Array<CollectionObject>> {
+		const url = relatedItemsQuery(object)
+		if (!url) return []
+
+		try {
+			const response = await fetch(url)
+
+			if (!response.ok) return []
+
+			const search: SearchResults = await response.json()
+
+			// drop the object itself and any duplicate (links can point both ways)
+			const related = search.results
+				.map((result) => result.item)
+				.filter(
+					(item, index, items) =>
+						item.id !== object.id &&
+						items.findIndex((other) => other.id === item.id) === index,
+				)
+
+			return Promise.all(
+				related.map(async (item) => {
+					try {
+						return await api.getCollectionObject(item.id)
+					} catch {
+						return item
+					}
+				}),
+			)
+		} catch {
+			// the section is decorative — a failed query just means no related records
+			return []
+		}
 	},
 }

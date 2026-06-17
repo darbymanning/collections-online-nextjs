@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { api, RecordNotFoundError } from "$library/api"
 import { furtherItemsSection } from "$library/further-items"
+import { relatedItemsSection } from "$library/related-items"
 import { slugify } from "$library/slug"
 import { derivative } from "$library/utils"
 import { collectionObjectJsonLd, imageUrls, metaDescription, openGraphDefaults } from "$library/seo"
@@ -428,7 +429,11 @@ export type Props = ReturnType<typeof props>
 export default async function Page({ params }: Params) {
 	const { id } = await params
 	const object = await loadObject(id)
-	const [iiif, relatedItems] = await Promise.all([loadIiif(object), api.getFurtherItems(object)])
+	const [iiif, furtherList, related] = await Promise.all([
+		loadIiif(object),
+		api.getFurtherItems(object),
+		api.getRelatedItems(object),
+	])
 
 	const data = props(object, iiif)
 	const canonical = new URL(
@@ -449,7 +454,8 @@ export default async function Page({ params }: Params) {
 			/>
 			<CollectionObjectLayout
 				{...data}
-				furtherItems={furtherItemsSection(object, relatedItems)}
+				related={relatedItemsSection(related)}
+				furtherItems={furtherItemsSection(object, furtherList)}
 			/>
 		</>
 	)

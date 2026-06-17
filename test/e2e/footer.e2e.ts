@@ -35,11 +35,12 @@ test("renders the site footer with its shared affiliations", async ({ page }) =>
 	await expect(footer.getByRole("link", { name: "Privacy policy" })).toBeVisible()
 })
 
-test("omits the current museum from its own sibling strip", async ({ page }) => {
+test("includes the current museum in its own family strip", async ({ page }) => {
 	await page.goto("/")
 	const footer = page.getByRole("contentinfo")
 
 	const label = ownGlamLabel[test.info().project.name as keyof typeof ownGlamLabel]
-	// the family strip lists the five *other* institutions, never the current one
-	await expect(footer.getByRole("link", { name: label, exact: true })).toHaveCount(0)
+	// the family strip lists all six institutions, the current one included, so the
+	// 2-col mobile grid fills evenly rather than orphaning a fifth card
+	await expect(footer.getByRole("link", { name: label, exact: true })).toHaveCount(1)
 })

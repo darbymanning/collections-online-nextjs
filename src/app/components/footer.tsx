@@ -30,7 +30,8 @@ const socials: Record<SocialPlatform, { Icon: IconType; label: string }> = {
 }
 
 /** The Gardens, Libraries & Museums family — the same six institutions on every
- * deployment (the current museum is dropped at render). */
+ * deployment, shown in full (the current museum included) so the strip stays a
+ * clean six across breakpoints rather than orphaning at five. */
 const glamFamily = [
 	{ ref: "ash", label: "Ashmolean Museum", logo: ashLogo, url: "https://www.ashmolean.org" },
 	{
@@ -159,14 +160,20 @@ function LogoLink({ logo, label, url, light }: LogoItem) {
 	)
 }
 
-/** A static strip of affiliation logos. On mobile the cards fill the width in two
- * equal columns; from `sm` up they flow at a fluid floor width so they stay
- * legible and wrap rather than shrink. */
-function LogoRow({ logos }: { logos: ReadonlyArray<LogoItem> }) {
+/** A static strip of affiliation logos, two equal columns on mobile. The
+ * variable-length supporter rows flow at a fluid floor width from `sm` up so they
+ * stay legible and wrap rather than shrink. Pass `even` for the fixed six-strong
+ * GLAM family: an even 2 → 3 → 6 column grid keeps all six on one desktop row. */
+function LogoRow({ logos, even }: { logos: ReadonlyArray<LogoItem>; even?: boolean }) {
 	return (
-		<ul className="grid grid-cols-2 gap-1 sm:flex sm:flex-wrap">
+		<ul
+			className={cn(
+				"grid grid-cols-2 gap-1",
+				even ? "sm:grid-cols-3 lg:grid-cols-6" : "sm:flex sm:flex-wrap",
+			)}
+		>
 			{logos.map((item) => (
-				<li key={item.label} className="sm:fl-w-36/56 sm:shrink-0">
+				<li key={item.label} className={cn(!even && "sm:fl-w-36/56 sm:shrink-0")}>
 					<LogoLink logo={item.logo} label={item.label} url={item.url} light={item.light} />
 				</li>
 			))}
@@ -176,14 +183,12 @@ function LogoRow({ logos }: { logos: ReadonlyArray<LogoItem> }) {
 
 export function Footer() {
 	const { footer } = museum
-	const siblings: Array<LogoItem> = glamFamily
-		.filter((institution) => institution.ref !== museum.ref)
-		.map((institution) => ({
-			logo: institution.logo,
-			label: institution.label,
-			url: institution.url,
-			light: "light" in institution ? institution.light : undefined,
-		}))
+	const family: Array<LogoItem> = glamFamily.map((institution) => ({
+		logo: institution.logo,
+		label: institution.label,
+		url: institution.url,
+		light: "light" in institution ? institution.light : undefined,
+	}))
 	const supporters: Array<LogoItem> = footer.partners.map((key) => partners[key])
 
 	return (
@@ -282,7 +287,7 @@ export function Footer() {
 						<h2 className="text-xs font-semibold tracking-wider text-foreground/60 uppercase">
 							Part of Gardens, Libraries &amp; Museums
 						</h2>
-						<LogoRow logos={siblings} />
+						<LogoRow logos={family} even />
 					</div>
 					{supporters.length > 0 && (
 						<div className="grid gap-5">

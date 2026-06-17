@@ -200,7 +200,10 @@ export type CollectionObject = {
 	format?: Array<any>
 	photoProcess?: Array<any>
 	rights?: Array<{ type?: string }>
-	objectLinks?: Array<any>
+	/** Curated links to other catalogue records — the legacy "Related" section.
+	 * The relationship is bidirectional and authored on either end, so a given
+	 * record may carry the irns in `objectLinks`, `objectLinks2`, or both. */
+	objectLinks?: Array<{ irn: string }>
 	objectLinks2?: Array<{ irn: string }>
 	objectGroups?: Array<{ id: string; isPublished: string }>
 	music?: Array<any>

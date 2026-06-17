@@ -82,6 +82,7 @@
 
 	/* Spacing */
 	--spacing-gap: clamp(3rem, 1.25rem + 7vw, 8rem);
+	--spacing-gap-sm: clamp(2rem, 1.25rem + 3vw, 4rem);
 }
 
 /* Per-museum brand colours. The active museum's key is set as a class on <html>
