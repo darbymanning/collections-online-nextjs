@@ -1,15 +1,15 @@
 /**
  * AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
- * Pitt Rivers Museum's navigation, scraped from https://www.prm.ox.ac.uk
- * on 2026-06-16T11:21:32.849Z by `bun run scrape`.
+ * Pitt Rivers Museum's navigation and footer, scraped from https://www.prm.ox.ac.uk
+ * on 2026-06-16T21:11:33.176Z by `bun run scrape`.
  *
  * Regenerate with: bun run scrape --museums=prm
  *
  * Written read-only; the scrape script restores write access before each
  * regeneration, so there is no need to chmod it back yourself.
  */
-import type { MenuItem } from "./config"
+import type { FooterData, MenuItem } from "./config"
 
 /** Utility links across the top of Pitt Rivers Museum's header. */
 export const topLinks: Array<{ label: string; href: string }> = [
@@ -167,3 +167,23 @@ export const nav: Array<MenuItem> = [
 		],
 	},
 ]
+
+/** Pitt Rivers Museum's footer: link columns, social, legal links and partner-logo keys. */
+export const footer: FooterData = {
+	social: [
+		{ platform: "x", href: "http://twitter.com/Pitt_Rivers" },
+		{ platform: "facebook", href: "https://www.facebook.com/pittriversmuseum/" },
+		{
+			platform: "youtube",
+			href: "https://www.youtube.com/channel/UChrusltscFV9mzri-FUGdAw/featured",
+		},
+		{ platform: "instagram", href: "https://www.instagram.com/pittriversmuseum/" },
+		{ platform: "bluesky", href: "https://bsky.app/profile/pittriversmuseum.bsky.social" },
+	],
+	legal: [
+		{ label: "Privacy policy", href: "/privacy-policy" },
+		{ label: "Accessibility", href: "/accessibility" },
+	],
+	partners: ["research-england", "oxford-mosaic", "it-services"],
+	newsletter: "/newsletter",
+}

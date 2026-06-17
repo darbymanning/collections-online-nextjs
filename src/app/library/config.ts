@@ -9,15 +9,41 @@ import oumHero from "$assets/oum-hero.jpg"
 import hsmHero from "$assets/hsm-hero.jpg"
 // `topLinks` and `nav` are scraped from each museum's live site — regenerate with
 // `bun run scrape` (see scripts/scrape.ts). Everything else here is hand-authored.
-import { nav as ashNav, topLinks as ashTopLinks } from "./scraped.ash"
-import { nav as oumNav, topLinks as oumTopLinks } from "./scraped.oum"
-import { nav as prmNav, topLinks as prmTopLinks } from "./scraped.prm"
-import { nav as hsmNav, topLinks as hsmTopLinks } from "./scraped.hsm"
+import { footer as ashFooter, nav as ashNav, topLinks as ashTopLinks } from "./scraped.ash"
+import { footer as oumFooter, nav as oumNav, topLinks as oumTopLinks } from "./scraped.oum"
+import { footer as prmFooter, nav as prmNav, topLinks as prmTopLinks } from "./scraped.prm"
+import { footer as hsmFooter, nav as hsmNav, topLinks as hsmTopLinks } from "./scraped.hsm"
 
 /** A node in a museum's burger-menu tree. A node with `children` drills into a
  * deeper layer (and its `href`, when present, becomes that layer's heading link);
  * a leaf links out via `href`. Mirrors each museum's own primary navigation. */
 export type MenuItem = { label: string; href?: string; children?: Array<MenuItem> }
+
+/** Social platforms a museum links to in its footer. Mapped to brand icons +
+ * accessible labels in `footer.tsx`. */
+export type SocialPlatform = "facebook" | "instagram" | "x" | "youtube" | "bluesky"
+
+/** Funder / accreditation / platform logos a museum carries in its footer. The
+ * key selects a local logo asset + label + link in `footer.tsx`; the scrape only
+ * records which ones each museum actually shows. */
+export type FooterPartner =
+	| "research-england"
+	| "athena-swan"
+	| "arts-council-england"
+	| "heritage-fund"
+	| "it-services"
+	| "oxford-mosaic"
+
+/** A museum's scraped footer content. The sitemap columns are derived from `nav`
+ * (the museums' own footer link-lists are messy and inconsistent), and the Oxford
+ * + GLAM-sibling logo strip is the same everywhere — both live in `footer.tsx`.
+ * Only these reliably-scrapeable, per-museum bits come from the live footer. */
+export type FooterData = {
+	social: Array<{ platform: SocialPlatform; href: string }>
+	legal: Array<{ label: string; href: string }>
+	partners: Array<FooterPartner>
+	newsletter?: string
+}
 
 /** Shared shape every museum entry must satisfy. Listing it explicitly means
  * adding a new museum is a type error until it declares its SEO policy —
@@ -198,6 +224,13 @@ const headers = {
 	},
 } satisfies Record<string, HeaderConfig>
 
+const footers = {
+	ash: ashFooter,
+	oum: oumFooter,
+	prm: prmFooter,
+	hsm: hsmFooter,
+} satisfies Record<string, FooterData>
+
 const current = museumDirectory[process.env.NEXT_PUBLIC_MUSEUM]
 const self = current.self
 const parent = new URL(current.url.origin)
@@ -207,6 +240,7 @@ const simpleSearch = new URL("#/search/simple-search", collectionsOnline)
 export const museum = {
 	...current,
 	header: headers[process.env.NEXT_PUBLIC_MUSEUM],
+	footer: footers[process.env.NEXT_PUBLIC_MUSEUM],
 	urls: {
 		self,
 		parent,

@@ -21,8 +21,8 @@ type Params = {
 // Incremental Static Regeneration: serve a prerendered, crawlable page and
 // refresh it in the background at most once a day, matching the upstream's 24h
 // reindex — a shorter interval would just regenerate identical pages. The
-// visitor's `?return=` back link is resolved client-side (see BackButton) so the
-// page itself reads no request-time APIs and stays statically prerenderable.
+// visitor's `?return=` back link is resolved client-side (see CollectionBreadcrumbs)
+// so the page itself reads no request-time APIs and stays statically prerenderable.
 export const revalidate = 86400
 
 // Don't prebuild the catalogue at build time — it's far too large. An empty

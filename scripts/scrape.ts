@@ -34,7 +34,24 @@ const allRefs = Object.keys(MUSEUMS) as Array<Ref>
 /** A node in the scraped menu tree — mirrors `MenuItem` in `config.ts`. */
 type MenuItem = { label: string; href?: string; children?: Array<MenuItem> }
 type TopLink = { label: string; href: string }
-type Scraped = { topLinks: Array<TopLink>; nav: Array<MenuItem> }
+
+/** Footer types — mirror `FooterData` in `config.ts`. */
+type SocialPlatform = "facebook" | "instagram" | "x" | "youtube" | "bluesky"
+type FooterPartner =
+	| "research-england"
+	| "athena-swan"
+	| "arts-council-england"
+	| "heritage-fund"
+	| "it-services"
+	| "oxford-mosaic"
+type FooterLink = { label: string; href: string }
+type Footer = {
+	social: Array<{ platform: SocialPlatform; href: string }>
+	legal: Array<FooterLink>
+	partners: Array<FooterPartner>
+	newsletter?: string
+}
+type Scraped = { topLinks: Array<TopLink>; nav: Array<MenuItem>; footer: Footer }
 
 /** Acronyms to keep intact when sentence-casing an all-caps label (only the
  * Ashmolean ships its menu in caps). Deliberately excludes anything that is also
@@ -132,7 +149,85 @@ function extractFromPage(): Scraped {
 		}
 	}
 
-	return { topLinks, nav }
+	// ---- footer (#footer + #footer-bottom) ----
+	// Detected by URL/alt/text signature so it survives the museums' messy,
+	// hand-authored rich-text footers rather than relying on exact markup.
+	const SOCIAL: Array<{ platform: SocialPlatform; re: RegExp }> = [
+		{ platform: "facebook", re: /facebook\.com/i },
+		{ platform: "instagram", re: /instagram\.com/i },
+		{ platform: "x", re: /twitter\.com|\bx\.com/i },
+		{ platform: "youtube", re: /youtube\.com|youtu\.be/i },
+		{ platform: "bluesky", re: /bsky\.(app|social)/i },
+	]
+	const PARTNERS: Array<{ key: FooterPartner; re: RegExp }> = [
+		{ key: "research-england", re: /re\.ukri\.org|research[\s-]*england/i },
+		{ key: "athena-swan", re: /athena[\s-]*swan|equality-charters\/athena/i },
+		{ key: "arts-council-england", re: /artscouncil|arts[\s-]*council/i },
+		{
+			key: "heritage-fund",
+			re: /heritagefund|heritage[\s-]*fund|national[\s-]*lottery[\s-]*heritage/i,
+		},
+		{ key: "it-services", re: /\bit[\s-]*services/i },
+		{ key: "oxford-mosaic", re: /oxford[\s-]*mosaic/i },
+	]
+	const LEGAL =
+		/privacy|terms|accessibility|cookie|image policy|copyright|modern slavery|data protection/i
+	const NEWSLETTER = /newsletter|sign up|mailing list|subscribe/i
+	const socialOf = (href: string): SocialPlatform | undefined =>
+		SOCIAL.find((s) => s.re.test(href))?.platform
+
+	const footerEl = document.querySelector("#footer")
+	const bottomEl = document.querySelector("#footer-bottom")
+	// the "Powered by Oxford Mosaic" / IT Services credit sits in a sibling banner
+	const mosaicEl = document.querySelector('[aria-label*="Oxford Mosaic" i]')
+	const isElement = (el: Element | null): el is Element => el !== null
+	const regions = [footerEl, bottomEl, mosaicEl].filter(isElement)
+
+	const social: Array<{ platform: SocialPlatform; href: string }> = []
+	const socialSeen = new Set<string>()
+	const partners: Array<FooterPartner> = []
+	for (const region of regions) {
+		for (const el of region.querySelectorAll("a[href], img[alt]")) {
+			const href = el.getAttribute("href") ?? ""
+			const platform = href && socialOf(href)
+			if (platform && !socialSeen.has(platform)) {
+				socialSeen.add(platform)
+				social.push({ platform, href })
+			}
+			const signature = `${href} ${el.getAttribute("alt") ?? ""} ${clean(el)}`
+			for (const p of PARTNERS) {
+				if (p.re.test(signature) && !partners.includes(p.key)) partners.push(p.key)
+			}
+		}
+	}
+
+	// The footer's link columns are a messy, inconsistent re-listing of each
+	// museum's primary nav, so the sitemap columns are derived from the (clean)
+	// scraped nav in `footer.tsx` instead. Here we only take the reliably
+	// extractable footer-specific bits: legal links and a newsletter sign-up.
+	let newsletter: string | undefined
+	const legal: Array<FooterLink> = []
+	const legalSeen = new Set<string>()
+	for (const region of [footerEl, bottomEl].filter(isElement)) {
+		for (const a of region.querySelectorAll<HTMLAnchorElement>("a[href]")) {
+			const href = a.getAttribute("href") ?? ""
+			const label = clean(a.closest("li") ?? a)
+			if (!href || !label) continue
+			if (NEWSLETTER.test(label)) newsletter ??= href
+			if (!LEGAL.test(label) || legalSeen.has(label.toLowerCase())) continue
+			legalSeen.add(label.toLowerCase())
+			legal.push({ label, href })
+		}
+	}
+
+	const footer: Footer = {
+		social,
+		legal,
+		partners,
+		...(newsletter ? { newsletter } : {}),
+	}
+
+	return { topLinks, nav, footer }
 }
 
 function normalizeTree(
@@ -146,6 +241,21 @@ function normalizeTree(
 		if (item.children) node.children = normalizeTree(item.children, base, sameSite)
 		return node
 	})
+}
+
+function normalizeFooter(footer: Footer, base: string, sameSite: Set<string>): Footer {
+	return {
+		// social links are inherently off-site, so they keep their absolute URL
+		social: footer.social,
+		legal: footer.legal.map((l) => ({
+			label: normalizeLabel(l.label),
+			href: normalizeHref(l.href, base, sameSite),
+		})),
+		partners: footer.partners,
+		...(footer.newsletter
+			? { newsletter: normalizeHref(footer.newsletter, base, sameSite) }
+			: {}),
+	}
 }
 
 /** Serialise a menu tree as indented TypeScript object literals. oxfmt has the
@@ -171,12 +281,30 @@ function serializeTopLinks(links: Array<TopLink>): string {
 	return `[\n${lines.join(",\n")},\n]`
 }
 
+/** Serialise plain data (string / array / object) as TypeScript with unquoted
+ * identifier keys — objects stay inline, arrays break across lines, and oxfmt
+ * does the final wrapping. */
+function serializeValue(value: unknown, depth: number): string {
+	if (Array.isArray(value)) {
+		if (value.length === 0) return "[]"
+		const pad = "\t".repeat(depth)
+		const inner = "\t".repeat(depth + 1)
+		const lines = value.map((item) => inner + serializeValue(item, depth + 1))
+		return `[\n${lines.join(",\n")},\n${pad}]`
+	}
+	if (value && typeof value === "object") {
+		const parts = Object.entries(value).map(([k, v]) => `${k}: ${serializeValue(v, depth)}`)
+		return `{ ${parts.join(", ")} }`
+	}
+	return JSON.stringify(value)
+}
+
 function generateModule(ref: Ref, scraped: Scraped): string {
 	const { name, url } = MUSEUMS[ref]
 	return `/**
  * AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
- * ${name}'s navigation, scraped from ${url}
+ * ${name}'s navigation and footer, scraped from ${url}
  * on ${new Date().toISOString()} by \`bun run scrape\`.
  *
  * Regenerate with: bun run scrape --museums=${ref}
@@ -184,13 +312,16 @@ function generateModule(ref: Ref, scraped: Scraped): string {
  * Written read-only; the scrape script restores write access before each
  * regeneration, so there is no need to chmod it back yourself.
  */
-import type { MenuItem } from "./config"
+import type { FooterData, MenuItem } from "./config"
 
 /** Utility links across the top of ${name}'s header. */
 export const topLinks: Array<{ label: string; href: string }> = ${serializeTopLinks(scraped.topLinks)}
 
 /** ${name}'s primary navigation (the burger-menu drill-down). */
 export const nav: Array<MenuItem> = ${serializeItems(scraped.nav, 0)}
+
+/** ${name}'s footer: link columns, social, legal links and partner-logo keys. */
+export const footer: FooterData = ${serializeValue(scraped.footer, 0)}
 `
 }
 
@@ -236,14 +367,18 @@ for (const ref of targets) {
 				href: normalizeHref(l.href, url, sameSite),
 			})),
 			nav: normalizeTree(scraped.nav, url, sameSite),
+			footer: normalizeFooter(scraped.footer, url, sameSite),
 		}
 
 		// the previous run left the file read-only; reopen it for writing
 		await $`chmod u+w ${outPath}`.nothrow().quiet()
 		await Bun.write(outPath, generateModule(ref, normalized))
 		written.push(outPath)
+		const { footer } = normalized
 		console.log(
-			`${ref}: ${normalized.topLinks.length} top links, ${normalized.nav.length} nav sections → ${outPath}`,
+			`${ref}: ${normalized.nav.length} nav, ${normalized.topLinks.length} top links, ` +
+				`footer[${footer.social.length} social, ${footer.legal.length} legal, ` +
+				`${footer.partners.length} partners] → ${outPath}`,
 		)
 	} catch (error) {
 		failed = true

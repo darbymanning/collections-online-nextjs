@@ -20,6 +20,8 @@ type Base = {
 	 * outline previews the colour that slides up on hover; override when that fill is
 	 * too dark to read as an outline (e.g. a deep accent on a photo — see `.oum`). */
 	outline?: string
+	/** rounded corner style: `base` (default) or a more compact `sm` or a full `full`. */
+	rounded?: "base" | "sm" | "full"
 }
 
 interface Link extends Base, Omit<ComponentPropsWithoutRef<typeof NextLink>, "children" | "href"> {
@@ -34,14 +36,14 @@ type Props = Link | Button
 
 type Rest = Omit<
 	Link | Button,
-	"children" | "revealIcon" | "size" | "className" | "fill" | "onFill" | "outline"
+	"children" | "revealIcon" | "size" | "className" | "fill" | "onFill" | "outline" | "rounded"
 >
 
 function isLink(
 	props: Rest,
 ): props is Omit<
 	Link,
-	"children" | "revealIcon" | "size" | "className" | "fill" | "onFill" | "outline"
+	"children" | "revealIcon" | "size" | "className" | "fill" | "onFill" | "outline" | "rounded"
 > {
 	return props.href !== undefined
 }
@@ -64,6 +66,7 @@ export function Button({
 	fill,
 	onFill,
 	outline,
+	rounded = "base",
 	...rest
 }: Props): ReactElement {
 	const merged = {
@@ -74,8 +77,11 @@ export function Button({
 			"--on-fill": onFill ?? "var(--color-on-accent)",
 		} as CSSProperties,
 		className: cn(
-			"group relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden rounded-md font-medium text-(--rest) no-underline ring-2 ring-(--rest/20) transition-[color,box-shadow] duration-300 hover:text-(--on-fill) hover:ring-(--fill)",
+			"group relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden font-medium text-(--rest) no-underline ring-2 ring-(--rest/20) transition-[color,box-shadow] duration-300 hover:text-(--on-fill) hover:ring-(--fill)",
 			sizeClass[size],
+			{ "rounded-full": rounded === "full" },
+			{ "rounded-sm": rounded === "sm" },
+			{ "rounded-md": rounded === "base" },
 			revealIcon &&
 				"[&_svg]:h-[1em] [&_svg]:w-0 [&_svg]:opacity-0 [&_svg]:transition-all [&_svg]:duration-300 hover:[&_svg]:mx-1 hover:[&_svg]:w-[1em] hover:[&_svg]:opacity-100",
 			className,

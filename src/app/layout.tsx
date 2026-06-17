@@ -4,6 +4,7 @@ import "./app.css"
 import { museum } from "$library/config"
 import { openGraphDefaults, robotsMetadata } from "$library/seo"
 import { Header } from "$components/header"
+import { Footer } from "$components/footer"
 
 const dmSans = DM_Sans({
 	subsets: ["latin"],
@@ -50,6 +51,7 @@ export default function RootLayout({
 				<main id="main-content" tabIndex={-1} className="flex grow flex-col focus:outline-none">
 					{children}
 				</main>
+				<Footer />
 			</body>
 		</html>
 	)

@@ -1,10 +1,11 @@
-import { BackButton, BackButtonFallback } from "$components/back-button"
-import { Breadcrumbs } from "$components/breadcrumbs"
+import {
+	CollectionBreadcrumbs,
+	CollectionBreadcrumbsFallback,
+} from "$components/collection-breadcrumbs"
 import { List } from "$components/list"
 import { FurtherItems } from "$components/further-items"
 import { ImageViewer } from "$components/image-viewer"
 import { ImageDownloads } from "$components/image-downloads"
-import { museum } from "$library/config"
 import type { Props } from "../item/[id]/[[...slug]]/page"
 import type { FurtherItemsSection } from "$library/further-items"
 import Link from "next/link"
@@ -62,31 +63,27 @@ export function CollectionObjectLayout({
 	imageDownloads,
 	furtherItems,
 }: Props & { furtherItems?: FurtherItemsSection }) {
+	const breadcrumbClassName = "border-b border-b-current/10 px-[5vw] py-3 text-sm text-on-band"
+
 	return (
 		<div className="flex flex-col">
-			<Breadcrumbs
-				className="border-b border-b-current/10 px-[5vw] py-3 text-sm text-on-band"
-				items={[
-					{ label: "Home", href: museum.url.toString() },
-					// the stable landing page (mirrors the BreadcrumbList JSON-LD); a
-					// visitor's search query lives on the back-link button instead
-					{
-						label: "Collections Online",
-						href: museum.urls.legacy.collectionsOnline.toString(),
-					},
-					{ label: title },
-				]}
-			/>
+			{/* The "Collections Online" crumb doubles as the back link — it resolves the
+			 * visitor's `?return=` search results on the client, so it sits inside a
+			 * Suspense boundary to keep the page statically prerenderable. */}
+			<Suspense
+				fallback={
+					<CollectionBreadcrumbsFallback title={title} className={breadcrumbClassName} />
+				}
+			>
+				<CollectionBreadcrumbs title={title} className={breadcrumbClassName} />
+			</Suspense>
 			{/* Accent header band: the museum colour bleeds up from <body> and the text
 			 * reverses to white. The image viewer below is pulled up so its top half
 			 * overlaps the band — the accent fills the top ~50% of the image before the
 			 * page turns white at the seam (cf. ox.ac.uk/research). With no image the
 			 * band just gets normal padding and flows straight into the white page. */}
-			<header className={`accented px-[5vw] pt-6 ${images?.length ? "pb-80" : "pb-12"}`}>
-				<Suspense fallback={<BackButtonFallback />}>
-					<BackButton />
-				</Suspense>
-				<div className="mt-8 grid gap-4">
+			<header className={`accented px-[5vw] pt-12 ${images?.length ? "pb-80" : "pb-12"}`}>
+				<div className="grid gap-4">
 					<h1 className="text-center text-5xl font-semibold">{title}</h1>
 					<h2 className="text-center text-2xl font-semibold text-current/80">{subTitle}</h2>
 					{onDisplay && <p className="text-center text-sm">On display</p>}
@@ -96,7 +93,7 @@ export function CollectionObjectLayout({
 					</span>
 				</div>
 			</header>
-			<div className="bg-background px-[5vw] pb-[5vw]">
+			<div className="bg-background px-[5vw]">
 				{images?.length ? (
 					// negative margin ≈ half the 34rem frame, so the viewer straddles the
 					// seam: top half over the accent band, lower half on the white page

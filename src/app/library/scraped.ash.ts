@@ -1,15 +1,15 @@
 /**
  * AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
- * Ashmolean Museum's navigation, scraped from https://www.ashmolean.org
- * on 2026-06-16T11:21:32.114Z by `bun run scrape`.
+ * Ashmolean Museum's navigation and footer, scraped from https://www.ashmolean.org
+ * on 2026-06-16T21:11:32.217Z by `bun run scrape`.
  *
  * Regenerate with: bun run scrape --museums=ash
  *
  * Written read-only; the scrape script restores write access before each
  * regeneration, so there is no need to chmod it back yourself.
  */
-import type { MenuItem } from "./config"
+import type { FooterData, MenuItem } from "./config"
 
 /** Utility links across the top of Ashmolean Museum's header. */
 export const topLinks: Array<{ label: string; href: string }> = [
@@ -163,3 +163,24 @@ export const nav: Array<MenuItem> = [
 		],
 	},
 ]
+
+/** Ashmolean Museum's footer: link columns, social, legal links and partner-logo keys. */
+export const footer: FooterData = {
+	social: [
+		{ platform: "x", href: "https://twitter.com/AshmoleanMuseum" },
+		{ platform: "facebook", href: "https://www.facebook.com/ashmoleanmuseum/" },
+		{ platform: "instagram", href: "https://www.instagram.com/ashmoleanmuseum/?hl=en" },
+	],
+	legal: [
+		{
+			label: "Privacy policy",
+			href: "https://www.glam.ox.ac.uk/privacy-notice-ashmolean-museum-website",
+		},
+		{ label: "Terms & copyright", href: "/terms" },
+		{ label: "Image policy", href: "/picture-library-terms-and-conditions" },
+		{ label: "Accessibility", href: "/platform-accessibility" },
+		{ label: "Cookies", href: "/cookies" },
+	],
+	partners: ["research-england", "arts-council-england", "oxford-mosaic", "it-services"],
+	newsletter: "/newsletter",
+}

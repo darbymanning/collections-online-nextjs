@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { museum } from "./config"
-import { legacyBackLink, list } from "./utils"
+import { collectionsOnlineHref, list } from "./utils"
 
 describe("list.readable", () => {
 	test("returns an empty string for an empty list", () => {
@@ -20,44 +20,30 @@ describe("list.readable", () => {
 	})
 })
 
-describe("legacyBackLink", () => {
-	const simpleSearch = String(museum.urls.legacy.simpleSearch)
+describe("collectionsOnlineHref", () => {
 	const collectionsOnline = String(museum.urls.legacy.collectionsOnline)
 
-	test("defaults to simple search when there is no return URL", () => {
-		expect(legacyBackLink(null)).toEqual({
-			href: simpleSearch,
-			label: "Back to search",
-		})
+	test("defaults to the Collections Online landing when there is no return URL", () => {
+		expect(collectionsOnlineHref(null)).toBe(collectionsOnline)
 	})
 
 	test("uses a validated legacy search results URL", () => {
 		const returnUrl = `${collectionsOnline}#/search/simple-search/object.objectType:tile`
 
-		expect(legacyBackLink(returnUrl)).toEqual({
-			href: returnUrl,
-			label: "Back to search results",
-		})
+		expect(collectionsOnlineHref(returnUrl)).toBe(returnUrl)
 	})
 
-	test("defaults to simple search for return URLs outside legacy Collections Online", () => {
-		expect(legacyBackLink("https://www.google.com/")).toEqual({
-			href: simpleSearch,
-			label: "Back to search",
-		})
+	test("falls back to the landing for return URLs outside legacy Collections Online", () => {
+		expect(collectionsOnlineHref("https://www.google.com/")).toBe(collectionsOnline)
 	})
 
-	test("defaults to simple search for other pages on the museum site", () => {
-		expect(legacyBackLink(`${museum.urls.parent}/visit`)).toEqual({
-			href: simpleSearch,
-			label: "Back to search",
-		})
+	test("falls back to the landing for other pages on the museum site", () => {
+		expect(collectionsOnlineHref(`${museum.urls.parent}/visit`)).toBe(collectionsOnline)
 	})
 
 	test("rejects non-https return URLs", () => {
-		expect(legacyBackLink("http://www.example.com/collections-online")).toEqual({
-			href: simpleSearch,
-			label: "Back to search",
-		})
+		expect(collectionsOnlineHref("http://www.example.com/collections-online")).toBe(
+			collectionsOnline,
+		)
 	})
 })

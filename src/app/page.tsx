@@ -30,7 +30,7 @@ switch (process.env.NEXT_PUBLIC_MUSEUM) {
 
 export default function Home() {
 	return (
-		<main className="grid flex-1 content-center justify-center gap-5 bg-white text-center">
+		<main className="grid flex-1 content-center justify-center gap-5 bg-white p-[5vw] text-center">
 			<pre className="font-mono text-sm tracking-wider text-foreground/60">{id}</pre>
 			<ol className="flex gap-6">
 				<li>

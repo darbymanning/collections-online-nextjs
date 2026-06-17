@@ -20,16 +20,6 @@ export function derivative(url: string, suffix: string) {
 	return url.replace(/\.[^.]+$/, `${suffix}.jpg`)
 }
 
-export type BackLink = {
-	href: string
-	label: string
-}
-
-const defaultBackLink = (): BackLink => ({
-	href: String(museum.urls.legacy.simpleSearch),
-	label: "Back to search",
-})
-
 function normalizedPathname(url: URL): string {
 	return url.pathname.replace(/\/+/g, "/") || "/"
 }
@@ -42,23 +32,21 @@ function isAllowedLegacyReturn(url: URL, legacy: URL): boolean {
 	return pathname === legacy.pathname || pathname.startsWith(`${legacy.pathname}/`)
 }
 
-/** Legacy links should pass `?return=` with `encodeURIComponent(window.location.href)`. */
-export function legacyBackLink(returnUrl: string | null | undefined): BackLink {
-	if (!returnUrl) return defaultBackLink()
+/** Resolve where the "Collections Online" breadcrumb points. Legacy links pass
+ * `?return=` set to `encodeURIComponent(window.location.href)` to send a visitor
+ * back to the search results they came from; anything that isn't a Collections
+ * Online URL falls back to the stable landing page (which the BreadcrumbList
+ * JSON-LD also points at). */
+export function collectionsOnlineHref(returnUrl: string | null | undefined): string {
+	const landing = museum.urls.legacy.collectionsOnline
+	if (!returnUrl) return String(landing)
 
 	try {
 		const url = new URL(returnUrl)
-		const legacy = museum.urls.legacy.collectionsOnline
-
-		if (isAllowedLegacyReturn(url, legacy)) {
-			return {
-				href: returnUrl,
-				label: "Back to search results",
-			}
-		}
+		if (isAllowedLegacyReturn(url, landing)) return returnUrl
 	} catch {
 		// ignore malformed return URLs
 	}
 
-	return defaultBackLink()
+	return String(landing)
 }

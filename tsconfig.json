@@ -41,7 +41,11 @@
 		".next-e2e-prm/types/**/*.ts",
 		".next-e2e-prm/dev/types/**/*.ts",
 		".next-e2e-hsm/types/**/*.ts",
-		".next-e2e-hsm/dev/types/**/*.ts"
+		".next-e2e-hsm/dev/types/**/*.ts",
+		".next-preview-prm/types/**/*.ts",
+		".next-preview-prm/dev/types/**/*.ts",
+		".next-preview-ash/types/**/*.ts",
+		".next-preview-ash/dev/types/**/*.ts"
 	],
 	"exclude": ["node_modules"]
 }

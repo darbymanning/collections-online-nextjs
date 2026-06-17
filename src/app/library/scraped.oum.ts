@@ -1,15 +1,15 @@
 /**
  * AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
- * Oxford University Museum of Natural History's navigation, scraped from https://www.oumnh.ox.ac.uk
- * on 2026-06-16T11:16:19.584Z by `bun run scrape`.
+ * Oxford University Museum of Natural History's navigation and footer, scraped from https://www.oumnh.ox.ac.uk
+ * on 2026-06-16T21:11:32.867Z by `bun run scrape`.
  *
  * Regenerate with: bun run scrape --museums=oum
  *
  * Written read-only; the scrape script restores write access before each
  * regeneration, so there is no need to chmod it back yourself.
  */
-import type { MenuItem } from "./config"
+import type { FooterData, MenuItem } from "./config"
 
 /** Utility links across the top of Oxford University Museum of Natural History's header. */
 export const topLinks: Array<{ label: string; href: string }> = [
@@ -218,3 +218,27 @@ export const nav: Array<MenuItem> = [
 	},
 	{ label: "Shop", href: "https://shop.oumnh.ox.ac.uk/" },
 ]
+
+/** Oxford University Museum of Natural History's footer: link columns, social, legal links and partner-logo keys. */
+export const footer: FooterData = {
+	social: [
+		{ platform: "facebook", href: "https://www.facebook.com/morethanadodo/" },
+		{ platform: "instagram", href: "https://www.instagram.com/morethanadodo/" },
+		{ platform: "youtube", href: "https://www.youtube.com/user/oumnhvideos/videos" },
+	],
+	legal: [
+		{ label: "Accessibility", href: "/accessibility-information" },
+		{ label: "Privacy policy", href: "https://www.glam.ox.ac.uk/privacy-notice-glam" },
+		{ label: "Terms of Use and Copyright", href: "/copyright-0" },
+		{ label: "Website Accessibility Statement", href: "/website-accessibility-statement" },
+	],
+	partners: [
+		"research-england",
+		"arts-council-england",
+		"heritage-fund",
+		"athena-swan",
+		"oxford-mosaic",
+		"it-services",
+	],
+	newsletter: "/newsletter",
+}

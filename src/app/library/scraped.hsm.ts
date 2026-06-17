@@ -1,15 +1,15 @@
 /**
  * AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
- * History of Science Museum's navigation, scraped from https://www.hsm.ox.ac.uk
- * on 2026-06-16T11:16:20.541Z by `bun run scrape`.
+ * History of Science Museum's navigation and footer, scraped from https://www.hsm.ox.ac.uk
+ * on 2026-06-16T21:11:33.543Z by `bun run scrape`.
  *
  * Regenerate with: bun run scrape --museums=hsm
  *
  * Written read-only; the scrape script restores write access before each
  * regeneration, so there is no need to chmod it back yourself.
  */
-import type { MenuItem } from "./config"
+import type { FooterData, MenuItem } from "./config"
 
 /** Utility links across the top of History of Science Museum's header. */
 export const topLinks: Array<{ label: string; href: string }> = [
@@ -155,3 +155,20 @@ export const nav: Array<MenuItem> = [
 		],
 	},
 ]
+
+/** History of Science Museum's footer: link columns, social, legal links and partner-logo keys. */
+export const footer: FooterData = {
+	social: [
+		{ platform: "x", href: "https://twitter.com/hsmoxford?lang=en" },
+		{ platform: "facebook", href: "https://www.facebook.com/HSMOxford/" },
+		{ platform: "instagram", href: "https://www.instagram.com/hsmoxford/" },
+		{ platform: "youtube", href: "https://www.youtube.com/c/HistoryofScienceMuseum" },
+	],
+	legal: [
+		{ label: "Privacy policy", href: "https://www.glam.ox.ac.uk/privacy-notice-glam" },
+		{ label: "Accessibility", href: "/accessibility" },
+		{ label: "Cookies", href: "/cookies" },
+	],
+	partners: ["research-england", "oxford-mosaic", "it-services"],
+	newsletter: "/mailing-list",
+}

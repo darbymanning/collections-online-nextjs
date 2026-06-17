@@ -17,20 +17,30 @@ test.afterEach(() => {
 	expect(pageErrors).toEqual([])
 })
 
-test("shows the default back link without a return URL", async ({ page }) => {
+// The "Collections Online" breadcrumb doubles as the back link — it points at the
+// stable landing page by default and at the visitor's search results when they
+// arrive with a `?return=` deep link.
+function collectionsOnlineCrumb(page: import("@playwright/test").Page) {
+	return page
+		.getByRole("navigation", { name: "Breadcrumb" })
+		.getByRole("link", { name: "Collections Online" })
+}
+
+test("links the Collections Online breadcrumb to the landing without a return URL", async ({
+	page,
+}) => {
 	const museum = currentMuseum()
 
 	await page.goto(`/item/${museum.id}/${museum.slug}`)
 
-	const backLink = page.getByTestId("back-link")
-	// the Suspense fallback and the resolved client button briefly coexist in the
+	const crumb = collectionsOnlineCrumb(page)
+	// the Suspense fallback and the resolved client crumb briefly coexist in the
 	// streamed HTML — wait for hydration to settle on the single link first
-	await expect(backLink).toHaveCount(1)
-	await expect(backLink).toHaveText("Back to search")
-	await expect(backLink).toHaveAttribute("href", museum.simpleSearchHref)
+	await expect(crumb).toHaveCount(1)
+	await expect(crumb).toHaveAttribute("href", museum.collectionsOnlineHref)
 })
 
-test("shows the legacy search results back link when a return URL is provided", async ({
+test("points the Collections Online breadcrumb at the search results when a return URL is provided", async ({
 	page,
 }) => {
 	const museum = currentMuseum()
@@ -38,26 +48,20 @@ test("shows the legacy search results back link when a return URL is provided", 
 
 	await page.goto(`/item/${museum.id}/${museum.slug}?return=${returnParam}`)
 
-	const backLink = page.getByTestId("back-link")
-	// the Suspense fallback and the resolved client button briefly coexist in the
-	// streamed HTML — wait for hydration to settle on the single link first
-	await expect(backLink).toHaveCount(1)
-	await expect(backLink).toHaveText("Back to search results")
-	await expect(backLink).toHaveAttribute("href", museum.legacySearchReturn)
+	const crumb = collectionsOnlineCrumb(page)
+	await expect(crumb).toHaveCount(1)
+	await expect(crumb).toHaveAttribute("href", museum.legacySearchReturn)
 })
 
-test("shows the default back link for untrusted return URLs", async ({ page }) => {
+test("ignores untrusted return URLs for the Collections Online breadcrumb", async ({ page }) => {
 	const museum = currentMuseum()
 	const returnParam = encodeURIComponent("https://www.google.com/")
 
 	await page.goto(`/item/${museum.id}/${museum.slug}?return=${returnParam}`)
 
-	const backLink = page.getByTestId("back-link")
-	// the Suspense fallback and the resolved client button briefly coexist in the
-	// streamed HTML — wait for hydration to settle on the single link first
-	await expect(backLink).toHaveCount(1)
-	await expect(backLink).toHaveText("Back to search")
-	await expect(backLink).toHaveAttribute("href", museum.simpleSearchHref)
+	const crumb = collectionsOnlineCrumb(page)
+	await expect(crumb).toHaveCount(1)
+	await expect(crumb).toHaveAttribute("href", museum.collectionsOnlineHref)
 })
 
 test("renders the record with canonical metadata", async ({ page }) => {

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "fluid-tailwindcss";
 
 @theme {
 	/* Colors */
@@ -149,7 +150,7 @@
 	}
 
 	/* content links (search links in the details/description) underline; the
-	 * back-link and teaser cards opt out with `no-underline` */
+	 * teaser cards opt out with `no-underline` */
 	article a {
 		font-weight: 500;
 		text-decoration: underline;
@@ -176,6 +177,15 @@
 
 @utility accented {
 	@apply bg-band text-on-band selection:bg-on-band/20 selection:text-on-band;
+}
+
+/* Infinite logo marquee (the footer's affiliation strips). The track holds two
+ * copies of the row, so sliding it -50% loops seamlessly. Applied motion-safe
+ * only — reduced-motion visitors get a static, manually-scrollable row. */
+@keyframes marquee {
+	to {
+		transform: translateX(-50%);
+	}
 }
 
 @utility search-icon {
