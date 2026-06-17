@@ -4,6 +4,11 @@ import type { ComponentPropsWithoutRef, CSSProperties, ReactElement, ReactNode }
 
 type Base = {
 	children: ReactNode
+	/** visual style: the outline `pill` (default), or an inline `link` — text with
+	 * the brand hover underline, for use in prose, lists and footers. The pill-only
+	 * props below (`revealIcon`, `size`, `fill`, `onFill`, `outline`, `rounded`)
+	 * don't apply to `link`. */
+	variant?: "pill" | "link"
 	/** hide any <svg> child at rest and reveal it (width + fade) on hover. Put the
 	 * icon before or after the text to control which side it appears on. */
 	revealIcon?: boolean
@@ -36,14 +41,30 @@ type Props = Link | Button
 
 type Rest = Omit<
 	Link | Button,
-	"children" | "revealIcon" | "size" | "className" | "fill" | "onFill" | "outline" | "rounded"
+	| "children"
+	| "variant"
+	| "revealIcon"
+	| "size"
+	| "className"
+	| "fill"
+	| "onFill"
+	| "outline"
+	| "rounded"
 >
 
 function isLink(
 	props: Rest,
 ): props is Omit<
 	Link,
-	"children" | "revealIcon" | "size" | "className" | "fill" | "onFill" | "outline" | "rounded"
+	| "children"
+	| "variant"
+	| "revealIcon"
+	| "size"
+	| "className"
+	| "fill"
+	| "onFill"
+	| "outline"
+	| "rounded"
 > {
 	return props.href !== undefined
 }
@@ -53,13 +74,17 @@ const sizeClass = {
 	sm: "min-h-9 px-3 text-xs",
 } as const
 
-/** Outline pill: white at rest; on hover the accent fills up from below and the
- * text reverses to white. Renders a NextLink when given `href`, otherwise a
- * `<button>` — any extra link/button props are spread through. */
+/** The shared interactive element: a `pill` (default) or an inline `link` (text
+ * with the brand hover underline), set via `variant`. The pill is white at rest
+ * and the accent fills up from below on hover, the text reversing to white.
+ * Renders a NextLink when given `href`, otherwise a `<button>` — any extra
+ * link/button props are spread through. Reach for this over a bare `<a>`/`<button>`
+ * so links pick up the `rounded` focus ring and stay DRY. */
 export function Button(props: Link): ReactElement
 export function Button(props: Button): ReactElement
 export function Button({
 	children,
+	variant = "pill",
 	revealIcon,
 	size = "base",
 	className,
@@ -69,6 +94,20 @@ export function Button({
 	rounded = "base",
 	...rest
 }: Props): ReactElement {
+	if (variant === "link") {
+		// inline text link with the brand hover underline; `rounded` keeps the focus
+		// ring's corners tidy. The pill-only props above don't apply here.
+		const merged = {
+			...rest,
+			className: cn("rounded animated-underline hover:[--underline-w:100%]", className),
+		}
+		return isLink(merged) ? (
+			<NextLink {...merged}>{children}</NextLink>
+		) : (
+			<button {...merged}>{children}</button>
+		)
+	}
+
 	const merged = {
 		...rest,
 		style: {

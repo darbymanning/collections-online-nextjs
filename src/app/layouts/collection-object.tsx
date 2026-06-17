@@ -2,6 +2,7 @@ import {
 	CollectionBreadcrumbs,
 	CollectionBreadcrumbsFallback,
 } from "$components/collection-breadcrumbs"
+import { Button } from "$components/button"
 import { List } from "$components/list"
 import { FurtherItems } from "$components/further-items"
 import { ImageViewer } from "$components/image-viewer"
@@ -120,24 +121,26 @@ export function CollectionObjectLayout({
 								{imageRights && (
 									<>
 										<p>
-											<a
+											<Button
+												variant="link"
 												href={imageRights.termsHref}
-												className="rounded animated-underline font-semibold text-primary hover:[--underline-w:100%]"
+												className="font-semibold text-primary"
 											>
 												Terms and Conditions
-											</a>
+											</Button>
 										</p>
 										<p>
 											If you wish to order a high-resolution image and/or licence its use
 											for print or web publication, exhibition, film, promotional product
 											or any other use, whether in the academic or commercial sector of
 											any print run, then please visit{" "}
-											<a
+											<Button
+												variant="link"
 												href={imageRights.photographicServicesHref}
-												className="rounded animated-underline font-semibold text-primary hover:[--underline-w:100%]"
+												className="font-semibold text-primary"
 											>
 												photographic services
-											</a>
+											</Button>
 											.
 										</p>
 									</>
@@ -496,12 +499,13 @@ export function CollectionObjectLayout({
 								{searchTerms.map((term, index) => (
 									<span key={term.label}>
 										{index > 0 && ", "}
-										<a
+										<Button
+											variant="link"
 											href={term.href}
-											className="rounded animated-underline font-semibold text-primary hover:[--underline-w:100%]"
+											className="font-semibold text-primary"
 										>
 											{term.label}
-										</a>
+										</Button>
 									</span>
 								))}
 							</p>

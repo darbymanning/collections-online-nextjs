@@ -125,9 +125,9 @@ const columns = museum.header.nav.map((section) => ({
 /** A footer link with the shared hover underline. */
 function FootLink({ href, children }: { href: string; children: string }) {
 	return (
-		<a href={href} className="rounded animated-underline font-medium hover:[--underline-w:100%]">
+		<Button variant="link" href={href} className="font-medium">
 			{children}
-		</a>
+		</Button>
 	)
 }
 
@@ -305,12 +305,9 @@ export function Footer() {
 						<ul className="flex flex-wrap gap-x-5 gap-y-2 lg:ml-auto">
 							{footer.legal.map((link) => (
 								<li key={link.label}>
-									<a
-										href={resolveHref(link.href)}
-										className="rounded animated-underline hover:[--underline-w:100%]"
-									>
+									<Button variant="link" href={resolveHref(link.href)}>
 										{link.label}
-									</a>
+									</Button>
 								</li>
 							))}
 						</ul>

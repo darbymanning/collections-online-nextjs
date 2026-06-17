@@ -1,4 +1,5 @@
 import { museum } from "$library/config"
+import { Button } from "$components/button"
 import { SiteSearch } from "$components/site-search"
 import { NotFoundMark } from "$components/not-found-mark"
 
@@ -21,12 +22,13 @@ export default function NotFound() {
 				</p>
 			</div>
 			<SiteSearch className="mt-2" />
-			<a
+			<Button
+				variant="link"
 				href={museum.url.toString()}
-				className="rounded animated-underline text-sm font-semibold text-primary hover:[--underline-w:100%]"
+				className="text-sm font-semibold text-primary"
 			>
 				Back to {museum.name}
-			</a>
+			</Button>
 		</section>
 	)
 }

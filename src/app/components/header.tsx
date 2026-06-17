@@ -3,7 +3,6 @@ import { museum, type MenuItem } from "$library/config"
 import { cn } from "$library/utils"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { useHeaderScrollHide } from "$hooks/use-scroll-hide"
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react"
 import { Button } from "$components/button"
@@ -207,13 +206,9 @@ export function Header() {
 				<div className="flex items-center gap-2">
 					<div className="flex gap-4 border-r border-r-current/20 pr-5 text-sm max-lg:hidden">
 						{museum.header.topLinks.map((link) => (
-							<Link
-								key={link.href}
-								className="rounded animated-underline hover:[--underline-w:100%]"
-								href={resolveHref(link.href)}
-							>
+							<Button variant="link" key={link.href} href={resolveHref(link.href)}>
 								{link.label}
-							</Link>
+							</Button>
 						))}
 					</div>
 					<button
