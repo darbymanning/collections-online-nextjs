@@ -192,8 +192,8 @@ export function Header() {
 						loading="eager"
 					/>
 				</a>
-				<div className="flex items-center gap-6">
-					<div className="flex gap-4 text-sm max-lg:hidden">
+				<div className="flex items-center gap-2">
+					<div className="flex gap-4 border-r border-r-current/20 pr-5 text-sm max-lg:hidden">
 						{museum.header.topLinks.map((link) => (
 							<Link
 								key={link.href}
@@ -206,7 +206,7 @@ export function Header() {
 					</div>
 					<button
 						ref={searchButtonRef}
-						className="rounded-full"
+						className="flex size-10 items-center justify-center rounded-full p-2"
 						data-open={searchOpen || undefined}
 						aria-label={searchOpen ? "Close search" : "Search"}
 						aria-expanded={searchOpen}
@@ -217,7 +217,7 @@ export function Header() {
 					</button>
 					<button
 						ref={menuButtonRef}
-						className="group rounded-full"
+						className="group flex size-10 items-center justify-center rounded-full p-2"
 						data-open={menuOpen || undefined}
 						aria-label={menuOpen ? "Close menu" : "Open menu"}
 						aria-expanded={menuOpen}

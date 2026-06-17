@@ -3,6 +3,7 @@
 import { Breadcrumbs } from "$components/breadcrumbs"
 import { museum } from "$library/config"
 import { collectionsOnlineHref } from "$library/utils"
+import { HomeIcon } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import type { ReactElement } from "react"
 
@@ -10,7 +11,7 @@ type Props = { title: string; className?: string }
 
 function items(title: string, returnUrl: string | null | undefined) {
 	return [
-		{ label: "Home", href: museum.url.toString() },
+		{ label: "Home", href: museum.url.toString(), icon: <HomeIcon aria-hidden /> },
 		// doubles as the back link: carries the visitor's `?return=` search results
 		// when present, else the stable landing page (mirrors the BreadcrumbList JSON-LD)
 		{ label: "Collections Online", href: collectionsOnlineHref(returnUrl) },

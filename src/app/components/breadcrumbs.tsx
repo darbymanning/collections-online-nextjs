@@ -1,3 +1,4 @@
+import { ChevronRightIcon } from "lucide-react"
 import Link from "next/link"
 import type { ReactElement } from "react"
 
@@ -5,6 +6,9 @@ export type Crumb = {
 	label: string
 	/** Omit on the final crumb — it's the current page, rendered as plain text. */
 	href?: string
+	/** Render this icon in place of the label text (e.g. a home icon). `label`
+	 * still provides the accessible name via `aria-label`. */
+	icon?: ReactElement
 }
 
 /** Visible breadcrumb trail for the accent header band (white text on accent).
@@ -19,7 +23,7 @@ export function Breadcrumbs({
 }): ReactElement {
 	return (
 		<nav aria-label="Breadcrumb" className={className}>
-			<ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
+			<ol className="scroll-fade grid grid-flow-col items-center justify-start gap-x-2 gap-y-1 py-3 whitespace-nowrap">
 				{items.map((item, index) => {
 					const isLast = index === items.length - 1
 
@@ -28,23 +32,25 @@ export function Breadcrumbs({
 							{item.href && !isLast ? (
 								<Link
 									href={item.href}
-									className="animated-underline font-medium hover:[--underline-w:100%]"
+									aria-label={item.icon ? item.label : undefined}
+									className={
+										item.icon
+											? "transition-opacity hover:opacity-70"
+											: "animated-underline font-medium hover:[--underline-w:100%]"
+									}
 								>
-									{item.label}
+									{item.icon ?? item.label}
 								</Link>
 							) : (
 								<span
 									aria-current={isLast ? "page" : undefined}
+									aria-label={item.icon ? item.label : undefined}
 									className="text-current/70"
 								>
-									{item.label}
+									{item.icon ?? item.label}
 								</span>
 							)}
-							{!isLast && (
-								<span aria-hidden className="opacity-50">
-									/
-								</span>
-							)}
+							{!isLast && <ChevronRightIcon className="opacity-50" />}
 						</li>
 					)
 				})}

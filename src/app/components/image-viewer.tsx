@@ -17,9 +17,11 @@ type Props = {
 }
 
 // gestureSettingsTouch is a live, mutable settings object the viewer reads per
-// gesture, but it isn't in OpenSeadragon's public type definitions
+// gesture, and navigator is the minimap instance — neither is in OpenSeadragon's
+// public type definitions
 type ViewerWithGestures = OpenSeadragon.Viewer & {
 	gestureSettingsTouch: OpenSeadragon.GestureSettings
+	navigator?: { element: HTMLElement }
 }
 
 // rounded white control buttons floating over the viewer
@@ -52,12 +54,14 @@ export function ImageViewer({ label, images }: Props) {
 	// drag scrolls the page rather than panning the image — only two fingers pan and
 	// zoom. In fullscreen there's no page to scroll, so one-finger panning is restored.
 	function applyTouchMode(isFullscreen: boolean) {
-		const v = viewer.current
+		const v = viewer.current as ViewerWithGestures | null
 		if (!v) return
 		const touchAction = isFullscreen ? "none" : "pan-y"
 		v.canvas.style.touchAction = touchAction
 		v.container.style.touchAction = touchAction
-		;(v as ViewerWithGestures).gestureSettingsTouch.dragToPan = isFullscreen
+		// the navigator minimap is a separate element OSD also pins to touch-action:none
+		if (v.navigator) v.navigator.element.style.touchAction = touchAction
+		v.gestureSettingsTouch.dragToPan = isFullscreen
 	}
 
 	useEffect(() => {

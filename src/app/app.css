@@ -179,6 +179,75 @@
 	@apply bg-band text-on-band selection:bg-on-band/20 selection:text-on-band;
 }
 
+/* `@media (overflow-block: scroll)` matches scrolling screens (true on screens,
+ * false on paged media like print) — Tailwind has no built-in variant for it, so
+ * expose it as one. Used to gate the scroll-fade below so the fade masks never
+ * clip a breadcrumb when the page is printed. Usage: `overflow-block-scroll:…`. */
+@custom-variant overflow-block-scroll (@media (overflow-block: scroll));
+
+/* Edge fades for a horizontally scrollable element (e.g. the breadcrumb trail),
+ * hinting that there's more to scroll. Pure CSS, no JS: a mask gradient fades
+ * each edge, and a scroll-driven animation grows the left fade in once you've
+ * scrolled away from the start and shrinks the right fade out as you reach the
+ * end. The mask paints on the element's box (not the scrolled content), so it
+ * stays pinned to the visible edges.
+ *
+ * --scroll-fade-start / --scroll-fade-end are the live widths of each fade,
+ * registered so they can be animated; both default to 0 (no fade) which is also
+ * the graceful fallback where scroll-driven animations aren't supported. The
+ * scroll timeline is *inactive* when there's nothing to scroll, so a trail that
+ * fits shows no fades at all. Gated to scrolling screens so print stays crisp. */
+@property --scroll-fade-start {
+	syntax: "<length>";
+	inherits: false;
+	initial-value: 0px;
+}
+
+@property --scroll-fade-end {
+	syntax: "<length>";
+	inherits: false;
+	initial-value: 0px;
+}
+
+@utility scroll-fade {
+	--scroll-fade-size: 10rem;
+	overflow-x: auto;
+
+	@variant overflow-block-scroll {
+		mask-image: linear-gradient(
+			to right,
+			transparent 0,
+			black var(--scroll-fade-start),
+			black calc(100% - var(--scroll-fade-end)),
+			transparent 100%
+		);
+		animation: scroll-fade-start linear, scroll-fade-end linear;
+		animation-timeline: scroll(self x), scroll(self x);
+		animation-range: 0 var(--scroll-fade-size), calc(100% - var(--scroll-fade-size)) 100%;
+		/* Hold each fade's value outside its active range: the left fade stays
+		 * full once you've scrolled past the start, and the right fade (keyed
+		 * with `from`) stays full until you near the end. Without this the props
+		 * revert to 0px off-range, so the fades only show mid-scroll. Must follow
+		 * the `animation` shorthand, which resets fill-mode. */
+		animation-fill-mode: both;
+	}
+}
+
+/* over the first --scroll-fade-size of scroll, ramp the left fade in */
+@keyframes scroll-fade-start {
+	to {
+		--scroll-fade-start: var(--scroll-fade-size);
+	}
+}
+
+/* over the last --scroll-fade-size of scroll, ramp the right fade out (it's on
+ * by default whenever the timeline is active, i.e. there's room to scroll) */
+@keyframes scroll-fade-end {
+	from {
+		--scroll-fade-end: var(--scroll-fade-size);
+	}
+}
+
 @utility search-icon {
 	outline: 2px solid;
 	outline-offset: -2px;
