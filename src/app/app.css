@@ -114,12 +114,12 @@
 
 .prm {
 	--color-primary: oklch(0.3558 0.0017 106.49);
-	--color-secondary: oklch(0.6530 0.1207 58.57);
+	--color-secondary: oklch(0.653 0.1207 58.57);
 }
 
 .hsm {
 	--color-secondary: oklch(0.5221 0.2058 340.85);
-	--color-primary: oklch(0.7870 0.1607 74.68);
+	--color-primary: oklch(0.787 0.1607 74.68);
 	/* both brand colours live in the multicolour logo, so a coloured header strip
 	 * clashes — the chrome uses a plain white band with dark text instead, while the
 	 * brand colours still drive the buttons and the smaller accents */
@@ -172,7 +172,9 @@
 		outline: 2px solid transparent;
 		outline-offset: 2px;
 		box-shadow: 0 0 0 0 transparent;
-		transition: outline-color 150ms ease, box-shadow 150ms ease;
+		transition:
+			outline-color 150ms ease,
+			box-shadow 150ms ease;
 	}
 
 	/* one focus ring for everything, replacing the UA's blue outline. Scoped to
@@ -187,7 +189,8 @@
 	*:focus-visible {
 		outline: 2px solid var(--color-ring);
 		outline-offset: 2px;
-		box-shadow: 0 0 0 var(--ring-halo, 6px) color-mix(in oklab, var(--color-ring) 18%, transparent);
+		box-shadow: 0 0 0 var(--ring-halo, 6px)
+			color-mix(in oklab, var(--color-ring) 18%, transparent);
 	}
 
 	::selection {
@@ -280,9 +283,13 @@
 			black calc(100% - var(--scroll-fade-end)),
 			transparent 100%
 		);
-		animation: scroll-fade-start linear, scroll-fade-end linear;
+		animation:
+			scroll-fade-start linear,
+			scroll-fade-end linear;
 		animation-timeline: scroll(self x), scroll(self x);
-		animation-range: 0 var(--scroll-fade-size), calc(100% - var(--scroll-fade-size)) 100%;
+		animation-range:
+			0 var(--scroll-fade-size),
+			calc(100% - var(--scroll-fade-size)) 100%;
 		/* Hold each fade's value outside its active range: the left fade stays
 		 * full once you've scrolled past the start, and the right fade (keyed
 		 * with `from`) stays full until you near the end. Without this the props
