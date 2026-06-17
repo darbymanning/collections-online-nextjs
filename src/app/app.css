@@ -179,15 +179,6 @@
 	@apply bg-band text-on-band selection:bg-on-band/20 selection:text-on-band;
 }
 
-/* Infinite logo marquee (the footer's affiliation strips). The track holds two
- * copies of the row, so sliding it -50% loops seamlessly. Applied motion-safe
- * only — reduced-motion visitors get a static, manually-scrollable row. */
-@keyframes marquee {
-	to {
-		transform: translateX(-50%);
-	}
-}
-
 @utility search-icon {
 	outline: 2px solid;
 	outline-offset: -2px;

@@ -135,68 +135,42 @@ type LogoItem = { logo: StaticImageData; label: string; url: string; light?: boo
 
 /** An affiliation logo card. Marks are greyscaled and a few supplied ones are
  * white-on-transparent (IT Services, the Pitt Rivers mark) — those carry `light`
- * and are darkened so they read. `decorative` flags the marquee's duplicate copy:
- * hidden from assistive tech and kept out of the tab order. */
-function LogoLink({ logo, label, url, light, decorative }: LogoItem & { decorative?: boolean }) {
+ * and are darkened so they read. */
+function LogoLink({ logo, label, url, light }: LogoItem) {
 	return (
 		<a
 			href={url}
 			title={label}
-			aria-hidden={decorative || undefined}
-			tabIndex={decorative ? -1 : undefined}
-			className="group flex aspect-video w-full items-center justify-center rounded-lg bg-primary/15 fl-p-2/8 opacity-50 transition-opacity hover:opacity-100"
+			className="relative flex aspect-video w-full rounded-lg bg-primary/15 opacity-50 transition-opacity hover:opacity-100"
 		>
+			{/* `fill` lets the logo scale into the card without pinning the <img> to a
+			 * ratio that fights its own (which trips Next's aspect-ratio warning);
+			 * object-contain keeps it proportional and the padding insets it. */}
 			<Image
 				src={logo}
-				alt={decorative ? "" : label}
+				alt={label}
+				fill
 				// logos don't need optimising, and a raster one would otherwise route
 				// through /_next/image, which has no sharp in this project
 				unoptimized
-				className={cn(
-					"aspect-video size-full max-h-18 object-contain grayscale-100",
-					light && "brightness-0",
-				)}
+				className={cn("object-contain fl-p-2/8 grayscale-100", light && "brightness-0")}
 			/>
 		</a>
 	)
 }
 
-/** A seamless, infinite logo marquee. The track carries two copies of the row, so
- * sliding it -50% loops without a seam; it pauses on hover, and visitors who
- * prefer reduced motion get a static, manually-scrollable row instead. Each card
- * has a fluid floor width so the logos stay legible (and scroll) on mobile rather
- * than shrinking to fit. */
-function LogoMarquee({ logos, reverse }: { logos: ReadonlyArray<LogoItem>; reverse?: boolean }) {
-	const row = (decorative?: boolean) => (
-		<ul
-			aria-hidden={decorative || undefined}
-			className={cn("flex shrink-0", decorative && "motion-reduce:hidden")}
-		>
+/** A static strip of affiliation logos. On mobile the cards fill the width in two
+ * equal columns; from `sm` up they flow at a fluid floor width so they stay
+ * legible and wrap rather than shrink. */
+function LogoRow({ logos }: { logos: ReadonlyArray<LogoItem> }) {
+	return (
+		<ul className="grid grid-cols-2 gap-1 sm:flex sm:flex-wrap">
 			{logos.map((item) => (
-				<li key={item.label} className="me-1 fl-w-36/56 shrink-0">
-					<LogoLink
-						logo={item.logo}
-						label={item.label}
-						url={item.url}
-						light={item.light}
-						decorative={decorative}
-					/>
+				<li key={item.label} className="sm:fl-w-36/56 sm:shrink-0">
+					<LogoLink logo={item.logo} label={item.label} url={item.url} light={item.light} />
 				</li>
 			))}
 		</ul>
-	)
-	return (
-		<div className="group relative overflow-hidden mask-[linear-gradient(to_right,transparent,black_var(--fade),black_calc(100%-var(--fade)),transparent)] [--fade:2.5rem] motion-reduce:overflow-x-auto motion-reduce:mask-none">
-			<div
-				className={cn(
-					"flex w-max group-hover:[animation-play-state:paused] motion-safe:animate-[marquee_40s_linear_infinite]",
-					reverse && "[animation-direction:reverse]",
-				)}
-			>
-				{row()}
-				{row(true)}
-			</div>
-		</div>
 	)
 }
 
@@ -308,14 +282,14 @@ export function Footer() {
 						<h2 className="text-xs font-semibold tracking-wider text-foreground/60 uppercase">
 							Part of Gardens, Libraries &amp; Museums
 						</h2>
-						<LogoMarquee logos={siblings} />
+						<LogoRow logos={siblings} />
 					</div>
 					{supporters.length > 0 && (
 						<div className="grid gap-5">
 							<h2 className="text-xs font-semibold tracking-wider text-foreground/60 uppercase">
 								With support from
 							</h2>
-							<LogoMarquee logos={supporters} reverse />
+							<LogoRow logos={supporters} />
 						</div>
 					)}
 				</div>
