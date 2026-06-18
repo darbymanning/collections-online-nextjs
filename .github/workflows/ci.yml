@@ -38,6 +38,10 @@ jobs:
          - run: bun ci
          - run: bun run fmt:check
 
+         - run: echo "IMAGE_TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
+
+         - run: docker build --build-arg NEXT_PUBLIC_MUSEUM=ash -t odp-ashm:$IMAGE_TAG .
+
    test:
       runs-on: ubuntu-latest
       steps:
@@ -65,11 +69,6 @@ jobs:
               bun-version: latest
 
          - run: bun ci
-
-         - run: echo "IMAGE_TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
-
-         - run: docker build --build-arg NEXT_PUBLIC_MUSEUM=ash -t odp-ashm:$IMAGE_TAG .
-
          - uses: actions/cache@v4
            with:
               path: ~/.cache/ms-playwright
