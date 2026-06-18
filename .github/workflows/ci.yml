@@ -3,7 +3,7 @@ name: CI
 on:
    pull_request:
    push:
-      branches: [main]
+      branches: ["*"]
 
 # pushing over an open PR cancels its in-flight run
 concurrency:
