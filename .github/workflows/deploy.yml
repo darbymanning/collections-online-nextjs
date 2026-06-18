@@ -63,7 +63,6 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          task-definition-family: odp-ash
           container-name: odp
           image: ${{ env.ECR_REPOSITORY_URI_STUB }}-ash:${{ steps.image.outputs.tag }}
           environment-variables: |
