@@ -38,10 +38,38 @@ jobs:
 
       - uses: docker/setup-buildx-action@v3
 
-      - run: docker buildx build --load --build-arg NEXT_PUBLIC_MUSEUM=ash -t odp-ash:${{ github.sha }} .
-      - run: docker buildx build --load --build-arg NEXT_PUBLIC_MUSEUM=oum -t odp-oum:${{ github.sha }} .
-      - run: docker buildx build --load --build-arg NEXT_PUBLIC_MUSEUM=prm -t odp-prm:${{ github.sha }} .
-      - run: docker buildx build --load --build-arg NEXT_PUBLIC_MUSEUM=hsm -t odp-hsm:${{ github.sha }} .
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          build-args: NEXT_PUBLIC_MUSEUM=ash
+          tags: odp-ash:${{ github.sha }}
+          cache-from: type=gha,scope=odp
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          build-args: NEXT_PUBLIC_MUSEUM=oum
+          tags: odp-oum:${{ github.sha }}
+          cache-from: type=gha,scope=odp
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          build-args: NEXT_PUBLIC_MUSEUM=prm
+          tags: odp-prm:${{ github.sha }}
+          cache-from: type=gha,scope=odp
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          build-args: NEXT_PUBLIC_MUSEUM=hsm
+          tags: odp-hsm:${{ github.sha }}
+          cache-from: type=gha,scope=odp
+          cache-to: type=gha,scope=odp,mode=max
 
   e2e:
     name: E2E (${{ matrix.museum }})

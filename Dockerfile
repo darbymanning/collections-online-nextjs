@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 # Build stage
 FROM oven/bun:latest AS builder
 
@@ -11,7 +13,7 @@ COPY bun.lock ./
 COPY package.json ./
 
 # Install dependencies
-RUN bun install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.bun/install/cache bun install --frozen-lockfile
 
 # Copy source code
 COPY . .
