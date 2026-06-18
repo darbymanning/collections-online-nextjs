@@ -1,14 +1,14 @@
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_MUSEUM: ${NEXT_PUBLIC_MUSEUM}
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_MUSEUM=${NEXT_PUBLIC_MUSEUM}
-      - NODE_ENV=production
-    # Optionally add restart policy
-    restart: unless-stopped
+   web:
+      build:
+         context: .
+         dockerfile: Dockerfile
+         args:
+            NEXT_PUBLIC_MUSEUM: ${NEXT_PUBLIC_MUSEUM}
+      ports:
+         - "3000:3000"
+      environment:
+         - NEXT_PUBLIC_MUSEUM=${NEXT_PUBLIC_MUSEUM}
+         - NODE_ENV=production
+      # Optionally add restart policy
+      restart: unless-stopped
