@@ -30,17 +30,18 @@ jobs:
       - run: bun run test
 
   docker:
-    name: Docker image (${{ matrix.museum }})
+    name: Docker images
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        museum: [ash, oum, prm, hsm]
     steps:
       - uses: actions/checkout@v6
 
-      - run: docker build --build-arg NEXT_PUBLIC_MUSEUM=${{ matrix.museum }} -t odp-${{ matrix.museum }}:${{ github.sha }} .
+      - uses: docker/setup-buildx-action@v3
+
+      - run: docker buildx build --load --build-arg NEXT_PUBLIC_MUSEUM=ash -t odp-ash:${{ github.sha }} .
+      - run: docker buildx build --load --build-arg NEXT_PUBLIC_MUSEUM=oum -t odp-oum:${{ github.sha }} .
+      - run: docker buildx build --load --build-arg NEXT_PUBLIC_MUSEUM=prm -t odp-prm:${{ github.sha }} .
+      - run: docker buildx build --load --build-arg NEXT_PUBLIC_MUSEUM=hsm -t odp-hsm:${{ github.sha }} .
 
   e2e:
     name: E2E (${{ matrix.museum }})
