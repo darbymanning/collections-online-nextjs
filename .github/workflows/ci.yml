@@ -36,7 +36,7 @@ jobs:
       - run: bun run test
 
   docker:
-    name: Docker images
+    name: Docker sanity check
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -50,32 +50,8 @@ jobs:
           load: true
           build-args: NEXT_PUBLIC_MUSEUM=ash
           tags: odp-ash:${{ github.sha }}
-          cache-from: type=gha,scope=odp
-
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          load: true
-          build-args: NEXT_PUBLIC_MUSEUM=oum
-          tags: odp-oum:${{ github.sha }}
-          cache-from: type=gha,scope=odp
-
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          load: true
-          build-args: NEXT_PUBLIC_MUSEUM=prm
-          tags: odp-prm:${{ github.sha }}
-          cache-from: type=gha,scope=odp
-
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          load: true
-          build-args: NEXT_PUBLIC_MUSEUM=hsm
-          tags: odp-hsm:${{ github.sha }}
-          cache-from: type=gha,scope=odp
-          cache-to: type=gha,scope=odp,mode=max
+          cache-from: type=gha,scope=odp-ci
+          cache-to: type=gha,scope=odp-ci,mode=max
 
   e2e:
     name: E2E (${{ matrix.museum }})
