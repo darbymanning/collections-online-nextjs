@@ -58,13 +58,24 @@ jobs:
           cache-from: type=gha,scope=odp
           cache-to: type=gha,scope=odp,mode=max
 
-      # - name: Render task definition
-      #   id: render-task
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
-      #   with:
-      #     task-definition: reference-task-definition.json
-      #     container-name: nextjs-demo
-      #     image: ${{ env.ECS_REPOSITORY_URI_STUB }}:${{ steps.image.outputs.tag }}
+      - name: Render task definition
+        id: render-task
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          task-definition-family: odp-ash
+          container-name: odp
+          image: ${{ env.ECR_REPOSITORY_URI_STUB }}-ash:${{ steps.image.outputs.tag }}
+          environment-variables: |
+            NEXT_PUBLIC_MUSEUM=ash
+            BASIC_AUTH_USER=colodp
+            BASIC_AUTH_PASS=tryN8xt!
+          log-configuration-log-driver: awslogs
+          log-configuration-options: |
+            awslogs-create-group=true
+            awslogs-group=/ecs/test-odp-ash
+            awslogs-region=${{ env.AWS_REGION }}
+            awslogs-stream-prefix=ecs
 
       # - name: Deploy to ECS
       #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
