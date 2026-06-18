@@ -43,6 +43,19 @@ Open [http://localhost:3000](http://localhost:3000) — the home page links to a
 
 Environment variables are declared in [.env.schema](.env.schema) and validated at boot by [varlock](https://varlock.dev). Set values in `.env.local` (gitignored).
 
+## Basic auth
+
+For preview/staging deployments, HTTP basic auth can be switched on to keep pages behind a login. It is controlled entirely by two environment variables — when **both** are set, every page requires a valid `Authorization` header; when either is missing, auth is off and the site is public.
+
+| Variable          | Where to set it              | Notes                                                                       |
+| ----------------- | ---------------------------- | --------------------------------------------------------------------------- |
+| `BASIC_AUTH_USER` | `.env.schema` / `.env.local` | The expected username.                                                      |
+| `BASIC_AUTH_PASS` | Deployment platform only     | The expected password. Deliberately omitted from `.env.schema` (see below). |
+
+`BASIC_AUTH_PASS` is read straight from `process.env` rather than varlock and is intentionally kept out of [.env.schema](.env.schema): varlock's build leak scan substring-matches the SSR HTML, which false-positives on catalogue words (e.g. `italian` in item slugs). Set it on the deployment platform's environment config, not in any committed file.
+
+The check lives in [src/proxy.ts](src/proxy.ts) and runs on every matched request.
+
 ## How it works
 
 - **Data** — item pages fetch records from the existing Collections Online API ([src/app/library/api.ts](src/app/library/api.ts)). Field shapes vary by museum; see the annotated `CollectionObject` type in [src/app/library/types.ts](src/app/library/types.ts).

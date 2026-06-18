@@ -277,6 +277,10 @@
 	overflow-x: auto;
 
 	@variant overflow-block-scroll {
+		/* The mask is plain CSS, pinned to the box. Its two cut points are the
+		 * registered properties below, which default to 0 (no fade). They're fed
+		 * either by the scroll-driven animation (where supported) or by the
+		 * `useScrollFade` hook (iOS Safari et al.) — both write the same props. */
 		mask-image: linear-gradient(
 			to right,
 			transparent 0,
@@ -284,19 +288,27 @@
 			black calc(100% - var(--scroll-fade-end)),
 			transparent 100%
 		);
-		animation:
-			scroll-fade-start linear,
-			scroll-fade-end linear;
-		animation-timeline: scroll(self x), scroll(self x);
-		animation-range:
-			0 var(--scroll-fade-size),
-			calc(100% - var(--scroll-fade-size)) 100%;
-		/* Hold each fade's value outside its active range: the left fade stays
-		 * full once you've scrolled past the start, and the right fade (keyed
-		 * with `from`) stays full until you near the end. Without this the props
-		 * revert to 0px off-range, so the fades only show mid-scroll. Must follow
-		 * the `animation` shorthand, which resets fill-mode. */
-		animation-fill-mode: both;
+
+		/* Drive the fades purely in CSS where scroll-driven animations exist.
+		 * Gated behind @supports: without it, engines that lack the scroll
+		 * timeline (iOS Safari) fall back to the time-based timeline, where
+		 * `animation-fill-mode: both` snaps the left fade permanently on. There
+		 * the JS hook takes over and this block simply doesn't apply. */
+		@supports (animation-timeline: scroll()) {
+			animation:
+				scroll-fade-start linear,
+				scroll-fade-end linear;
+			animation-timeline: scroll(self x), scroll(self x);
+			animation-range:
+				0 var(--scroll-fade-size),
+				calc(100% - var(--scroll-fade-size)) 100%;
+			/* Hold each fade's value outside its active range: the left fade stays
+			 * full once you've scrolled past the start, and the right fade (keyed
+			 * with `from`) stays full until you near the end. Without this the props
+			 * revert to 0px off-range, so the fades only show mid-scroll. Must follow
+			 * the `animation` shorthand, which resets fill-mode. */
+			animation-fill-mode: both;
+		}
 	}
 }
 
