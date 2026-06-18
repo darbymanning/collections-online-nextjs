@@ -33,6 +33,12 @@ echo 'NEXT_PUBLIC_MUSEUM="ash"' > .env.local
 bun run dev
 ```
 
+- Bake and run docker container
+
+```bash
+NEXT_PUBLIC_MUSEUM=ash docker-compose up
+```
+
 Open [http://localhost:3000](http://localhost:3000) — the home page links to a sample item page for the active museum, alongside its legacy equivalent.
 
 Environment variables are declared in [.env.schema](.env.schema) and validated at boot by [varlock](https://varlock.dev). Set values in `.env.local` (gitignored).
