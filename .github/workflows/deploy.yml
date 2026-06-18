@@ -11,49 +11,65 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  id-token: write
   contents: read
 
 jobs:
-  docker:
-    name: Docker images
+  deploy:
+    name: Bake and deploy Ashmolean
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+      ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+      ECS_REPOSITORY_URI_STUB: ${{ secrets.ECS_REPOSITORY_URI_STUB }}
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
+      - name: Set image tag
+        id: image
+        env:
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: echo "tag=${HEAD_SHA::8}" >> $GITHUB_OUTPUT
+
       - uses: docker/setup-buildx-action@v3
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr --region "$AWS_REGION" get-login-password | docker login \
+            --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+
       - uses: docker/build-push-action@v6
         with:
           context: .
-          load: true
+          push: true
           build-args: NEXT_PUBLIC_MUSEUM=ash
-          tags: odp-ash:${{ github.event.workflow_run.head_sha }}
-          cache-from: type=gha,scope=odp
-
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          load: true
-          build-args: NEXT_PUBLIC_MUSEUM=oum
-          tags: odp-oum:${{ github.event.workflow_run.head_sha }}
-          cache-from: type=gha,scope=odp
-
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          load: true
-          build-args: NEXT_PUBLIC_MUSEUM=prm
-          tags: odp-prm:${{ github.event.workflow_run.head_sha }}
-          cache-from: type=gha,scope=odp
-
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          load: true
-          build-args: NEXT_PUBLIC_MUSEUM=hsm
-          tags: odp-hsm:${{ github.event.workflow_run.head_sha }}
+          tags: ${{ env.ECS_REPOSITORY_URI_STUB }}-ash:${{ steps.image.outputs.tag }}
           cache-from: type=gha,scope=odp
           cache-to: type=gha,scope=odp,mode=max
+
+      # - name: Render task definition
+      #   id: render-task
+      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #   with:
+      #     task-definition: reference-task-definition.json
+      #     container-name: nextjs-demo
+      #     image: ${{ env.ECS_REPOSITORY_URI_STUB }}:${{ steps.image.outputs.tag }}
+
+      # - name: Deploy to ECS
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      #   with:
+      #     task-definition: ${{ steps.render-task.outputs.task-definition }}
+      #     service: ${{ env.ECS_SERVICE }}
+      #     cluster: ${{ env.ECS_CLUSTER }}
+      #     wait-for-service-stability: true
