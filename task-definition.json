@@ -30,6 +30,7 @@
 			"credentialSpecs": []
 		}
 	],
+	"family": "<family>",
 	"executionRoleArn": "arn:aws:iam::322692172920:role/ecsTaskExecutionRole",
 	"networkMode": "awsvpc",
 	"volumes": [],
