@@ -24,7 +24,7 @@ jobs:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
       ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
-      ECS_REPOSITORY_URI_STUB: ${{ secrets.ECS_REPOSITORY_URI_STUB }}
+      ECR_REPOSITORY_URI_STUB: ${{ secrets.ECR_REPOSITORY_URI_STUB }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -54,7 +54,7 @@ jobs:
           context: .
           push: true
           build-args: NEXT_PUBLIC_MUSEUM=ash
-          tags: ${{ env.ECS_REPOSITORY_URI_STUB }}-ash:${{ steps.image.outputs.tag }}
+          tags: ${{ env.ECR_REPOSITORY_URI_STUB }}-ash:${{ steps.image.outputs.tag }}
           cache-from: type=gha,scope=odp
           cache-to: type=gha,scope=odp,mode=max
 
