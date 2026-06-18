@@ -4,6 +4,15 @@
 	"semi": false,
 	"tabWidth": 3,
 	"useTabs": true,
+	"overrides": [
+		{
+			"files": [".github/**/*.yml", ".github/**/*.yaml"],
+			"options": {
+				"tabWidth": 2,
+				"useTabs": false
+			}
+		}
+	],
 	"sortTailwindcss": {
 		"stylesheet": "src/app/app.css",
 		"functions": ["cn"]

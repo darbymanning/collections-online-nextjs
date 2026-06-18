@@ -1,90 +1,80 @@
 name: CI
 
 on:
-   pull_request:
-   push:
-      branches: ["*"]
+  pull_request:
+  push:
+    branches: ["*"]
 
 # pushing over an open PR cancels its in-flight run
 concurrency:
-   group: ${{ github.workflow }}-${{ github.ref }}
-   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
-   contents: read
+  contents: read
 
 jobs:
-   lint:
-      runs-on: ubuntu-latest
-      steps:
-         - uses: actions/checkout@v6
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
 
-         - uses: oven-sh/setup-bun@v2
-           with:
-              bun-version: latest
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
-         - run: bun ci
-         - run: bun run lint
+      - run: bun ci
+      - run: bun run fmt:check
+      - run: bun run lint
+      - run: bun run test
 
-   format:
-      runs-on: ubuntu-latest
-      steps:
-         - uses: actions/checkout@v6
+  docker:
+    name: Docker image (${{ matrix.museum }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        museum: [ash, oum, prm, hsm]
+    steps:
+      - uses: actions/checkout@v6
 
-         - uses: oven-sh/setup-bun@v2
-           with:
-              bun-version: latest
+      - run: docker build --build-arg NEXT_PUBLIC_MUSEUM=${{ matrix.museum }} -t odp-${{ matrix.museum }}:${{ github.sha }} .
 
-         - run: bun ci
-         - run: bun run fmt:check
+  e2e:
+    name: E2E (${{ matrix.museum }})
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        museum: [ash, oum, prm, hsm]
+    steps:
+      - uses: actions/checkout@v6
 
-         - run: echo "IMAGE_TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
-         - run: docker build --build-arg NEXT_PUBLIC_MUSEUM=ash -t odp-ashm:$IMAGE_TAG .
+      - run: bun ci
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: playwright-${{ runner.os }}-
 
-   test:
-      runs-on: ubuntu-latest
-      steps:
-         - uses: actions/checkout@v6
+      # chromium only, no --with-deps: ubuntu-latest already ships its system libraries
+      - run: bunx playwright install chromium
 
-         - uses: oven-sh/setup-bun@v2
-           with:
-              bun-version: latest
+      - run: bun run test:e2e
+        env:
+          E2E_MUSEUMS: ${{ matrix.museum }}
 
-         - run: bun ci
-         - run: bun run test
-
-   e2e:
-      runs-on: ubuntu-latest
-      timeout-minutes: 15
-      strategy:
-         fail-fast: false
-         matrix:
-            museum: [ash, oum, prm, hsm]
-      steps:
-         - uses: actions/checkout@v6
-
-         - uses: oven-sh/setup-bun@v2
-           with:
-              bun-version: latest
-
-         - run: bun ci
-         - uses: actions/cache@v4
-           with:
-              path: ~/.cache/ms-playwright
-              key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-              restore-keys: playwright-${{ runner.os }}-
-
-         # chromium only, no --with-deps: ubuntu-latest already ships its system libraries
-         - run: bunx playwright install chromium
-
-         - run: bun run test:e2e
-           env:
-              E2E_MUSEUMS: ${{ matrix.museum }}
-
-         - uses: actions/upload-artifact@v4
-           if: failure()
-           with:
-              name: playwright-report-${{ matrix.museum }}
-              path: playwright-report/
-              retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-${{ matrix.museum }}
+          path: playwright-report/
+          retention-days: 7
