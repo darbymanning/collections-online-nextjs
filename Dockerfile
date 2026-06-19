@@ -55,7 +55,7 @@ COPY --from=builder /app/public ./public
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-	CMD curl -f http://localhost:3000/healthcheck || exit 1
+	CMD curl -f http://$(hostname):3000/healthcheck || exit 1
 
 # Start the standalone server
 CMD ["bun", "server.js"]
