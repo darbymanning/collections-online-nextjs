@@ -16,3 +16,17 @@ coverage
 .turbo
 playwright-report
 .cache
+
+# build/test artifacts — regenerated in the builder, never needed in the context
+.next-e2e-*
+test-results
+tsconfig.tsbuildinfo
+
+# docs, editor, and CI metadata — not needed to build the app
+docs
+.github
+.zed
+.claude
+README.md
+AGENTS.md
+CLAUDE.md

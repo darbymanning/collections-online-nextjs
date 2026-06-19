@@ -20,9 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # Bun version is auto-detected from package.json "packageManager"
       - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
 
       - uses: actions/cache@v5
         with:

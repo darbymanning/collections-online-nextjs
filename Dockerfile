@@ -1,7 +1,12 @@
 # syntax=docker/dockerfile:1.7
 
+# Pinned Bun version for both stages. FROM can't read package.json, so this is the
+# one place the base-image tag lives — keep it in sync with package.json
+# "packageManager". CI/CD can override with --build-arg BUN_VERSION=...
+ARG BUN_VERSION=1.3.14
+
 # Build stage
-FROM oven/bun:latest AS builder
+FROM oven/bun:${BUN_VERSION} AS builder
 
 WORKDIR /app
 
@@ -21,25 +26,36 @@ COPY . .
 # Build the Next.js app with the NEXT_PUBLIC_MUSEUM variable
 RUN NEXT_PUBLIC_MUSEUM=${NEXT_PUBLIC_MUSEUM} bun run build
 
-# Production stage
-FROM oven/bun:latest
+# Production stage. Alpine (musl) is the smallest sensible base. sharp's prebuilt
+# musl binary ships in the standalone trace and is verified to load (libvips
+# 8.17.3), so /_next/image optimisation still works. The builder stays on the full
+# glibc image — its trace includes both glibc and musl sharp variants, so building
+# on glibc and running on musl is fine.
+FROM oven/bun:${BUN_VERSION}-alpine
 
 WORKDIR /app
 
-# Install curl for healthchecks (optional)
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# curl backs the container/task health check (see HEALTHCHECK below and the
+# healthCheck block in task-definition-*.json)
+RUN apk add --no-cache curl
 
-# Copy built app from builder
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
+ENV NODE_ENV=production
+# Bind all interfaces so the ALB/host can reach the container
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+
+# Standalone build: a self-contained server.js plus a traced, minimal
+# node_modules. Static assets and public/ are not bundled, so copy them
+# alongside the server where Next expects to serve them from.
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
 
 # Expose port (Next.js default)
 EXPOSE 3000
 
-# Set environment to production
-ENV NODE_ENV=production
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+	CMD curl -f http://localhost:3000/healthcheck || exit 1
 
-# Start the application
-CMD ["bun", "run", "start"]
+# Start the standalone server
+CMD ["bun", "server.js"]

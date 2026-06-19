@@ -139,8 +139,8 @@ function LogoLink({ logo, label, url, light }: LogoItem) {
 				src={logo}
 				alt={label}
 				fill
-				// logos don't need optimising, and a raster one would otherwise route
-				// through /_next/image, which has no sharp in this project
+				// logos don't need optimising (a raster one would otherwise take a
+				// needless /_next/image round-trip), so serve them as-is
 				unoptimized
 				className={cn("object-contain fl-p-2/8 grayscale-100", light && "brightness-0")}
 			/>
