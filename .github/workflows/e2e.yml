@@ -1,0 +1,81 @@
+name: E2E
+
+# Runs independently of CI so a flaky upstream museum API can't block merges or
+# deploys (CI gates those). On PRs for visibility, on a schedule as an
+# upstream-drift canary, and on demand. Not a required check — see the preflight,
+# which skips a shard whose upstream is out rather than failing it.
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # daily at 06:00 UTC: aligns with the upstream's 24h reindex and catches
+    # API/contract drift during quiet spells, without spending private-repo
+    # Actions minutes on a canary that rarely changes between runs
+    - cron: "0 6 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: E2E (${{ matrix.museum }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        museum: [ash, oum, prm, hsm]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun ci
+
+      - uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: playwright-${{ runner.os }}-
+
+      # chromium only, no --with-deps: ubuntu-latest already ships its system libraries
+      - run: bunx playwright install chromium
+
+      # Is the upstream actually serving this museum? If it's unreachable (not just
+      # a stale record), skip the shard with a warning instead of failing on an
+      # outage we don't control. exit 1 = down (skip), 2 = misconfigured (fail).
+      - name: Upstream preflight
+        id: preflight
+        env:
+          E2E_MUSEUMS: ${{ matrix.museum }}
+        run: |
+          if bun scripts/e2e-preflight.ts; then
+            echo "up=true" >> "$GITHUB_OUTPUT"
+          else
+            code=$?
+            if [ "$code" = "1" ]; then
+              echo "up=false" >> "$GITHUB_OUTPUT"
+              echo "::warning title=Upstream down::Skipping ${{ matrix.museum }} e2e — its upstream API is unreachable"
+            else
+              exit "$code"
+            fi
+          fi
+
+      - name: E2E (${{ matrix.museum }})
+        if: steps.preflight.outputs.up == 'true'
+        run: bun run test:e2e
+        env:
+          E2E_MUSEUMS: ${{ matrix.museum }}
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report-${{ matrix.museum }}
+          path: playwright-report/
+          retention-days: 7
