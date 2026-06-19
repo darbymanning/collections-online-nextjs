@@ -1,4 +1,3 @@
-import { ENV } from "varlock/env"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { museum } from "./app/library/config"
@@ -7,7 +6,7 @@ import { museum } from "./app/library/config"
 // .env.schema so varlock does not inject it into build output or scan SSR HTML
 // for substring matches against catalogue text (e.g. "italian" in item slugs).
 function getBasicAuthCredentials() {
-	const user = ENV.BASIC_AUTH_USER
+	const user = process.env.BASIC_AUTH_USER
 	const pass = process.env.BASIC_AUTH_PASS
 	return { user, pass, enabled: Boolean(user && pass) }
 }
