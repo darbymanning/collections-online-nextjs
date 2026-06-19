@@ -29,6 +29,8 @@ jobs:
       ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
       ECS_SERVICE_STUB: ${{ secrets.ECS_SERVICE_STUB }}
       ECR_REPOSITORY_URI_STUB: ${{ secrets.ECR_REPOSITORY_URI_STUB }}
+      BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
+      BASIC_AUTH_PASS: ${{ secrets.BASIC_AUTH_PASS }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -71,8 +73,8 @@ jobs:
           image: ${{ env.ECR_REPOSITORY_URI_STUB }}-${{ matrix.museum }}:${{ steps.image.outputs.tag }}
           environment-variables: |
             NEXT_PUBLIC_MUSEUM=${{ matrix.museum }}
-            BASIC_AUTH_USER=colodp
-            BASIC_AUTH_PASS=tryN8xt!
+            BASIC_AUTH_USER=${{ env.BASIC_AUTH_USER }}
+            BASIC_AUTH_PASS=${{ env.BASIC_AUTH_PASS }}
           log-configuration-log-driver: awslogs
           log-configuration-options: |
             awslogs-create-group=true
