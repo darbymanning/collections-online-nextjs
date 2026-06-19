@@ -16,9 +16,13 @@ permissions:
 
 jobs:
   deploy:
-    name: Bake and deploy Ashmolean
+    name: Bake and deploy ${{ matrix.museum }}
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        museum: [ash, oum, prm, hsm]
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -53,38 +57,38 @@ jobs:
         with:
           context: .
           push: true
-          build-args: NEXT_PUBLIC_MUSEUM=ash
-          tags: ${{ env.ECR_REPOSITORY_URI_STUB }}-ash:${{ steps.image.outputs.tag }}
-          cache-from: type=gha,scope=odp
-          cache-to: type=gha,scope=odp,mode=max
+          build-args: NEXT_PUBLIC_MUSEUM=${{ matrix.museum }}
+          tags: ${{ env.ECR_REPOSITORY_URI_STUB }}-${{ matrix.museum }}:${{ steps.image.outputs.tag }}
+          cache-from: type=gha,scope=odp-${{ matrix.museum }}
+          cache-to: type=gha,scope=odp-${{ matrix.museum }},mode=max
 
       - name: Render task definition
         id: render-task
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition.json
+          task-definition: task-definition-${{ matrix.museum }}.json
           container-name: odp
-          image: ${{ env.ECR_REPOSITORY_URI_STUB }}-ash:${{ steps.image.outputs.tag }}
+          image: ${{ env.ECR_REPOSITORY_URI_STUB }}-${{ matrix.museum }}:${{ steps.image.outputs.tag }}
           environment-variables: |
-            NEXT_PUBLIC_MUSEUM=ash
+            NEXT_PUBLIC_MUSEUM=${{ matrix.museum }}
             BASIC_AUTH_USER=colodp
             BASIC_AUTH_PASS=tryN8xt!
           log-configuration-log-driver: awslogs
           log-configuration-options: |
             awslogs-create-group=true
-            awslogs-group=/ecs/test-odp-ash
+            awslogs-group=/ecs/test-odp-${{ matrix.museum }}
             awslogs-region=${{ env.AWS_REGION }}
             awslogs-stream-prefix=ecs
 
-      # - name: Register task definition
-      #   run: |
-      #     aws ecs register-task-definition \
-      #       --cli-input-json "file://${{ steps.render-task.outputs.task-definition }}"
+      - name: Register task definition
+        run: |
+          aws ecs register-task-definition \
+            --cli-input-json "file://${{ steps.render-task.outputs.task-definition }}"
 
-      - name: Deploy to ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.render-task.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE_STUB }}-ash
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+      # - name: Deploy to ECS
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      #   with:
+      #     task-definition: ${{ steps.render-task.outputs.task-definition }}
+      #     service: ${{ env.ECS_SERVICE_STUB }}-${{ matrix.museum }}
+      #     cluster: ${{ env.ECS_CLUSTER }}
+      #     wait-for-service-stability: true
