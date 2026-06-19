@@ -23,7 +23,7 @@ jobs:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
       ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
-      ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+      ECS_SERVICE_STUB: ${{ secrets.ECS_SERVICE_STUB }}
       ECR_REPOSITORY_URI_STUB: ${{ secrets.ECR_REPOSITORY_URI_STUB }}
     steps:
       - uses: actions/checkout@v7
@@ -75,15 +75,16 @@ jobs:
             awslogs-group=/ecs/test-odp-ash
             awslogs-region=${{ env.AWS_REGION }}
             awslogs-stream-prefix=ecs
-      - name: Register task definition
-        run: |
-          aws ecs register-task-definition \
-            --cli-input-json "file://${{ steps.render-task.outputs.task-definition }}"
 
-      # - name: Deploy to ECS
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-      #   with:
-      #     task-definition: ${{ steps.render-task.outputs.task-definition }}
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true
+      # - name: Register task definition
+      #   run: |
+      #     aws ecs register-task-definition \
+      #       --cli-input-json "file://${{ steps.render-task.outputs.task-definition }}"
+      
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_STUB }}-ash
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
