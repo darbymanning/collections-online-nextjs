@@ -80,15 +80,10 @@ jobs:
             awslogs-region=${{ env.AWS_REGION }}
             awslogs-stream-prefix=ecs
 
-      - name: Register task definition
-        run: |
-          aws ecs register-task-definition \
-            --cli-input-json "file://${{ steps.render-task.outputs.task-definition }}"
-
-      # - name: Deploy to ECS
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-      #   with:
-      #     task-definition: ${{ steps.render-task.outputs.task-definition }}
-      #     service: ${{ env.ECS_SERVICE_STUB }}-${{ matrix.museum }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_STUB }}-${{ matrix.museum }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
