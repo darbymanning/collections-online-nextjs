@@ -56,6 +56,17 @@ For preview/staging deployments, HTTP basic auth can be switched on to keep page
 
 The check lives in [src/proxy.ts](src/proxy.ts) and runs on every matched request.
 
+## Deployment
+
+One image per museum on **AWS ECS (Fargate)** — one service each, its own ECR repo. `NEXT_PUBLIC_MUSEUM` is baked in at build time.
+
+- **[CI](.github/workflows/ci.yml)** — format, lint, unit tests, Docker build, and e2e (one shard per museum) on every push/PR.
+- **[Deploy](.github/workflows/deploy.yml)** — after CI passes on `main`/`test`: build and push SHA-tagged images to ECR, then deploy to ECS via GitHub OIDC, waiting for a stable, healthy service.
+
+The two-stage [Dockerfile](Dockerfile) builds with full `oven/bun` and ships an `*-alpine` runtime carrying only Next's standalone output (`output: "standalone"`) — ~65 MB compressed, with `sharp` retained for `/_next/image`. Bun is pinned once in `package.json` (`packageManager`). A `/healthcheck` route ([src/app/healthcheck/route.ts](src/app/healthcheck/route.ts)) serves `200` for health checks, excluded from the [proxy](src/proxy.ts) matcher. All museums share one [task-definition.json](task-definition.json); the deploy workflow sets `family` per museum with `jq`.
+
+Item pages use ISR (daily revalidate); the cache is per-container and resets on deploy — fine for now. Past the PoC we'll weigh **[OpenNext](https://opennext.js.org)**/**[SST](https://sst.dev)**, a shared ISR cache, CloudFront, Secrets Manager, and IaC (see [docs/seo-phased-delivery.md](docs/seo-phased-delivery.md)).
+
 ## How it works
 
 - **Data** — item pages fetch records from the existing Collections Online API ([src/app/library/api.ts](src/app/library/api.ts)). Field shapes vary by museum; see the annotated `CollectionObject` type in [src/app/library/types.ts](src/app/library/types.ts).

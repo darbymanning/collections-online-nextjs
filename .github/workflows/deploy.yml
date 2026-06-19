@@ -64,6 +64,11 @@ jobs:
           cache-from: type=gha,scope=odp-${{ matrix.museum }}
           cache-to: type=gha,scope=odp-${{ matrix.museum }},mode=max
 
+      # One template for all museums; the only per-museum field is the family,
+      # which the render action can't set, so derive it here from the matrix.
+      - name: Set task family for ${{ matrix.museum }}
+        run: jq --arg fam "odp-${{ matrix.museum }}" '.family = $fam' task-definition.json > "task-definition-${{ matrix.museum }}.json"
+
       - name: Render task definition
         id: render-task
         uses: aws-actions/amazon-ecs-render-task-definition@v1
