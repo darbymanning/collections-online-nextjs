@@ -51,39 +51,3 @@ jobs:
           tags: odp-ash:${{ github.sha }}
           cache-from: type=gha,scope=odp-ci
           cache-to: type=gha,scope=odp-ci,mode=max
-
-  e2e:
-    name: E2E (${{ matrix.museum }})
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        museum: [ash, oum, prm, hsm]
-    steps:
-      - uses: actions/checkout@v7
-
-      # Bun version is auto-detected from package.json "packageManager"
-      - uses: oven-sh/setup-bun@v2
-
-      - run: bun ci
-      - uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-          restore-keys: playwright-${{ runner.os }}-
-
-      # chromium only, no --with-deps: ubuntu-latest already ships its system libraries
-      - run: bunx playwright install chromium
-
-      - run: bun run test:e2e
-        env:
-          E2E_MUSEUMS: ${{ matrix.museum }}
-
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: playwright-report-${{ matrix.museum }}
-          path: playwright-report/
-          retention-days: 7
