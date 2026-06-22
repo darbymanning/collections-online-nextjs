@@ -2,16 +2,23 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { museum } from "./app/library/config"
 
-// Password is read from process.env, not ENV — it is intentionally omitted from
-// .env.schema so varlock does not inject it into build output or scan SSR HTML
-// for substring matches against catalogue text (e.g. "italian" in item slugs).
-function getBasicAuthCredentials() {
-	const user = process.env.BASIC_AUTH_USER
-	const pass = process.env.BASIC_AUTH_PASS
-	return { user, pass, enabled: Boolean(user && pass) }
+function unauthorizedResponse() {
+	return new NextResponse("Authentication required", {
+		status: 401,
+		headers: {
+			"WWW-Authenticate": 'Basic realm="Collections Online", charset="UTF-8"',
+		},
+	})
 }
 
-function isAuthorized(request: NextRequest, expectedUser: string, expectedPass: string): boolean {
+// Both username and password are read from process.env
+function isAuthorized(request: NextRequest): boolean {
+	const expectedUser = process.env.BASIC_AUTH_USER
+	const expectedPass = process.env.BASIC_AUTH_PASS
+	if (!expectedUser) console.warn("Basic auth is missing: BASIC_AUTH_USER.")
+	if (!expectedPass) console.warn("Basic auth is missing: BASIC_AUTH_PASS.")
+	if (!expectedUser || !expectedPass) return false
+
 	const authHeader = request.headers.get("authorization")
 	if (!authHeader?.startsWith("Basic ")) return false
 
@@ -32,16 +39,7 @@ function isAuthorized(request: NextRequest, expectedUser: string, expectedPass: 
 }
 
 export function proxy(request: NextRequest) {
-	const { user, pass, enabled } = getBasicAuthCredentials()
-
-	if (enabled && !isAuthorized(request, user!, pass!)) {
-		return new NextResponse("Authentication required", {
-			status: 401,
-			headers: {
-				"WWW-Authenticate": 'Basic realm="Collections Online", charset="UTF-8"',
-			},
-		})
-	}
+	if (!isAuthorized(request)) return unauthorizedResponse()
 
 	const response = NextResponse.next()
 

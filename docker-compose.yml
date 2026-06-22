@@ -9,6 +9,8 @@ services:
          - "3000:3000"
       environment:
          - NEXT_PUBLIC_MUSEUM=${NEXT_PUBLIC_MUSEUM}
+         - BASIC_AUTH_USER=food
+         - BASIC_AUTH_PASS=bar
          - NODE_ENV=production
       # Optionally add restart policy
       restart: unless-stopped
