@@ -9,6 +9,10 @@ const selected = process.env.E2E_MUSEUMS?.split(",")
 const museums = selected ? allMuseums.filter((museum) => selected.includes(museum)) : allMuseums
 
 const port = (museum: (typeof allMuseums)[number]) => 3101 + allMuseums.indexOf(museum)
+const e2eAuth = {
+	username: process.env.E2E_BASIC_AUTH_USER ?? "playwright",
+	password: process.env.E2E_BASIC_AUTH_PASS ?? "playwright",
+}
 
 export default defineConfig({
 	testDir: "./test/e2e",
@@ -26,14 +30,27 @@ export default defineConfig({
 	// NEXT_PUBLIC_MUSEUM is fixed per server, so each museum gets its own dev server and project
 	projects: museums.map((museum) => ({
 		name: museum,
-		use: { ...devices["Desktop Chrome"], baseURL: `http://localhost:${port(museum)}` },
+		use: {
+			...devices["Desktop Chrome"],
+			baseURL: `http://localhost:${port(museum)}`,
+			httpCredentials: {
+				...e2eAuth,
+				origin: `http://localhost:${port(museum)}`,
+				send: "always",
+			},
+		},
 	})),
 	webServer: museums.map((museum) => ({
 		command: `bun run dev --port ${port(museum)}`,
-		url: `http://localhost:${port(museum)}`,
+		url: `http://localhost:${port(museum)}/healthcheck`,
 		reuseExistingServer: !process.env.CI,
 		timeout: 120_000,
 		// explicit process env beats .env.local in varlock's loader
-		env: { NEXT_PUBLIC_MUSEUM: museum, NEXT_DIST_DIR: `.next-e2e-${museum}` },
+		env: {
+			NEXT_PUBLIC_MUSEUM: museum,
+			NEXT_DIST_DIR: `.next-e2e-${museum}`,
+			BASIC_AUTH_USER: e2eAuth.username,
+			BASIC_AUTH_PASS: e2eAuth.password,
+		},
 	})),
 })
