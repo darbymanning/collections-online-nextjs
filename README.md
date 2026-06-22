@@ -47,8 +47,8 @@ Environment variables are declared in [.env.schema](.env.schema) and validated a
 
 For preview/staging deployments, HTTP basic auth keeps pages behind a login. It is controlled entirely by two environment variables — when **both** are set, every page requires a valid `Authorization` header; when either is missing, requests fail closed with `401`.
 
-| Variable          | Where to set it          | Notes                                                                      |
-| ----------------- | ------------------------ | -------------------------------------------------------------------------- |
+| Variable          | Where to set it          | Notes                                                                       |
+| ----------------- | ------------------------ | --------------------------------------------------------------------------- |
 | `BASIC_AUTH_USER` | Deployment platform only | The expected username. Deliberately omitted from `.env.schema` (see below). |
 | `BASIC_AUTH_PASS` | Deployment platform only | The expected password. Deliberately omitted from `.env.schema` (see below). |
 
