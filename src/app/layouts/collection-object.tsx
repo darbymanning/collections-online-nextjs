@@ -69,10 +69,7 @@ export function CollectionObjectLayout({
 	related,
 	furtherItems,
 }: Props & { related?: FurtherItemsSection; furtherItems?: FurtherItemsSection }) {
-	// sits on the band that bleeds up from <body> (not inside `.accented`), so it carries
-	// the band's reverse text colour — and its focus ring colour — itself
-	const breadcrumbClassName =
-		"border-b border-b-current/10 pl-[5vw] text-sm text-on-band [--color-ring:var(--color-on-band)]"
+	const breadcrumbClassName = "border-b border-b-current/10 pl-[5vw] text-sm"
 
 	return (
 		<div className="flex flex-col">
@@ -86,12 +83,9 @@ export function CollectionObjectLayout({
 			>
 				<CollectionBreadcrumbs title={title} className={breadcrumbClassName} />
 			</Suspense>
-			{/* Accent header band: the museum colour bleeds up from <body> and the text
-			 * reverses to white. The image viewer below is pulled up so its top half
-			 * overlaps the band — the accent fills the top ~50% of the image before the
-			 * page turns white at the seam (cf. ox.ac.uk/research). With no image the
-			 * band just gets normal padding and flows straight into the white page. */}
-			<header className={`accented px-[5vw] pt-12 ${images?.length ? "pb-80" : "pb-12"}`}>
+			{/* plain hero: the brand colour stays up in the site header (the museums
+			 * asked that it not extend down behind the object) */}
+			<header className="px-[5vw] py-12">
 				<div className="grid gap-4">
 					<h1 className="mx-auto max-w-7xl text-center text-5xl font-semibold text-balance">
 						{title}
@@ -106,9 +100,7 @@ export function CollectionObjectLayout({
 			</header>
 			<div className="bg-background px-[5vw]">
 				{images?.length ? (
-					// negative margin ≈ half the 34rem frame, so the viewer straddles the
-					// seam: top half over the accent band, lower half on the white page
-					<figure className="-mt-68 grid gap-3">
+					<figure className="grid gap-3">
 						<ImageViewer label={title} images={images} />
 						{(imageCopyright || imageRights) && (
 							<figcaption className="mx-auto grid max-w-3xl gap-1 text-center text-xs text-pretty">

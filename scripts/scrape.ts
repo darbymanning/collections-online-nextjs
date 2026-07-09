@@ -311,7 +311,7 @@ import type { FooterData, MenuItem } from "./config"
 /** Utility links across the top of ${name}'s header. */
 export const topLinks: Array<{ label: string; href: string }> = ${serializeTopLinks(scraped.topLinks)}
 
-/** ${name}'s primary navigation (the burger-menu drill-down). */
+/** ${name}'s primary navigation (the header nav bar). */
 export const nav: Array<MenuItem> = ${serializeItems(scraped.nav, 0)}
 
 /** ${name}'s footer: link columns, social, legal links and partner-logo keys. */

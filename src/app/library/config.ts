@@ -3,10 +3,6 @@ import prmLogo from "$assets/prm-logo.svg"
 import ashLogo from "$assets/ash-logo.svg"
 import oumLogo from "$assets/oum-logo.svg"
 import hsmLogo from "$assets/hsm-logo.svg"
-import prmHero from "$assets/prm-hero.jpg"
-import ashHero from "$assets/ash-hero.jpg"
-import oumHero from "$assets/oum-hero.jpg"
-import hsmHero from "$assets/hsm-hero.jpg"
 // `topLinks` and `nav` are scraped from each museum's live site — regenerate with
 // `bun run scrape` (see scripts/scrape.ts). Everything else here is hand-authored.
 import { footer as ashFooter, nav as ashNav, topLinks as ashTopLinks } from "./scraped.ash"
@@ -14,9 +10,9 @@ import { footer as oumFooter, nav as oumNav, topLinks as oumTopLinks } from "./s
 import { footer as prmFooter, nav as prmNav, topLinks as prmTopLinks } from "./scraped.prm"
 import { footer as hsmFooter, nav as hsmNav, topLinks as hsmTopLinks } from "./scraped.hsm"
 
-/** A node in a museum's burger-menu tree. A node with `children` drills into a
- * deeper layer (and its `href`, when present, becomes that layer's heading link);
- * a leaf links out via `href`. Mirrors each museum's own primary navigation. */
+/** A node in a museum's nav tree. A top-level node renders in the header's
+ * horizontal nav bar, its `children` (when present) as a dropdown of links; a
+ * leaf links out via `href`. Mirrors each museum's own primary navigation. */
 export type MenuItem = { label: string; href?: string; children?: Array<MenuItem> }
 
 /** Social platforms a museum links to in its footer. Mapped to brand icons +
@@ -150,77 +146,21 @@ export const museumDirectory = {
 } as const satisfies Record<string, MuseumConfig>
 
 /** Everything the shared header renders for a museum: branding, the utility links
- * across the top, the feature panel's image + copy, and the burger-menu tree.
- * Sourced from each museum's own website. */
+ * across the top, and the nav-bar tree. Sourced from each museum's own website. */
 type HeaderConfig = {
 	logo: StaticImageData
 	/** rendered logo width in px — logos differ in aspect ratio, so each museum
 	 * picks its own to land on a comparable header height */
 	logoWidth: number
-	hero: StaticImageData
-	heroAlt: string
 	topLinks: Array<{ label: string; href: string }>
-	feature: { title: string; text: string; href: string; label: string }
 	nav: Array<MenuItem>
 }
 
 const headers = {
-	prm: {
-		logo: prmLogo,
-		logoWidth: 150,
-		hero: prmHero,
-		heroAlt: "The Pitt Rivers Museum court, filled with display cases",
-		topLinks: prmTopLinks,
-		feature: {
-			title: "Plan your visit",
-			text: "Free entry, no booking required. Discover over half a million objects from cultures around the world.",
-			href: "/visit-us",
-			label: "Plan your visit",
-		},
-		nav: prmNav,
-	},
-	ash: {
-		logo: ashLogo,
-		logoWidth: 200,
-		hero: ashHero,
-		heroAlt: "The neoclassical façade of the Ashmolean Museum",
-		topLinks: ashTopLinks,
-		feature: {
-			title: "Plan your visit",
-			text: "Free entry to Britain's first public museum — art and archaeology from across the world.",
-			href: "/plan-your-visit",
-			label: "Plan your visit",
-		},
-		nav: ashNav,
-	},
-	oum: {
-		logo: oumLogo,
-		logoWidth: 56,
-		hero: oumHero,
-		heroAlt: "The neo-Gothic main court of the Museum of Natural History",
-		topLinks: oumTopLinks,
-		feature: {
-			title: "Plan your visit",
-			text: "Free entry, no booking required. Meet dinosaurs, dodos and the wonders of the natural world.",
-			href: "/visit-us",
-			label: "Plan your visit",
-		},
-		nav: oumNav,
-	},
-	hsm: {
-		logo: hsmLogo,
-		logoWidth: 150,
-		hero: hsmHero,
-		heroAlt: "Historic instruments in the gallery of the History of Science Museum",
-		topLinks: hsmTopLinks,
-		feature: {
-			title: "Plan your visit",
-			text: "Free entry to the world's finest collection of historic scientific instruments.",
-			href: "/plan-your-visit",
-			label: "Plan your visit",
-		},
-		nav: hsmNav,
-	},
+	prm: { logo: prmLogo, logoWidth: 150, topLinks: prmTopLinks, nav: prmNav },
+	ash: { logo: ashLogo, logoWidth: 200, topLinks: ashTopLinks, nav: ashNav },
+	oum: { logo: oumLogo, logoWidth: 56, topLinks: oumTopLinks, nav: oumNav },
+	hsm: { logo: hsmLogo, logoWidth: 150, topLinks: hsmTopLinks, nav: hsmNav },
 } satisfies Record<string, HeaderConfig>
 
 const footers = {

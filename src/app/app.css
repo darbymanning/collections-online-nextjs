@@ -14,7 +14,7 @@
 	--color-border: var(--color-gray-200);
 	/* keyboard focus ring colour (see the `*:focus-visible` base rule). A soft neutral
 	 * grey on the white content card (shadcn's `--ring`) rather than hard black. The
-	 * `.accented` chrome (header band, menu, footer, item hero) repoints it at
+	 * `.accented` chrome (header band, footer copyright bar) repoints it at
 	 * `--color-on-band` for a high-contrast ring on a coloured band — a mid-grey would
 	 * vanish on the light ash band. Exposed as ring-ring / outline-ring for a bespoke ring. */
 	--color-ring: var(--color-gray-600);
@@ -22,28 +22,17 @@
 	--color-primary: var(--color-foreground);
 	--color-secondary: var(--color-foreground);
 	/* reverse text colour for anything sitting on the primary/secondary accent
-	 * (header band, menu, filled buttons). White suits the deep brand colours;
+	 * (header band, filled buttons). White suits the deep brand colours;
 	 * museums with a light accent flip it to the foreground (see `.ash`). */
 	--color-on-accent: var(--color-background);
-	/* reverse text for a button filled with the *secondary* CTA accent (the menu's
-	 * "Plan your visit" feature button). Tracks `--color-on-accent` — fine while a
-	 * museum's primary and secondary share lightness — but a museum that pairs a
-	 * light primary with a deep secondary tunes `--color-on-accent` for its light
-	 * chrome, so the deep CTA needs its own (light) reverse here (see `.oum`). */
-	--color-on-secondary: var(--color-on-accent);
-	/* rest outline (text + ring) of the secondary CTA feature button, before its fill
-	 * slides up on hover. Defaults to the secondary, so the outline previews the fill —
-	 * but a museum whose secondary is too deep to read as an outline on the hero photo
-	 * points this at a lighter brand colour (see `.oum`). */
-	--color-cta-rest: var(--color-secondary);
 	/* accent for the search submit button, which sits ON the primary band. Usually
 	 * the secondary accent, but museums whose secondary equals their primary (so it
 	 * would vanish against the band) point this at a contrasting colour (see `.ash`). */
 	--color-search-accent: var(--color-secondary);
-	/* background of the `accented` chrome — the sticky header strip, the search/menu
-	 * overlays, the item-page hero band and the page edge behind the content card.
-	 * Usually the brand primary, but a museum whose brand colours are too loud for a
-	 * large fill (or already busy in the logo) can give it a plain bg (see `.hsm`). */
+	/* background of the `accented` chrome — the sticky header strip and the footer's
+	 * copyright bar. Usually the brand primary, but a museum whose brand colours are
+	 * too loud for a large fill (or already busy in the logo) can give it a plain bg
+	 * (see `.hsm`). */
 	--color-band: var(--color-primary);
 	/* text on the band — tracks `--color-on-accent` unless the band is recoloured to
 	 * something that needs a different contrast (see `.hsm`). */
@@ -103,14 +92,8 @@
 	--color-primary: oklch(0.8151 0.0427 232.65);
 	--color-secondary: oklch(0.4275 0.0525 257.94);
 	/* unusually, the primary is the light colour and the secondary the deep one, so
-	 * the light chrome (band, menu, primary-filled buttons) reverses to the deep
-	 * secondary… */
+	 * the light chrome (band, primary-filled buttons) reverses to the deep secondary */
 	--color-on-accent: var(--color-secondary);
-	/* …while the deep secondary CTA (the feature button) reverses back to white */
-	--color-on-secondary: var(--color-background);
-	/* the deep secondary is illegible as an outline on the menu's hero, so the CTA
-	 * rests as the light primary instead (and still fills deep blue on hover) */
-	--color-cta-rest: var(--color-primary);
 }
 
 .prm {
@@ -136,11 +119,9 @@
 		/* prose (details rows, descriptions) inherits the body base size */
 		font-size: var(--text-base);
 		color: var(--color-foreground);
-		/* the band colour fills the page behind the white content card (the card
-		 * supplies its own bg + the 5vw inset that used to live here), so the header
-		 * band reads continuously and over-scrolling past the top reveals the colour —
-		 * an app-like edge rather than a white gutter */
-		background: var(--color-band);
+		/* the band colour is confined to the header (the museums asked that it not
+		 * bleed down into the page), so the page itself is plain white */
+		background: var(--color-background);
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}

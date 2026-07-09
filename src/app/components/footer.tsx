@@ -29,10 +29,30 @@ const socials: Record<SocialPlatform, { Icon: IconType; label: string }> = {
 }
 
 /** The Gardens, Libraries & Museums family — the same six institutions on every
- * deployment, shown in full (the current museum included) so the strip stays a
- * clean six across breakpoints rather than orphaning at five. */
+ * deployment, shown in full (the current museum included) and in the same order
+ * the museums' own footers use. */
 const glamFamily = [
-	{ ref: "ash", label: "Ashmolean Museum", logo: ashLogo, url: "https://www.ashmolean.org" },
+	// the Ashmolean lockup is much wider than its siblings, so it runs shorter to
+	// keep its visual mass in line
+	{
+		ref: "ash",
+		label: "Ashmolean Museum",
+		logo: ashLogo,
+		url: "https://www.ashmolean.org",
+		size: "fl-h-10/16",
+	},
+	{
+		ref: "bodleian",
+		label: "Bodleian Libraries",
+		logo: bodleianLogo,
+		url: "https://www.bodleian.ox.ac.uk",
+	},
+	{
+		ref: "obga",
+		label: "Oxford Botanic Garden & Arboretum",
+		logo: obgaLogo,
+		url: "https://www.obga.ox.ac.uk",
+	},
 	{
 		ref: "hsm",
 		label: "History of Science Museum",
@@ -53,46 +73,40 @@ const glamFamily = [
 		url: "https://www.prm.ox.ac.uk",
 		light: true,
 	},
-	{
-		ref: "bodleian",
-		label: "Bodleian Libraries",
-		logo: bodleianLogo,
-		url: "https://www.bodleian.ox.ac.uk",
-	},
-	{
-		ref: "obga",
-		label: "Oxford Botanic Garden & Arboretum",
-		logo: obgaLogo,
-		url: "https://www.obga.ox.ac.uk",
-	},
 ] as const
 
 /** Funder / accreditation / platform logos, keyed by the partner identifiers the
  * scrape records per museum. `light` marks white-on-transparent logos that need
- * darkening to read on the white footer. */
+ * darkening to read on the white footer. `size` is a per-logo fluid height that
+ * balances the marks' very different aspect ratios — wide banners run shorter,
+ * square-ish marks taller, so no one logo dominates the strip. */
 const partners: Record<
 	FooterPartner,
-	{ label: string; logo: StaticImageData; url: string; light?: boolean }
+	{ label: string; logo: StaticImageData; url: string; light?: boolean; size: string }
 > = {
 	"research-england": {
 		label: "Research England",
 		logo: researchEnglandLogo,
 		url: "https://re.ukri.org/",
+		size: "fl-h-10/16",
 	},
 	"athena-swan": {
 		label: "Athena Swan Charter",
 		logo: athenaSwanLogo,
 		url: "https://www.advance-he.ac.uk/equality-charters/athena-swan-charter",
+		size: "fl-h-14/20",
 	},
 	"arts-council-england": {
 		label: "Arts Council England",
 		logo: artsCouncilLogo,
 		url: "https://www.artscouncil.org.uk/",
+		size: "fl-h-10/16",
 	},
 	"heritage-fund": {
 		label: "National Lottery Heritage Fund",
 		logo: heritageFundLogo,
 		url: "https://www.heritagefund.org.uk/",
+		size: "fl-h-16/26",
 	},
 }
 
@@ -120,49 +134,51 @@ function FootLink({ href, children }: { href: string; children: string }) {
 	)
 }
 
-type LogoItem = { logo: StaticImageData; label: string; url: string; light?: boolean }
-
-/** An affiliation logo card. Marks are greyscaled; the Pitt Rivers mark is partly
- * white-on-transparent (for its dark site), so it carries `light` and is darkened
- * to read on the white footer. */
-function LogoLink({ logo, label, url, light }: LogoItem) {
-	return (
-		<a
-			href={url}
-			title={label}
-			className="relative flex aspect-video w-full rounded-lg bg-primary/15 opacity-50 transition-opacity hover:opacity-100"
-		>
-			{/* `fill` lets the logo scale into the card without pinning the <img> to a
-			 * ratio that fights its own (which trips Next's aspect-ratio warning);
-			 * object-contain keeps it proportional and the padding insets it. */}
-			<Image
-				src={logo}
-				alt={label}
-				fill
-				// logos don't need optimising (a raster one would otherwise take a
-				// needless /_next/image round-trip), so serve them as-is
-				unoptimized
-				className={cn("object-contain fl-p-2/8 grayscale-100", light && "brightness-0")}
-			/>
-		</a>
-	)
+type LogoItem = {
+	logo: StaticImageData
+	label: string
+	url: string
+	light?: boolean
+	/** per-logo fluid img height; the shared default suits the museum marks */
+	size?: string
 }
 
-/** A static strip of affiliation logos, two equal columns on mobile. The
- * variable-length supporter rows flow at a fluid floor width from `sm` up so they
- * stay legible and wrap rather than shrink. Pass `even` for the fixed six-strong
- * GLAM family: an even 2 → 3 → 6 column grid keeps all six on one desktop row. */
-function LogoRow({ logos, even }: { logos: ReadonlyArray<LogoItem>; even?: boolean }) {
+/** A strip of plain affiliation logos, no cards (the museums' own footers just
+ * line the logos up). `family` gives the GLAM strip its original-site look:
+ * greyscale marks spread edge-to-edge (justify-between); without it the logos
+ * keep their colour and centre up (the funder strip). */
+function LogoRow({ logos, family }: { logos: ReadonlyArray<LogoItem>; family?: boolean }) {
 	return (
 		<ul
 			className={cn(
-				"grid grid-cols-2 gap-1",
-				even ? "sm:grid-cols-3 lg:grid-cols-6" : "sm:flex sm:flex-wrap",
+				"flex flex-wrap items-center gap-x-10 gap-y-8",
+				family ? "justify-between max-sm:justify-center" : "justify-center gap-x-12",
 			)}
 		>
-			{logos.map((item) => (
-				<li key={item.label} className={cn(!even && "sm:fl-w-36/56 sm:shrink-0")}>
-					<LogoLink logo={item.logo} label={item.label} url={item.url} light={item.light} />
+			{logos.map(({ logo, label, url, light, size }) => (
+				<li key={label}>
+					<a
+						href={url}
+						title={label}
+						className={cn(
+							"inline-block rounded transition-opacity",
+							family ? "opacity-70 hover:opacity-100" : "hover:opacity-80",
+						)}
+					>
+						<Image
+							src={logo}
+							alt={label}
+							// logos don't need optimising (a raster one would otherwise take
+							// a needless /_next/image round-trip), so serve them as-is
+							unoptimized
+							className={cn(
+								"w-auto object-contain",
+								size ?? "fl-h-14/24",
+								family && "grayscale-100",
+								light && "brightness-0",
+							)}
+						/>
+					</a>
 				</li>
 			))}
 		</ul>
@@ -171,12 +187,7 @@ function LogoRow({ logos, even }: { logos: ReadonlyArray<LogoItem>; even?: boole
 
 export function Footer() {
 	const { footer } = museum
-	const family: Array<LogoItem> = glamFamily.map((institution) => ({
-		logo: institution.logo,
-		label: institution.label,
-		url: institution.url,
-		light: "light" in institution ? institution.light : undefined,
-	}))
+	const family: Array<LogoItem> = [...glamFamily]
 	const supporters: Array<LogoItem> = footer.partners.map((key) => partners[key])
 
 	return (
@@ -272,14 +283,14 @@ export function Footer() {
 			<div className="border-t border-border py-10">
 				<div className="mx-auto grid max-w-wrap gap-8 px-[5vw]">
 					<div className="grid gap-5">
-						<h2 className="text-xs font-semibold tracking-wider text-foreground/60 uppercase">
+						<h2 className="text-center text-xs font-semibold tracking-wider text-foreground/60 uppercase">
 							Part of Gardens, Libraries &amp; Museums
 						</h2>
-						<LogoRow logos={family} even />
+						<LogoRow logos={family} family />
 					</div>
 					{supporters.length > 0 && (
 						<div className="grid gap-5">
-							<h2 className="text-xs font-semibold tracking-wider text-foreground/60 uppercase">
+							<h2 className="text-center text-xs font-semibold tracking-wider text-foreground/60 uppercase">
 								With support from
 							</h2>
 							<LogoRow logos={supporters} />
