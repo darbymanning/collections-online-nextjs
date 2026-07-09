@@ -21,6 +21,10 @@
 	/* per-museum brand primary — overridden by the museum class on <html> below */
 	--color-primary: var(--color-foreground);
 	--color-secondary: var(--color-foreground);
+	/* content hyperlinks (keyword / person / place search links, rich-text links).
+	 * Oxford blue on every museum, so links read as links rather than blending into
+	 * the brand-coloured field headers — some brands' primaries are near-black. */
+	--color-link: #002147;
 	/* reverse text colour for anything sitting on the primary/secondary accent
 	 * (header band, filled buttons). White suits the deep brand colours;
 	 * museums with a light accent flip it to the foreground (see `.ash`). */

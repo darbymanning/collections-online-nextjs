@@ -23,7 +23,7 @@ function linkify(text: string): ReactNode[] {
 			<a
 				key={start}
 				href={url}
-				className="animated-underline font-semibold text-primary hover:[--underline-w:100%]"
+				className="animated-underline font-semibold text-link hover:[--underline-w:100%]"
 			>
 				{url}
 			</a>,
