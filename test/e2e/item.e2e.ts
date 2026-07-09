@@ -144,6 +144,8 @@ test("suggests related items to explore", async ({ page }) => {
 test("expands and collapses hierarchy trails", async ({ page }) => {
 	const museum = currentMuseum()
 	test.skip(!museum.expectHierarchy, "no hierarchy trails for this item")
+	// only Pitt Rivers keeps the collapsed-trail toggle — see the full-trail test below
+	test.skip(test.info().project.name !== "prm", "museum shows the full trail outright")
 
 	await page.goto(`/item/${museum.id}/${museum.slug}`)
 
@@ -168,4 +170,20 @@ test("expands and collapses hierarchy trails", async ({ page }) => {
 	await toggle.click()
 
 	await expect(toggle).toHaveAttribute("aria-expanded", "false")
+})
+
+test("shows hierarchy trails in full", async ({ page }) => {
+	const museum = currentMuseum()
+	test.skip(!museum.expectHierarchy, "no hierarchy trails for this item")
+	test.skip(test.info().project.name === "prm", "Pitt Rivers collapses trails behind a toggle")
+
+	await page.goto(`/item/${museum.id}/${museum.slug}`)
+
+	// at least one trail renders every level as a link, with no expand toggle
+	const trails = page.getByTestId("list")
+	const counts = await trails.evaluateAll((els) =>
+		els.map((el) => el.querySelectorAll("a").length),
+	)
+	expect(Math.max(...counts)).toBeGreaterThan(1)
+	await expect(trails.locator("button[aria-expanded]")).toHaveCount(0)
 })

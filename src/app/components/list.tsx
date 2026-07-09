@@ -1,5 +1,6 @@
 "use client"
 
+import { museum } from "$library/config"
 import { useState } from "react"
 
 type Props = {
@@ -8,10 +9,39 @@ type Props = {
 	prefix?: string
 }
 
+/** The full hierarchy, every level linked: `Africa > Nigeria > Calabar`. */
+function Trail({ links, association, prefix }: Props) {
+	return (
+		<>
+			{prefix ? `${prefix} ` : ""}
+			{links.map((link, index) => (
+				<span key={index}>
+					<a className="rounded" href={link.href}>
+						{link.label}
+					</a>
+					{index < links.length - 1 && <span className="opacity-50"> &gt; </span>}
+				</span>
+			))}
+			{association ? ` (${association})` : ""}
+		</>
+	)
+}
+
 export function List({ links, association, prefix }: Props) {
 	const [open, setOpen] = useState(false)
 
 	const last = links[links.length - 1]
+
+	// Only Pitt Rivers wants the collapsed last-term + expand toggle (their long
+	// ethnographic trails swamp the row); the other museums found the "+" confusing
+	// and asked for the whole hierarchy outright.
+	if (museum.ref !== "prm") {
+		return (
+			<div data-testid="list">
+				<Trail links={links} association={association} prefix={prefix} />
+			</div>
+		)
+	}
 
 	return (
 		<div className="group" data-open={open ? "" : undefined} data-testid="list">
@@ -32,16 +62,7 @@ export function List({ links, association, prefix }: Props) {
 						data-testid="list-expanded"
 					>
 						<div className="min-h-0 overflow-hidden clip-focus">
-							{prefix ? `${prefix} ` : ""}
-							{links.map((link, index) => (
-								<span key={index}>
-									<a className="rounded" href={link.href}>
-										{link.label}
-									</a>
-									{index < links.length - 1 && <span className="opacity-50"> &gt; </span>}
-								</span>
-							))}
-							{association ? ` (${association})` : ""}
+							<Trail links={links} association={association} prefix={prefix} />
 						</div>
 					</div>
 				</div>
